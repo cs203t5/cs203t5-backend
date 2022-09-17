@@ -3,8 +3,8 @@
 echo 'Starting to Deploy...'
 
 # Install required dependencies
-sudo apt-get update
-sudo apt-get upgrade
+sudo yum update
+sudo yum upgrade
 yes | sudo yum install openjdk-17-jdk
 yes | sudo yum install nginx
 yes | sudo yum install apt-transport-https ca-certificates curl software-properties-common

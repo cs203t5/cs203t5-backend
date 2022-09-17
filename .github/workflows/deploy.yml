@@ -35,7 +35,7 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i private_key.pem ${USER_NAME}@${HOSTNAME} '
             rm -rf /home/ubuntu/cs203t5-backend
             git clone https://github.com/cs203t5/cs203t5-backend.git
-            cd <your-repo>
+            cd cs203t5-backend
             git checkout staging
             git pull origin staging
             sudo chmod +x ./deploy.sh

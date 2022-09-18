@@ -2,3 +2,4 @@
 
 ## Installation
 Run mvn spring-boot:run
+Test

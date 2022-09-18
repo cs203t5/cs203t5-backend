@@ -5,7 +5,7 @@ echo 'Starting to Deploy...'
 # Install required dependencies
 sudo yum update
 sudo yum upgrade
-yes | sudo yum install openjdk-17-jdk
+yes | sudo yum install java-17-openjdk
 yes | sudo yum install nginx
 yes | sudo yum install apt-transport-https ca-certificates curl software-properties-common
 yes | curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -

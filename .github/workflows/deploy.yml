@@ -39,6 +39,7 @@ jobs:
             git checkout staging
             git pull origin staging
             sudo chmod +x ./deploy.sh
+            cd Vox-Viridis
             ./deploy.sh
           '
           rm -rf private_key.pem

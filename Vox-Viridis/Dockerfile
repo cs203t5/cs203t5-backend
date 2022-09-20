@@ -1,4 +1,4 @@
-FROM maven:3.6.3 AS maven
+FROM maven:3.8.3-openjdk-17 AS maven
 # Create a workdir for our app
 WORKDIR /usr/src/app
 COPY . /usr/src/app

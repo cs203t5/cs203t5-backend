@@ -6,7 +6,7 @@ COPY . /usr/src/app
 # Compile and package the application to an executable JAR
 RUN mvn clean package -DskipTests
 # Using java 17
-FROM openjdk:17-oracle
+FROM openjdk:17-jdk
 
 ARG JAR_FILE=/usr/src/app/target/*.jar
 

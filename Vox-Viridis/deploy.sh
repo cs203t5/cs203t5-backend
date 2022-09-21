@@ -29,7 +29,7 @@ sudo systemctl restart nginx
 
 # run in detached mode
 # sudo docker run -p 8080:8080 -d demo:latest
-sudo docker-compose up
+sudo docker-compose -d up
 sleep 15
 
 PORT=8080

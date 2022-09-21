@@ -29,7 +29,7 @@ sudo systemctl restart nginx
 sudo docker rm $(sudo docker stop $(sudo docker ps -a -q --filter ancestor=demo))
 
 # remove all stopped docker containers
-sudo docker system prune -a
+sudo docker system prune -a | y
 
 # build dockerfile
 sudo docker build -f Dockerfile -t demo:latest .

@@ -18,7 +18,8 @@ echo 'Starting to Deploy...'
 # make sure demo docker is not running
 #not working
 #sudo docker rm $(sudo docker stop $(sudo docker ps -a -q --filter ancestor=demo:latest --format="{{.ID}}"))
-
+sudo apt-get update
+sudo apt-get install docker-compose-plugin
 # copy nginx conf to default
 sudo cp nginx.conf /etc/nginx/conf.d/default.conf
 
@@ -29,7 +30,7 @@ sudo systemctl restart nginx
 
 # run in detached mode
 # sudo docker run -p 8080:8080 -d demo:latest
-sudo docker-compose -d up
+sudo docker compose -d up
 sleep 15
 
 PORT=8080

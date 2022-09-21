@@ -38,8 +38,8 @@ jobs:
             cd cs203t5-backend
             git checkout staging
             git pull origin staging
-            sudo chmod +x ./deploy.sh
             cd Vox-Viridis
+            sudo chmod +x ./deploy.sh
             ./deploy.sh
           '
           rm -rf private_key.pem

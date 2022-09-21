@@ -18,19 +18,25 @@ echo 'Starting to Deploy...'
 # make sure demo docker is not running
 #not working
 #sudo docker rm $(sudo docker stop $(sudo docker ps -a -q --filter ancestor=demo:latest --format="{{.ID}}"))
-sudo apt-get update
-sudo apt-get install docker-compose-plugin
+# sudo apt-get update
+# sudo apt-get install docker-compose-plugin
+
 # copy nginx conf to default
 sudo cp nginx.conf /etc/nginx/conf.d/default.conf
 
 sudo systemctl restart nginx
 
+sudo docker rm $(sudo docker stop $(sudo docker ps -a -q --filter ancestor=demo))
+
+# remove all stopped docker containers
+sudo docker system prune -a
+
 # build dockerfile
-# sudo docker build -f Dockerfile -t demo:latest .
+sudo docker build -f Dockerfile -t demo:latest .
 
 # run in detached mode
-# sudo docker run -p 8080:8080 -d demo:latest
-sudo docker compose -d up
+sudo docker run -p 8080:8080 -d demo:latest
+# sudo docker compose -d up
 sleep 15
 
 PORT=8080

@@ -23,6 +23,7 @@ public class VoxViridisController {
         list.add("bleh bleh");
         list.add("bleh bleh");
         list.add("frankeee abang");
+        list.add("frankeee ");
         return list;
     }
 

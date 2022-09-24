@@ -25,4 +25,10 @@ public class VoxViridisController {
         return list;
     }
 
+    @GetMapping()
+    public String helloworld() {
+        // System.out.println("okkk");
+        return "hello word";
+    }
+
 }

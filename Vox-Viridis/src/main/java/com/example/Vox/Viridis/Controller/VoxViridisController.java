@@ -28,7 +28,7 @@ public class VoxViridisController {
     @GetMapping()
     public String helloworld() {
         // System.out.println("okkk");
-        return "hello word";
+        return "hello word CS203";
     }
 
 }

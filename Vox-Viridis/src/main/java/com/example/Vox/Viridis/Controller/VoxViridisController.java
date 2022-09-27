@@ -1,4 +1,4 @@
-package com.example.Vox.Viridis.Controller;
+package com.example.Vox.Viridis.controller;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,8 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin(origins = "http://localhost:3000")
 public class VoxViridisController {
 
-    public VoxViridisController() {
-    }
+    public VoxViridisController() {}
 
     @GetMapping("/books")
     public List<String> getBooks() {

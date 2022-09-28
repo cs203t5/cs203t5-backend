@@ -27,6 +27,6 @@ public class Users {
     private String firstName;
     private String lastName;
     private String email;
-    private int points;
+    private int points = 0;
     private String image;
 }

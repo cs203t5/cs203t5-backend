@@ -1,9 +1,8 @@
-package com.example.Vox.Viridis.Controller;
+package com.example.Vox.Viridis.controller;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,12 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin(origins = "http://localhost:3000")
 public class VoxViridisController {
 
-    public VoxViridisController() {
-    }
+    public VoxViridisController() {}
 
     @GetMapping("/books")
     public List<String> getBooks() {
-        // System.out.println("okkk");
         List<String> list = new ArrayList<>();
         list.add("okk");
         list.add("bleh bleh");
@@ -28,7 +25,7 @@ public class VoxViridisController {
     @GetMapping()
     public String helloworld() {
         // System.out.println("okkk");
-        return "hello word CS203";
+        return "CS203 Backend";
     }
 
 }

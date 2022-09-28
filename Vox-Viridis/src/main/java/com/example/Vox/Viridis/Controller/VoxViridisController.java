@@ -3,7 +3,6 @@ package com.example.Vox.Viridis.controller;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,7 +15,6 @@ public class VoxViridisController {
 
     @GetMapping("/books")
     public List<String> getBooks() {
-        // System.out.println("okkk");
         List<String> list = new ArrayList<>();
         list.add("okk");
         list.add("bleh bleh");

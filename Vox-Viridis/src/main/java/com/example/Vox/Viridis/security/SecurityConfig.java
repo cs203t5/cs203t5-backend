@@ -56,14 +56,8 @@ public class SecurityConfig {
 
     @Bean
     UserDetailsService users() {
-        // @formatter:off
-		return new InMemoryUserDetailsManager(
-			User.withUsername("user")
-				.password("{noop}password")
-				.authorities("app")
-				.build()
-		);
-		// @formatter:on
+        return new InMemoryUserDetailsManager(
+                User.withUsername("user").password("password").authorities("app").build());
     }
 
     @Bean

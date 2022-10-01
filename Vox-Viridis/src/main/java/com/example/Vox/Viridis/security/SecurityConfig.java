@@ -15,6 +15,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import com.example.Vox.Viridis.service.JpaUserDetailsService;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
@@ -26,9 +27,11 @@ import com.nimbusds.jose.proc.SecurityContext;
 @Configuration
 public class SecurityConfig {
         private final RsaKeyProperties rsaKeys;
+        private final JpaUserDetailsService myUserDetailsService;
 
-        public SecurityConfig(RsaKeyProperties rsaKeys) {
+        public SecurityConfig(RsaKeyProperties rsaKeys, JpaUserDetailsService myUsersService) {
                 this.rsaKeys = rsaKeys;
+                this.myUserDetailsService = myUsersService;
         }
 
         @Bean
@@ -36,7 +39,7 @@ public class SecurityConfig {
                 return new InMemoryUserDetailsManager(
                                 User.withUsername("consumer").password("{noop}passwordC")
                                                 .authorities("consumer").build(),
-                                User.withUsername("admin").password("{noop}passwordA")
+                                User.withUsername("admin").password("passwordA")
                                                 .authorities("admin").build());
         }
 
@@ -45,6 +48,7 @@ public class SecurityConfig {
                 http.authorizeRequests(auth -> auth.antMatchers("/users/save").permitAll()
                                 .anyRequest().authenticated()).csrf(csrf -> csrf.disable())
                                 .httpBasic(Customizer.withDefaults())
+                                .userDetailsService(myUserDetailsService)
                                 .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
                                 .sessionManagement((session) -> session.sessionCreationPolicy(
                                                 SessionCreationPolicy.STATELESS));

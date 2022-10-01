@@ -29,4 +29,6 @@ public class Users {
     private String email;
     private int points = 0;
     private String image;
+    private String roles;
+
 }

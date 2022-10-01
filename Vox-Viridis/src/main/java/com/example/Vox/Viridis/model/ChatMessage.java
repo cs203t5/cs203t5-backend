@@ -14,7 +14,6 @@ import java.util.Date;
 @NoArgsConstructor
 @Builder
 @Entity
-
 public class ChatMessage {
     @Id @GeneratedValue
     private String id;

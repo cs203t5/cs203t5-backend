@@ -1,7 +1,10 @@
 package com.example.Vox.Viridis.controller;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +27,11 @@ import lombok.RequiredArgsConstructor;
 public class CampaignController {
     private final CampaignService campaignService;
     private final StorageService storageService;
+
+    @GetMapping()
+    public List<Campaign> getCampaign(@RequestParam(value="filterByTitle", required=false) String filterByTitle){
+        return campaignService.getCampaign(filterByTitle);
+    }
 
     @PostMapping()
     public Campaign addCampaign(@ModelAttribute @Valid Campaign campaign, @RequestParam(value="imageFile", required=false) MultipartFile image) {

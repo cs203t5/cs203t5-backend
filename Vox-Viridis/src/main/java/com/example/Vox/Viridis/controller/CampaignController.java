@@ -38,7 +38,7 @@ public class CampaignController {
         Campaign result = campaignService.addCampaign(campaign);
         if (result == null) throw new CampaignExistsException(campaign.getTitle());
         
-        if (!image.isEmpty()) {
+        if (image != null && !image.isEmpty()) {
             if (image.getContentType() == null || !image.getContentType().startsWith("image/"))
                 throw new InvalidFileTypeException("Image like jpeg");
             

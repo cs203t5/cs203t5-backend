@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.Vox.Viridis.exception.CampaignExistsException;
+import com.example.Vox.Viridis.exception.InconsistentDateException;
 import com.example.Vox.Viridis.exception.InvalidFileTypeException;
 import com.example.Vox.Viridis.model.Campaign;
 import com.example.Vox.Viridis.service.AwsS3Storage;
@@ -35,6 +36,8 @@ public class CampaignController {
 
     @PostMapping()
     public Campaign addCampaign(@ModelAttribute @Valid Campaign campaign, @RequestParam(value="imageFile", required=false) MultipartFile image) {
+        if (!campaignService.validateCampaign(campaign)) throw new InconsistentDateException();
+        
         Campaign result = campaignService.addCampaign(campaign);
         if (result == null) throw new CampaignExistsException(campaign.getTitle());
         

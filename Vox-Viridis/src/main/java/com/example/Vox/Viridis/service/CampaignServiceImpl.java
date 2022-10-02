@@ -16,7 +16,14 @@ import lombok.extern.slf4j.Slf4j;
 public class CampaignServiceImpl implements CampaignService {
     private final CampaignRepository campaignRepository;
     
+    public boolean validateCampaign(Campaign campaign) {
+        if (campaign.getEndDate().isBefore(campaign.getStartDate())) return false;
+        return true;
+    }
+
     public Campaign addCampaign(Campaign campaign) {
+        if (!validateCampaign(campaign)) return null;
+        
         String title = campaign.getTitle();
         if (!campaignRepository.findByTitle(title).isEmpty()) {
             log.error("Error creating Campaign: duplicate title: " + title);

@@ -12,6 +12,9 @@ import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import javax.validation.constraints.Future;
+import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -36,10 +39,12 @@ public class Campaign {
 
     @NotNull(message = "Campaign's startDate should not be null")
     @DateTimeFormat(pattern = "dd-MM-yyyy HH:mm")
+    @FutureOrPresent
     private LocalDateTime startDate;
 
     @NotNull(message = "Campaign's endDate should not be null")
     @DateTimeFormat(pattern = "dd-MM-yyyy HH:mm")
+    @FutureOrPresent
     private LocalDateTime endDate;
     
     private String location;

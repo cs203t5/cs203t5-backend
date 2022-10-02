@@ -1,7 +1,6 @@
 package com.example.Vox.Viridis.model;
 
-import java.time.LocalDate;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,8 +8,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -37,24 +34,13 @@ public class Campaign {
 
     private String description;
 
-    @NotNull(message = "Campaign's startDateshould not be null")
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
-    private LocalDate startDate;
-
-    @NotNull(message = "Campaign's startTime should not be null")
-    @Temporal(TemporalType.TIMESTAMP)
-    @DateTimeFormat(pattern = "HH:mm")
-    private Date startTime;
+    @NotNull(message = "Campaign's startDate should not be null")
+    @DateTimeFormat(pattern = "dd-MM-yyyy HH:mm")
+    private LocalDateTime startDate;
 
     @NotNull(message = "Campaign's endDate should not be null")
-    // @JsonFormat(pattern = "dd-MM-yyyy")
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
-    private LocalDate endDate;
-
-    @NotNull(message = "Campaign's endTime should not be null")
-    @Temporal(TemporalType.TIMESTAMP)
-    @DateTimeFormat(pattern = "HH:mm")
-    private Date endTime;
+    @DateTimeFormat(pattern = "dd-MM-yyyy HH:mm")
+    private LocalDateTime endDate;
     
     private String location;
     private char status;

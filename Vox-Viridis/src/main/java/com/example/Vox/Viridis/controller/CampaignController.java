@@ -5,19 +5,24 @@ import java.util.List;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.Vox.Viridis.exception.CampaignExistsException;
+import com.example.Vox.Viridis.exception.CampaignTitleExistsException;
+import com.example.Vox.Viridis.exception.CampaignNotFoundException;
 import com.example.Vox.Viridis.exception.InconsistentDateException;
 import com.example.Vox.Viridis.exception.InvalidFileTypeException;
 import com.example.Vox.Viridis.model.Campaign;
-import com.example.Vox.Viridis.service.AwsS3Storage;
 import com.example.Vox.Viridis.service.CampaignService;
 import com.example.Vox.Viridis.service.StorageService;
 
@@ -30,12 +35,24 @@ public class CampaignController {
     private final CampaignService campaignService;
     private final StorageService storageService;
 
+    @GetMapping("{id}")
+    public Campaign getCampaign(@PathVariable Long id){
+        Campaign result =  campaignService.getCampaign(id)
+            .orElseThrow(() -> new CampaignNotFoundException(id));
+        result.setImage(storageService.getUrl(result.getImage()));
+        return result;
+    }
+
     @GetMapping()
     public List<Campaign> getCampaign(@RequestParam(value="filterByTitle", required=false) String filterByTitle){
-        return campaignService.getCampaign(filterByTitle);
+        List<Campaign> result = campaignService.getCampaign(filterByTitle);
+        result.forEach(campaign ->
+                campaign.setImage(storageService.getUrl(campaign.getImage())));
+        return result;
     }
 
     @Transactional
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping()
     public Campaign addCampaign(@ModelAttribute @Valid Campaign campaign, @RequestParam(value="imageFile", required=false) MultipartFile image) {
         if (!campaignService.validateCampaign(campaign)) throw new InconsistentDateException();
@@ -45,15 +62,47 @@ public class CampaignController {
         }
 
         Campaign result = campaignService.addCampaign(campaign);
-        if (result == null) throw new CampaignExistsException(campaign.getTitle());
+        if (result == null) throw new CampaignTitleExistsException(campaign.getTitle());
         
         if (image != null && !image.isEmpty()) {
-            String filename = result.getId() + image.getOriginalFilename().substring(image.getOriginalFilename().lastIndexOf("."));
-            String url = storageService.putObject(AwsS3Storage.CAMPAIGNS_DIR + filename, image);
+            String filename = StorageService.CAMPAIGNS_DIR + result.getId() + image.getOriginalFilename().substring(image.getOriginalFilename().lastIndexOf("."));
+            result = campaignService.updateCampaignImage(campaign, filename);
 
-            campaignService.updateCampaignImageUrl(campaign, url);
+            storageService.putObject(filename, image);
         }
 
         return result;
+    }
+
+    @Transactional
+    @PutMapping("{id}")
+    public Campaign updateCampaign(@PathVariable Long id, @ModelAttribute @Valid Campaign campaign, @RequestParam(value="imageFile", required=false) MultipartFile image) {
+        if (!campaignService.validateCampaign(campaign)) throw new InconsistentDateException();
+        if (image != null && !image.isEmpty()) {
+            if (image.getContentType() == null || !image.getContentType().startsWith("image/"))
+                throw new InvalidFileTypeException("Image like jpeg");
+        }
+
+        Campaign result = campaignService.updateCampaign(campaign, id);
+        if (result == null) throw new CampaignTitleExistsException(campaign.getTitle());
+        
+        if (image != null && !image.isEmpty()) {
+            storageService.deleteObject(result.getImage());
+
+            String filename = StorageService.CAMPAIGNS_DIR + result.getId() + image.getOriginalFilename().substring(image.getOriginalFilename().lastIndexOf("."));
+            result = campaignService.updateCampaignImage(campaign, filename);
+
+            storageService.putObject(filename, image);
+        }
+
+        return result;
+    }
+
+    @DeleteMapping("{id}")
+    public void deleteCampaign(@PathVariable Long id){
+        Campaign campaign = campaignService.getCampaign(id).orElseThrow(() -> new CampaignNotFoundException(id));
+        if (campaign.getImage() != null && !campaign.getImage().isBlank())
+            storageService.deleteObject(campaign.getImage());
+        campaignService.deleteCampaign(id);
     }
 }

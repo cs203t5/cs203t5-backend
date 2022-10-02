@@ -2,6 +2,7 @@ package com.example.Vox.Viridis.controller;
 
 import java.util.List;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,18 +35,23 @@ public class CampaignController {
         return campaignService.getCampaign(filterByTitle);
     }
 
+    @Transactional
     @PostMapping()
     public Campaign addCampaign(@ModelAttribute @Valid Campaign campaign, @RequestParam(value="imageFile", required=false) MultipartFile image) {
         if (!campaignService.validateCampaign(campaign)) throw new InconsistentDateException();
-        
+        if (image != null && !image.isEmpty()) {
+            if (image.getContentType() == null || !image.getContentType().startsWith("image/"))
+                throw new InvalidFileTypeException("Image like jpeg");
+        }
+
         Campaign result = campaignService.addCampaign(campaign);
         if (result == null) throw new CampaignExistsException(campaign.getTitle());
         
         if (image != null && !image.isEmpty()) {
-            if (image.getContentType() == null || !image.getContentType().startsWith("image/"))
-                throw new InvalidFileTypeException("Image like jpeg");
-            
-            storageService.putObject(AwsS3Storage.CAMPAIGNS_DIR + result.getId() + image.getOriginalFilename().substring(image.getOriginalFilename().lastIndexOf(".")), image);
+            String filename = result.getId() + image.getOriginalFilename().substring(image.getOriginalFilename().lastIndexOf("."));
+            String url = storageService.putObject(AwsS3Storage.CAMPAIGNS_DIR + filename, image);
+
+            campaignService.updateCampaignImageUrl(campaign, url);
         }
 
         return result;

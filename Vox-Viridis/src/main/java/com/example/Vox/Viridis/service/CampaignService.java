@@ -8,4 +8,5 @@ public interface CampaignService {
     boolean validateCampaign(Campaign campaign);
     List<Campaign> getCampaign(String filterByTitle);
     Campaign addCampaign(Campaign campaign);
+    Campaign updateCampaignImageUrl(Campaign campaign, String imageUrl);
 }

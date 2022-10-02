@@ -39,4 +39,10 @@ public class CampaignServiceImpl implements CampaignService {
         if (filterByTitle == null) filterByTitle = "";
         return campaignRepository.findTop20ByTitleOrderByTitleAsc(filterByTitle);
     }
+
+    @Override
+    public Campaign updateCampaignImageUrl(Campaign campaign, String imageUrl) {
+        campaign.setImage(imageUrl);
+        return campaignRepository.save(campaign);
+    }
 }

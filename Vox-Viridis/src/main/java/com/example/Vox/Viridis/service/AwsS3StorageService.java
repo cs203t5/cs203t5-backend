@@ -19,35 +19,40 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Transactional
 @Slf4j
-public class AwsS3Storage implements StorageService {
-    private static final String BUCKET_NAME = "voxviridis";
-    public static final String CAMPAIGNS_DIR = "campaigns/";
-    @Value("${aws.s3-base-url}")
-    private String BASE_URL;
+public class AwsS3StorageService implements StorageService {
+    private final String baseUrl;
+    private final String bucketName;
     private final AmazonS3 client;
 
-    public AwsS3Storage(AWSConfig config) {
+    public AwsS3StorageService(AWSConfig config, 
+            @Value("${aws.s3-base-url}") String baseUrl,
+            @Value("${aws.s3-bucket-name}") String bucketName) {
         client = config.amazonS3();
+        this.baseUrl = baseUrl;
+        this.bucketName = bucketName;
     }
 
-    /// @Return: URL to the file in AWS
+    public String getUrl(String filename) {
+        return baseUrl + filename;
+    }
+
     @Override
-    public String putObject(String filename, MultipartFile file) {
+    public void putObject(String filename, MultipartFile file) {
         ObjectMetadata md = new ObjectMetadata();
         md.setContentLength(file.getSize());
         md.setContentType(file.getContentType());
         
         try {
-            var putObjectRequest = new PutObjectRequest(BUCKET_NAME, filename, file.getInputStream(), md).withCannedAcl(CannedAccessControlList.PublicRead);
+            var putObjectRequest = new PutObjectRequest(bucketName, filename, file.getInputStream(), md).withCannedAcl(CannedAccessControlList.PublicRead);
             client.putObject(putObjectRequest);
             log.info("upload file into AWS S3: " + filename);
-            return BASE_URL + filename;
         } catch (IOException ioException) {
-            log.error("Error uploading file '" + filename + "'", ioException);
             throw new RuntimeException(ioException);
-        } catch (RuntimeException exception) {
-            log.error("Error uploading file '" + filename + "'", exception);
-            throw exception;
         }
+    }
+
+    @Override
+    public void deleteObject(String filename) {
+        client.deleteObject(bucketName, filename);
     }
 }

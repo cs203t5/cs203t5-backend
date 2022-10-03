@@ -54,5 +54,6 @@ public class AwsS3StorageService implements StorageService {
     @Override
     public void deleteObject(String filename) {
         client.deleteObject(bucketName, filename);
+        log.info("delete file in AWS S3: " + filename);
     }
 }

@@ -51,26 +51,33 @@ public class CampaignServiceImpl implements CampaignService {
     @Override
     public Campaign updateCampaignImage(Campaign campaign, String imageFilename) {
         campaign.setImage(imageFilename);
+        log.info("updated campaign image to '" + imageFilename + "'' for id: " + campaign.getId());
         return campaignRepository.save(campaign);
     }
 
-    /// Return null if title alr exists
-    /// @Throw CampaignNotFoundException
+    /**
+     * @Return null if title alr exists. Else, return updated campaign
+     * @Throw CampaignNotFoundException
+     */
     @Override
     public Campaign updateCampaign(Campaign updatedCampaign, Long id) {
         List<Campaign> tmp = campaignRepository.findByTitle(updatedCampaign.getTitle());
-        if ((tmp.size() == 1 && tmp.get(0).getId() == id)) return null;
+        if (!((tmp.size() == 1 && tmp.get(0).getId() == id) || tmp.size() == 0)) {
+            log.error("Error creating Campaign: duplicate title: " + updatedCampaign.getTitle());
+            return null;
+        }
 
         Campaign existingCampaign = getCampaign(id).orElseThrow(() -> new CampaignNotFoundException(id));
 
         updatedCampaign.setId(id);
         updatedCampaign.setImage(existingCampaign.getImage());
-        
+        log.info("updated campaign id: " + id);
         return campaignRepository.save(updatedCampaign);
     }
 
     @Override
     public void deleteCampaign(Long id) {
-        campaignRepository.deleteById(id);;
+        log.info("Delete campaign id: " + id);
+        campaignRepository.deleteById(id);
     }
 }

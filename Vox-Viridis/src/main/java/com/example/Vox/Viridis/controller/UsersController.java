@@ -17,7 +17,7 @@ import com.example.Vox.Viridis.service.UsersService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@RestController()
+@RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
 @Slf4j

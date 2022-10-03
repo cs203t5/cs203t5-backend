@@ -2,6 +2,7 @@ package com.example.Vox.Viridis.controller;
 
 import java.util.List;
 
+import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
@@ -34,20 +35,30 @@ import lombok.RequiredArgsConstructor;
 public class CampaignController {
     private final CampaignService campaignService;
     private final StorageService storageService;
+    private final EntityManager entityManager;
 
     @GetMapping("{id}")
     public Campaign getCampaign(@PathVariable Long id){
         Campaign result =  campaignService.getCampaign(id)
             .orElseThrow(() -> new CampaignNotFoundException(id));
-        result.setImage(storageService.getUrl(result.getImage()));
+        entityManager.detach(result);
+        String image = result.getImage();
+        if (image != null)
+            result.setImage(storageService.getUrl(image));
         return result;
     }
 
     @GetMapping()
     public List<Campaign> getCampaign(@RequestParam(value="filterByTitle", required=false) String filterByTitle){
         List<Campaign> result = campaignService.getCampaign(filterByTitle);
-        result.forEach(campaign ->
-                campaign.setImage(storageService.getUrl(campaign.getImage())));
+        
+        result.forEach(campaign -> {
+                String image = campaign.getImage();
+                if (image != null) {
+                    entityManager.detach(campaign);
+                    campaign.setImage(storageService.getUrl(image));
+                }
+            });
         return result;
     }
 
@@ -58,7 +69,7 @@ public class CampaignController {
         if (!campaignService.validateCampaign(campaign)) throw new InconsistentDateException();
         if (image != null && !image.isEmpty()) {
             if (image.getContentType() == null || !image.getContentType().startsWith("image/"))
-                throw new InvalidFileTypeException("Image like jpeg");
+                throw new InvalidFileTypeException("Image file like jpeg");
         }
 
         Campaign result = campaignService.addCampaign(campaign);
@@ -80,7 +91,7 @@ public class CampaignController {
         if (!campaignService.validateCampaign(campaign)) throw new InconsistentDateException();
         if (image != null && !image.isEmpty()) {
             if (image.getContentType() == null || !image.getContentType().startsWith("image/"))
-                throw new InvalidFileTypeException("Image like jpeg");
+                throw new InvalidFileTypeException("Image file like jpeg");
         }
 
         Campaign result = campaignService.updateCampaign(campaign, id);

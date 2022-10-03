@@ -7,6 +7,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class CampaignTitleExistsException extends RuntimeException {
     private static final long serialVersionUID = 1L;
     public CampaignTitleExistsException(String title) {
-        super("This title exists: " + title);
+        super("This title already exists: " + title);
     }
 }

@@ -54,5 +54,6 @@ public class Campaign {
     private String image;
     private String category;
     private int goal;
+    @Column(name="created_by")
     private String createdBy; // Users.username
 }

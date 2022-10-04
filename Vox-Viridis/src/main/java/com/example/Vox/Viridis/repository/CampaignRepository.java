@@ -13,6 +13,6 @@ public interface CampaignRepository extends JpaRepository<Campaign, Long> {
     @Query(nativeQuery = true, value = "SELECT * FROM campaign WHERE title LIKE %:title% ORDER BY title LIMIT 20")
     List<Campaign> findTop20ByTitleOrderByTitleAsc(String title);
 
-    @Query(nativeQuery = true, value = "SELECT createdBy FROM campaign WHERE id = :id")
+    @Query(nativeQuery = true, value = "SELECT created_by FROM campaign WHERE id = :id")
     String getCreatedBy(Long id);
 }

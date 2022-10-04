@@ -27,8 +27,10 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import com.example.Vox.Viridis.model.Campaign;
+import com.example.Vox.Viridis.model.Role;
 import com.example.Vox.Viridis.model.Users;
 import com.example.Vox.Viridis.repository.CampaignRepository;
+import com.example.Vox.Viridis.repository.RoleRepository;
 import com.example.Vox.Viridis.repository.UsersRepository;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -37,6 +39,7 @@ public class CampaignIntegrationTest {
 	private int port;
     
     private final String baseUrl = "http://localhost:";
+    private final String USERNAME = "admin";
 
     @Autowired
     private TestRestTemplate restTemplate;
@@ -49,22 +52,28 @@ public class CampaignIntegrationTest {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+	private RoleRepository roles;
+
     @AfterEach
 	void tearDown(){
 		// clear the database after each test
+        roles.deleteAll();
         users.deleteAll();
 		campaigns.deleteAll();
 	}
 
     private TestRestTemplate createAdminAccount() {
         Users admin = new Users();
-        admin.setUsername("admin");
+        admin.setUsername(USERNAME);
         admin.setEmail("admin@test.com");
         admin.setFirstName("Admin");
         admin.setLastName("admin");
         admin.setPassword(passwordEncoder.encode("goodpassword"));
-        // admin.setRoles(null);
-        users.save(admin);
+        Role role = new Role(1l, "ROLE_BUSINESS", admin);
+        admin.setRoles(List.of(role));
+        admin = users.save(admin);
+        roles.save(role);
 
         return restTemplate.withBasicAuth("admin", "goodpassword");
     }
@@ -76,11 +85,13 @@ public class CampaignIntegrationTest {
         DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
         Campaign campaign = new Campaign();
         campaign.setTitle("New campaign");
+        campaign.setCreatedBy(USERNAME);
         campaign.setStartDate(LocalDateTime.parse(LocalDateTime.now().plusMinutes(2).format(dateFormat), dateFormat));
         campaign.setEndDate(LocalDateTime.parse(LocalDateTime.now().plusMinutes(2).plusDays(1).format(dateFormat), dateFormat));
 
         Campaign campaign2 = new Campaign();
         campaign2.setTitle("New campaign 2");
+        campaign2.setCreatedBy(USERNAME);
         campaign2.setStartDate(LocalDateTime.parse(LocalDateTime.now().plusMinutes(12).format(dateFormat), dateFormat));
         campaign2.setEndDate(LocalDateTime.parse(LocalDateTime.now().plusMinutes(12).plusDays(1).format(dateFormat), dateFormat));
         
@@ -99,11 +110,13 @@ public class CampaignIntegrationTest {
         DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
         Campaign campaign = new Campaign();
         campaign.setTitle("New campaign");
+        campaign.setCreatedBy(USERNAME);
         campaign.setStartDate(LocalDateTime.parse(LocalDateTime.now().plusMinutes(2).format(dateFormat), dateFormat));
         campaign.setEndDate(LocalDateTime.parse(LocalDateTime.now().plusMinutes(2).plusDays(1).format(dateFormat), dateFormat));
 
         Campaign campaign2 = new Campaign();
         campaign2.setTitle("New campaign 2");
+        campaign2.setCreatedBy(USERNAME);
         campaign2.setStartDate(LocalDateTime.parse(LocalDateTime.now().plusMinutes(12).format(dateFormat), dateFormat));
         campaign2.setEndDate(LocalDateTime.parse(LocalDateTime.now().plusMinutes(12).plusDays(1).format(dateFormat), dateFormat));
         
@@ -122,11 +135,13 @@ public class CampaignIntegrationTest {
         DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
         Campaign campaign = new Campaign();
         campaign.setTitle("New campaign");
+        campaign.setCreatedBy(USERNAME);
         campaign.setStartDate(LocalDateTime.parse(LocalDateTime.now().plusMinutes(2).format(dateFormat), dateFormat));
         campaign.setEndDate(LocalDateTime.parse(LocalDateTime.now().plusMinutes(2).plusDays(1).format(dateFormat), dateFormat));
 
         Campaign campaign2 = new Campaign();
         campaign2.setTitle("New campaign 2");
+        campaign2.setCreatedBy(USERNAME);
         campaign2.setStartDate(LocalDateTime.parse(LocalDateTime.now().plusMinutes(12).format(dateFormat), dateFormat));
         campaign2.setEndDate(LocalDateTime.parse(LocalDateTime.now().plusMinutes(12).plusDays(1).format(dateFormat), dateFormat));
         
@@ -247,6 +262,7 @@ public class CampaignIntegrationTest {
         campaign.setTitle("New campaign");
         campaign.setStartDate(LocalDateTime.now().plusMinutes(2));
         campaign.setEndDate(LocalDateTime.now().plusMinutes(2).plusDays(1));
+        campaign.setCreatedBy(USERNAME);
         campaigns.save(campaign);
 
         HttpHeaders headers = new HttpHeaders();
@@ -274,6 +290,7 @@ public class CampaignIntegrationTest {
         campaign.setTitle("New campaign");
         campaign.setStartDate(LocalDateTime.now().plusMinutes(2));
         campaign.setEndDate(LocalDateTime.now().plusMinutes(2).plusDays(1));
+        campaign.setCreatedBy(USERNAME);
         campaigns.save(campaign);
 
         HttpHeaders headers = new HttpHeaders();
@@ -302,12 +319,14 @@ public class CampaignIntegrationTest {
         
         Campaign campaign = new Campaign();
         campaign.setTitle("New campaign");
+        campaign.setCreatedBy(USERNAME);
         campaign.setStartDate(LocalDateTime.now().plusMinutes(2));
         campaign.setEndDate(LocalDateTime.now().plusMinutes(2).plusDays(1));
         campaigns.save(campaign);
         
         Campaign campaign2 = new Campaign();
         campaign2.setTitle("New campaign 2");
+        campaign2.setCreatedBy(USERNAME);
         campaign2.setStartDate(LocalDateTime.now().plusMinutes(2));
         campaign2.setEndDate(LocalDateTime.now().plusMinutes(2).plusDays(1));
         campaigns.save(campaign2);
@@ -358,6 +377,7 @@ public class CampaignIntegrationTest {
         campaign.setTitle("New campaign");
         campaign.setStartDate(LocalDateTime.now().plusMinutes(2));
         campaign.setEndDate(LocalDateTime.now().plusMinutes(2).plusDays(1));
+        campaign.setCreatedBy(USERNAME);
         campaigns.save(campaign);
 
         ResponseEntity<Void> result = createAdminAccount().exchange(uri + "/" + campaign.getId(), HttpMethod.DELETE, null, Void.class);

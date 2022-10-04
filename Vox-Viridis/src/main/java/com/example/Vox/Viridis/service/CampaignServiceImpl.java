@@ -4,10 +4,15 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.example.Vox.Viridis.exception.CampaignNotFoundException;
+import com.example.Vox.Viridis.exception.NotOwnerException;
 import com.example.Vox.Viridis.model.Campaign;
+import com.example.Vox.Viridis.model.SecurityUser;
 import com.example.Vox.Viridis.repository.CampaignRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +23,12 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class CampaignServiceImpl implements CampaignService {
     private final CampaignRepository campaignRepository;
+
+    private String getCurrentUsername() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null) return null;
+        return ((SecurityUser) auth.getPrincipal()).getUsername();
+    }
     
     @Override
     public Optional<Campaign> getCampaign(Long id) {
@@ -32,6 +43,7 @@ public class CampaignServiceImpl implements CampaignService {
         }
 
         log.info("Campaign created: " + title);
+        campaign.setCreatedBy(getCurrentUsername());
         return campaignRepository.save(campaign);
     }
 
@@ -50,7 +62,8 @@ public class CampaignServiceImpl implements CampaignService {
 
     /**
      * @Return null if title alr exists. Else, return updated campaign
-     * @Throw CampaignNotFoundException
+     * @throws CampaignNotFoundException if campaign doesn't exist
+     * @throws NotOwnerException if current user isn't the owner of this campaign
      */
     @Override
     public Campaign updateCampaign(Campaign updatedCampaign, Long id) {
@@ -61,6 +74,8 @@ public class CampaignServiceImpl implements CampaignService {
         }
 
         Campaign existingCampaign = getCampaign(id).orElseThrow(() -> new CampaignNotFoundException(id));
+        String username = getCurrentUsername();
+        if (username != null && !existingCampaign.getCreatedBy().equals(username)) throw new NotOwnerException();
 
         updatedCampaign.setId(id);
         updatedCampaign.setImage(existingCampaign.getImage());
@@ -68,8 +83,13 @@ public class CampaignServiceImpl implements CampaignService {
         return campaignRepository.save(updatedCampaign);
     }
 
+    /**
+     * @throws NotOwnerException if current user isn't the owner of this campaign
+     */
     @Override
     public void deleteCampaign(Long id) {
+        String username = getCurrentUsername();
+        if (username != null && !campaignRepository.getCreatedBy(id).equals(username)) throw new NotOwnerException();
         log.info("Delete campaign id: " + id);
         campaignRepository.deleteById(id);
     }

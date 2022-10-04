@@ -54,4 +54,5 @@ public class Campaign {
     private String image;
     private String category;
     private int goal;
+    private String createdBy; // Users.username
 }

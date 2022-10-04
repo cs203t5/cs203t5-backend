@@ -3,6 +3,7 @@ package com.example.Vox.Viridis.security;
 import java.util.Arrays;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -40,7 +41,11 @@ public class SecurityConfig {
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
                 http.cors().and().authorizeRequests(auth -> auth
                                 .antMatchers("/users/save", "/swagger-ui/**", "/swagger-ui.html")
-                                .permitAll().anyRequest().authenticated())
+                                .permitAll()
+                                .antMatchers(HttpMethod.POST, "/campaign").hasRole("BUSINESS")
+                                .antMatchers(HttpMethod.PUT, "/campaign/*").hasRole("BUSINESS")
+                                .antMatchers(HttpMethod.DELETE, "/campaign/*").hasRole("BUSINESS")
+                                .anyRequest().authenticated())
                                 .csrf(csrf -> csrf.disable()).httpBasic(Customizer.withDefaults())
                                 .userDetailsService(myUserDetailsService)
                                 .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)

@@ -21,7 +21,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.Vox.Viridis.exception.CampaignTitleExistsException;
 import com.example.Vox.Viridis.exception.CampaignNotFoundException;
-import com.example.Vox.Viridis.exception.InconsistentDateException;
 import com.example.Vox.Viridis.exception.InvalidFileTypeException;
 import com.example.Vox.Viridis.model.Campaign;
 import com.example.Vox.Viridis.service.CampaignService;
@@ -66,7 +65,6 @@ public class CampaignController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping()
     public Campaign addCampaign(@ModelAttribute @Valid Campaign campaign, @RequestParam(value="imageFile", required=false) MultipartFile image) {
-        if (!campaignService.validateCampaign(campaign)) throw new InconsistentDateException();
         if (image != null && !image.isEmpty()) {
             if (image.getContentType() == null || !image.getContentType().startsWith("image/"))
                 throw new InvalidFileTypeException("Image file like jpeg");
@@ -88,7 +86,6 @@ public class CampaignController {
     @Transactional
     @PutMapping("{id}")
     public Campaign updateCampaign(@PathVariable Long id, @ModelAttribute @Valid Campaign campaign, @RequestParam(value="imageFile", required=false) MultipartFile image) {
-        if (!campaignService.validateCampaign(campaign)) throw new InconsistentDateException();
         if (image != null && !image.isEmpty()) {
             if (image.getContentType() == null || !image.getContentType().startsWith("image/"))
                 throw new InvalidFileTypeException("Image file like jpeg");

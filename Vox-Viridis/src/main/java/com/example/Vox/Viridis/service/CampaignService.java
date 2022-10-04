@@ -6,7 +6,6 @@ import java.util.Optional;
 import com.example.Vox.Viridis.model.Campaign;
 
 public interface CampaignService {
-    boolean validateCampaign(Campaign campaign);
     Optional<Campaign> getCampaign(Long id);
     List<Campaign> getCampaign(String filterByTitle);
     Campaign addCampaign(Campaign campaign);

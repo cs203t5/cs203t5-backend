@@ -10,9 +10,6 @@ import com.example.Vox.Viridis.model.Campaign;
 public interface CampaignRepository extends JpaRepository<Campaign, Long> {
     List<Campaign> findByTitle(String title);
 
-    @Query(nativeQuery = true, value = "SELECT * FROM campaign ORDER BY title LIMIT 20")
-    List<Campaign> findTop20OrderByTitleAsc();
-
     @Query(nativeQuery = true, value = "SELECT * FROM campaign WHERE title LIKE %:title% ORDER BY title LIMIT 20")
     List<Campaign> findTop20ByTitleOrderByTitleAsc(String title);
 }

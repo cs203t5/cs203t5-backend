@@ -22,8 +22,8 @@ import lombok.NoArgsConstructor;
 @Table(name = "Role")
 public class Role {
     @Id
-    @SequenceGenerator(name = "users_seq", sequenceName = "users_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_seq")
+    @SequenceGenerator(name = "roles_seq", sequenceName = "roles_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "roles_seq")
     private Long id;
     @Column(unique = true)
     @NotNull(message = "Role name is required!")

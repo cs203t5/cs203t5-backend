@@ -101,7 +101,8 @@ public class CampaignController {
         if (result == null) throw new CampaignTitleExistsException(campaign.getTitle());
         
         if (image != null && !image.isEmpty()) {
-            storageService.deleteObject(result.getImage());
+            if (result.getImage() != null)
+                storageService.deleteObject(result.getImage());
 
             String filename = StorageService.CAMPAIGNS_DIR + result.getId() + image.getOriginalFilename().substring(image.getOriginalFilename().lastIndexOf("."));
             result = campaignService.updateCampaignImage(campaign, filename);

@@ -90,6 +90,8 @@ public class CampaignServiceImpl implements CampaignService {
 
         updatedCampaign.setId(id);
         updatedCampaign.setImage(existingCampaign.getImage());
+        updatedCampaign.setCreatedBy(existingCampaign.getCreatedBy());
+        updatedCampaign.setCreatedOn(existingCampaign.getCreatedOn());
         log.info("updated campaign id: " + id);
         return campaignRepository.save(updatedCampaign);
     }

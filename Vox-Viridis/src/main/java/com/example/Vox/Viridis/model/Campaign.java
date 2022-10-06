@@ -49,7 +49,7 @@ public class Campaign {
     @DateTimeFormat(pattern = "dd-MM-yyyy HH:mm")
     @FutureOrToday
     @Column(name="end_date")
-    private LocalDateTime endDate;
+    private LocalDateTime endDate; // should store 2359 if intending for whole day
     
     @Column(name="location")
     @Location

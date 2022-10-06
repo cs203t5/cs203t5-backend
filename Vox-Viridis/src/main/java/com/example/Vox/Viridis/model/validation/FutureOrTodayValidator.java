@@ -12,10 +12,10 @@ public class FutureOrTodayValidator implements ConstraintValidator<FutureOrToday
     @Override
     public boolean isValid(LocalDateTime value, ConstraintValidatorContext context) {
         if (value == null) return false;
-        if (value.toLocalTime() == null || value.toLocalTime().equals(LocalTime.of(0,0))) {
+        //if (value.toLocalTime() == null || value.toLocalTime().equals(LocalTime.of(0,0))) {
             return value.toLocalDate().compareTo(LocalDate.now()) >= 0;
-        }
-        return value.compareTo(LocalDateTime.now()) >= 0;
+        //}
+        //return value.compareTo(LocalDateTime.now()) >= 0;
     }
     
 }

@@ -16,6 +16,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import com.example.Vox.Viridis.model.Campaign;
 import com.example.Vox.Viridis.repository.CampaignRepository;
@@ -33,14 +38,18 @@ public class CampaignServiceTest {
         Campaign campaign = new Campaign();
         campaign.setTitle("New Campaign");
 
-        when(campaigns.findTop20ByTitleOrderByTitleAsc(any(String.class))).thenReturn(List.of(campaign));
+        Sort sort = Sort.by("created_on").ascending().and(Sort.by("title").ascending());
+        Pageable pageable = PageRequest.of(0, 20, sort);
 
-        List<Campaign> result = campaignService.getCampaign((String)null);
+        Page<Campaign> page = new PageImpl(List.of(campaign));
+        when(campaigns.findByTitleAndCategoryAndLocation("", null, null, pageable)).thenReturn(page);
+
+        List<Campaign> result = campaignService.getCampaign(0, null, null, null, true);
 
         assertNotNull(result);
         assertEquals(result.size(), 1);
         assertEquals(result.get(0), campaign);
-        verify(campaigns).findTop20ByTitleOrderByTitleAsc("");
+        verify(campaigns).findByTitleAndCategoryAndLocation("", null, null, pageable);
     }
 
     @Test
@@ -48,14 +57,17 @@ public class CampaignServiceTest {
         Campaign campaign = new Campaign();
         campaign.setTitle("New Campaign");
 
-        when(campaigns.findTop20ByTitleOrderByTitleAsc(any(String.class))).thenReturn(List.of(campaign));
+        Sort sort = Sort.by("created_on").ascending().and(Sort.by("title").ascending());
+        Pageable pageable = PageRequest.of(0, 20, sort);
 
-        List<Campaign> result = campaignService.getCampaign("New");
+        when(campaigns.findByTitleAndCategoryAndLocation("New", null, null, pageable)).thenReturn(new PageImpl(List.of(campaign)));
+
+        List<Campaign> result = campaignService.getCampaign(0, "New", (String)null, (String)null, true);
 
         assertNotNull(result);
         assertEquals(result.size(), 1);
         assertEquals(result.get(0), campaign);
-        verify(campaigns).findTop20ByTitleOrderByTitleAsc("New");
+        verify(campaigns).findByTitleAndCategoryAndLocation("New", null, null, pageable);
     }
 
     @Test

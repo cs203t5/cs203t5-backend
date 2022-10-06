@@ -48,8 +48,14 @@ public class CampaignController {
     }
 
     @GetMapping()
-    public List<Campaign> getCampaign(@RequestParam(value="filterByTitle", required=false) String filterByTitle){
-        List<Campaign> result = campaignService.getCampaign(filterByTitle);
+    public List<Campaign> getCampaign(@RequestParam(value="filterByTitle", required=false) String filterByTitle,
+            @RequestParam(value="category", required=false) String category,
+            @RequestParam(value="location", required=false) String location,
+            @RequestParam(value="isOrderByNewest", required=false) Boolean isOrderByNewest,
+            @RequestParam(value="pageNum", required=false) Integer pageNum){
+        if (isOrderByNewest == null) isOrderByNewest = true;
+        if (pageNum == null) pageNum = 0;
+        List<Campaign> result = campaignService.getCampaign(pageNum, filterByTitle, category, location, isOrderByNewest);
         
         result.forEach(campaign -> {
                 String image = campaign.getImage();

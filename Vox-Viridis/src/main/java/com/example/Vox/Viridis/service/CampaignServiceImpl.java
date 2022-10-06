@@ -1,10 +1,15 @@
 package com.example.Vox.Viridis.service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -43,14 +48,21 @@ public class CampaignServiceImpl implements CampaignService {
         }
 
         log.info("Campaign created: " + title);
+        campaign.setCreatedOn(LocalDateTime.now());
         campaign.setCreatedBy(getCurrentUsername());
         return campaignRepository.save(campaign);
     }
 
     @Override
-    public List<Campaign> getCampaign(String filterByTitle) {
+    public List<Campaign> getCampaign(int page, String filterByTitle, String category, String location, boolean isOrderByNewest) {
+        Sort sort = Sort.by("created_on");
+        if (isOrderByNewest) sort = sort.descending();
+        else sort = sort.ascending();
+        sort = sort.and(Sort.by("title").ascending());
+
+        Pageable pageable = PageRequest.of(page, 20, sort);
         if (filterByTitle == null) filterByTitle = "";
-        return campaignRepository.findTop20ByTitleOrderByTitleAsc(filterByTitle);
+        return campaignRepository.findByTitleAndCategoryAndLocation(filterByTitle, category, location, pageable).getContent();
     }
 
     @Override

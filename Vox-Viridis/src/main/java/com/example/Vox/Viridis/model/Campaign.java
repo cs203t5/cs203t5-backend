@@ -32,7 +32,7 @@ public class Campaign {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
+    @Column(unique = true, name = "title")
     @NotNull(message = "Campaign's title should not be null")
     @Size(min = 5, max = 255, message = "Campaign's title should be at least 5 characters long")
     private String title;
@@ -47,13 +47,19 @@ public class Campaign {
     @NotNull(message = "Campaign's endDate should not be null")
     @DateTimeFormat(pattern = "dd-MM-yyyy HH:mm")
     @FutureOrToday
+    @Column(name="end_date")
     private LocalDateTime endDate;
     
-    private String location;
+    @Column(name="location")
+    private String location; // North, South, East, West, Central
+    private String address;
     private char status;
     private String image;
+    @Column(name="category")
     private String category;
     private int goal;
     @Column(name="created_by")
     private String createdBy; // Users.username
+    @Column(name="created_on")
+    private LocalDateTime createdOn = LocalDateTime.now();
 }

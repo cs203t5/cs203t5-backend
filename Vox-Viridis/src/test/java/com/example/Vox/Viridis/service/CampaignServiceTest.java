@@ -38,7 +38,7 @@ public class CampaignServiceTest {
         Campaign campaign = new Campaign();
         campaign.setTitle("New Campaign");
 
-        Sort sort = Sort.by("created_on").ascending().and(Sort.by("title").ascending());
+        Sort sort = Sort.by("created_on").descending().and(Sort.by("title").ascending());
         Pageable pageable = PageRequest.of(0, 20, sort);
 
         Page<Campaign> page = new PageImpl<>(List.of(campaign));
@@ -57,7 +57,7 @@ public class CampaignServiceTest {
         Campaign campaign = new Campaign();
         campaign.setTitle("New Campaign");
 
-        Sort sort = Sort.by("created_on").ascending().and(Sort.by("title").ascending());
+        Sort sort = Sort.by("created_on").descending().and(Sort.by("title").ascending());
         Pageable pageable = PageRequest.of(0, 20, sort);
 
         when(campaigns.findByTitleAndCategoryAndLocation("New", null, null, pageable)).thenReturn(new PageImpl<>(List.of(campaign)));

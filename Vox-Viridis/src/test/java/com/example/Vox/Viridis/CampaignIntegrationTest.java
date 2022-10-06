@@ -445,7 +445,7 @@ public class CampaignIntegrationTest {
         campaigns.save(campaign);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
         DateTimeFormatter dateformat = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
         String startDate = LocalDateTime.now().plusMinutes(20).format(dateformat);
@@ -485,7 +485,7 @@ public class CampaignIntegrationTest {
         campaigns.save(campaign2);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
         DateTimeFormatter dateformat = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
         String startDate = LocalDateTime.now().plusMinutes(20).format(dateformat);
@@ -506,7 +506,7 @@ public class CampaignIntegrationTest {
         URI uri = new URI(baseUrl + port + "/api/campaign/123");
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
         DateTimeFormatter dateformat = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
         String startDate = LocalDateTime.now().plusMinutes(20).format(dateformat);

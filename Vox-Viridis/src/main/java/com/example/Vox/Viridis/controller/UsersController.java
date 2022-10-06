@@ -2,6 +2,7 @@ package com.example.Vox.Viridis.controller;
 
 import java.net.URI;
 import java.security.Principal;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;

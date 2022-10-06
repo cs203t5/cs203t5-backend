@@ -1,6 +1,5 @@
 package com.example.Vox.Viridis.model.validation;
 
-
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 

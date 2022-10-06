@@ -1,6 +1,7 @@
 package com.example.Vox.Viridis;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -304,10 +305,12 @@ public class CampaignIntegrationTest {
 
         ResponseEntity<Campaign> result = createAdminAccount().postForEntity(uri, request, Campaign.class);
         assertEquals(201, result.getStatusCode().value());
-		assertEquals("New campaign", result.getBody().getTitle());
-		assertEquals(startDate, result.getBody().getStartDate().format(dateformat));
-		assertEquals(endDate, result.getBody().getEndDate().format(dateformat));
-        assertEquals("north", result.getBody().getLocation());
+        Campaign campaign = result.getBody();
+        assertNotNull(campaign);
+		assertEquals("New campaign", campaign.getTitle());
+		assertEquals(startDate, campaign.getStartDate().format(dateformat));
+		assertEquals(endDate, campaign.getEndDate().format(dateformat));
+        assertEquals("north", campaign.getLocation());
     }
 
     @Test
@@ -353,9 +356,11 @@ public class CampaignIntegrationTest {
 
         ResponseEntity<Campaign> result = createAdminAccount().postForEntity(uri, request, Campaign.class);
         assertEquals(201, result.getStatusCode().value());
-		assertEquals("New campaign", result.getBody().getTitle());
-		assertEquals(startDate, result.getBody().getStartDate().format(dateformat));
-		assertEquals(endDate, result.getBody().getEndDate().format(dateformat));
+        Campaign campaign = result.getBody();
+        assertNotNull(campaign);
+		assertEquals("New campaign", campaign.getTitle());
+		assertEquals(startDate, campaign.getStartDate().format(dateformat));
+		assertEquals(endDate, campaign.getEndDate().format(dateformat));
     }
 
     @Test
@@ -454,9 +459,11 @@ public class CampaignIntegrationTest {
 
         ResponseEntity<Campaign> result = createAdminAccount().exchange(uri + "/" + campaign.getId(), HttpMethod.PUT, request, Campaign.class);
         assertEquals(200, result.getStatusCode().value());
-        assertEquals("New campaign 2", result.getBody().getTitle());
-        assertEquals(startDate, result.getBody().getStartDate().format(dateformat));
-        assertEquals(endDate, result.getBody().getEndDate().format(dateformat));
+        Campaign results = result.getBody();
+        assertNotNull(results);
+        assertEquals("New campaign 2", results.getTitle());
+        assertEquals(startDate, results.getStartDate().format(dateformat));
+        assertEquals(endDate, results.getEndDate().format(dateformat));
     }
 
     @Test

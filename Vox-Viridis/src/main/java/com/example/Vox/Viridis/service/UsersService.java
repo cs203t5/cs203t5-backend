@@ -30,9 +30,7 @@ public class UsersService {
         roles.add(consumer);
         user.setRoles(roles);
         Users saveUser = usersRepository.save(user);
-        UsersDTO usersDTO = new UsersDTO();
-        usersDTO.setUsername(saveUser.getUsername());
-        usersDTO.setAccount_id(saveUser.getAccount_id());
-        return usersDTO;
+
+        return saveUser.convertToDTO();
     }
 }

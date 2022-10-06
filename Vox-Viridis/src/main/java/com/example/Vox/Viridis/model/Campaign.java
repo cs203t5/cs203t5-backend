@@ -20,6 +20,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import com.example.Vox.Viridis.model.validation.ConsistentDate;
 import com.example.Vox.Viridis.model.validation.FutureOrToday;
+import com.example.Vox.Viridis.model.validation.Location;
 
 @ConsistentDate
 @Entity
@@ -51,6 +52,7 @@ public class Campaign {
     private LocalDateTime endDate;
     
     @Column(name="location")
+    @Location
     private String location; // North, South, East, West, Central
     private String address;
     private char status;

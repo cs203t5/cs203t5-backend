@@ -298,6 +298,7 @@ public class CampaignIntegrationTest {
         map.add("title", "New campaign");
         map.add("startDate", startDate);
         map.add("endDate", endDate);
+        map.add("location", "north");
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
 
@@ -306,6 +307,29 @@ public class CampaignIntegrationTest {
 		assertEquals("New campaign", result.getBody().getTitle());
 		assertEquals(startDate, result.getBody().getStartDate().format(dateformat));
 		assertEquals(endDate, result.getBody().getEndDate().format(dateformat));
+        assertEquals("north", result.getBody().getLocation());
+    }
+
+    @Test
+    public void addCampaign_InvalidLocation_Fail() throws Exception {
+        URI uri = new URI(baseUrl + port + "/api/campaign");
+        
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        DateTimeFormatter dateformat = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+        String startDate = LocalDateTime.now().plusMinutes(20).format(dateformat);
+        String endDate = LocalDateTime.now().plusMinutes(20).plusDays(1).format(dateformat);
+        MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
+        map.add("title", "New campaign");
+        map.add("startDate", startDate);
+        map.add("endDate", endDate);
+        map.add("location", "Abc");
+
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
+
+        ResponseEntity<Campaign> result = createAdminAccount().postForEntity(uri, request, Campaign.class);
+        assertEquals(400, result.getStatusCode().value());
     }
 
     @Test

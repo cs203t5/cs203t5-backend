@@ -107,6 +107,34 @@ public class CampaignIntegrationTest {
     }
 
     @Test
+    public void getCampaigns_ShowStartDateAfterToday_Sucess() throws Exception {
+        URI uri = new URI(baseUrl + port + "/api/campaign");
+
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+        DateTimeFormatter dateOnlyFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        Campaign campaign = new Campaign();
+        campaign.setTitle("New campaign");
+        campaign.setCreatedBy(USERNAME);
+        campaign.setStartDate(LocalDateTime.parse(LocalDateTime.now().format(dateOnlyFormat) + " 00:00", dateFormat));
+        campaign.setEndDate(LocalDateTime.parse(LocalDateTime.now().plusDays(1).format(dateOnlyFormat) + " 00:00", dateFormat));
+        campaign.setCreatedOn(LocalDateTime.parse(LocalDateTime.now().format(dateFormat), dateFormat));
+
+        Campaign campaign2 = new Campaign();
+        campaign2.setTitle("New campaign 2");
+        campaign2.setCreatedBy(USERNAME);
+        campaign2.setStartDate(LocalDateTime.parse(LocalDateTime.now().plusDays(1).format(dateOnlyFormat) + " 00:00", dateFormat));
+        campaign2.setEndDate(LocalDateTime.parse(LocalDateTime.now().plusDays(2).format(dateOnlyFormat) + " 00:00", dateFormat));
+        campaign2.setCreatedOn(LocalDateTime.parse(LocalDateTime.now().format(dateFormat), dateFormat));
+        
+        List<Campaign> campaignArr = List.of(campaign, campaign2);
+        campaignArr = campaigns.saveAll(campaignArr);
+        
+        ResponseEntity<List<Campaign>> result = createAdminAccount().exchange(uri, HttpMethod.GET, null, new ParameterizedTypeReference<List<Campaign>>() {});
+        assertEquals(200, result.getStatusCode().value());
+		assertEquals(List.of(campaign), result.getBody());
+    }
+
+    @Test
     public void getCampaigns_FilterTitle_Sucess() throws Exception {
         URI uri = new URI(baseUrl + port + "/api/campaign?filterByTitle=2");
 

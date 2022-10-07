@@ -18,5 +18,5 @@ public interface CampaignRepository extends JpaRepository<Campaign, Long> {
     Page<Campaign> findByTitleAndCategoryAndLocation(String title, String category, String location, Pageable pageable);
 
     @Query(nativeQuery = true, value = "SELECT created_by FROM campaign WHERE id = :id")
-    String getCreatedBy(Long id);
+    Long getCreatedBy(Long id);
 }

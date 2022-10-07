@@ -7,6 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -21,6 +23,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import com.example.Vox.Viridis.model.validation.ConsistentDate;
 import com.example.Vox.Viridis.model.validation.FutureOrToday;
 import com.example.Vox.Viridis.model.validation.Location;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @ConsistentDate
 @Entity
@@ -54,14 +57,21 @@ public class Campaign {
     @Column(name="location")
     @Location
     private String location; // North, South, East, West, Central
+    
     private String address;
     private char status;
     private String image;
+
     @Column(name="category")
     private String category;
+
     private int goal;
-    @Column(name="created_by")
-    private String createdBy; // Users.username
+
+    @JsonIgnore
+    @ManyToOne()
+    @JoinColumn(name="created_by", nullable = false)
+    private Users createdBy;
+
     @Column(name="created_on")
     private LocalDateTime createdOn = LocalDateTime.now();
 }

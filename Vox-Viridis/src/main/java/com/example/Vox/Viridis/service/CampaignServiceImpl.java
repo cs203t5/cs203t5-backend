@@ -17,7 +17,10 @@ import com.example.Vox.Viridis.exception.CampaignNotFoundException;
 import com.example.Vox.Viridis.exception.NotOwnerException;
 import com.example.Vox.Viridis.model.Campaign;
 import com.example.Vox.Viridis.model.SecurityUser;
+import com.example.Vox.Viridis.model.Users;
 import com.example.Vox.Viridis.repository.CampaignRepository;
+import com.example.Vox.Viridis.repository.UsersRepository;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,11 +30,12 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class CampaignServiceImpl implements CampaignService {
     private final CampaignRepository campaignRepository;
+    private final UsersRepository usersRepository;
 
-    private String getCurrentUsername() {
+    private Users getCurrentUsername() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null) return null;
-        return ((SecurityUser) auth.getPrincipal()).getUsername();
+        return usersRepository.findByUsername(((SecurityUser) auth.getPrincipal()).getUsername()).orElse(null);
     }
     
     @Override
@@ -85,7 +89,7 @@ public class CampaignServiceImpl implements CampaignService {
         }
 
         Campaign existingCampaign = getCampaign(id).orElseThrow(() -> new CampaignNotFoundException(id));
-        String username = getCurrentUsername();
+        Users username = getCurrentUsername();
         if (username != null && !existingCampaign.getCreatedBy().equals(username)) throw new NotOwnerException();
 
         updatedCampaign.setId(id);
@@ -101,8 +105,8 @@ public class CampaignServiceImpl implements CampaignService {
      */
     @Override
     public void deleteCampaign(Long id) {
-        String username = getCurrentUsername();
-        if (username != null && !campaignRepository.getCreatedBy(id).equals(username)) throw new NotOwnerException();
+        Users username = getCurrentUsername();
+        if (username != null && !campaignRepository.getCreatedBy(id).equals(username.getAccount_id())) throw new NotOwnerException();
         log.info("Delete campaign id: " + id);
         campaignRepository.deleteById(id);
     }

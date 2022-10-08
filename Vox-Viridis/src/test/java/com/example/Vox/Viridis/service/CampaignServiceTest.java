@@ -34,6 +34,36 @@ public class CampaignServiceTest {
     private CampaignServiceImpl campaignService;
 
     @Test
+    void getCampaignStatus_ReturnUpcoming() {
+        Campaign campaign = new Campaign();
+        campaign.setTitle("Existing Campaign");
+        campaign.setStartDate(LocalDateTime.now().plusDays(1));
+        campaign.setEndDate(LocalDateTime.now().plusDays(2));
+
+        assertEquals(campaign.status(), 'U');
+    }
+
+    @Test
+    void getCampaignStatus_ReturnOngoing() {
+        Campaign campaign = new Campaign();
+        campaign.setTitle("Existing Campaign");
+        campaign.setStartDate(LocalDateTime.now());
+        campaign.setEndDate(LocalDateTime.now().plusDays(2));
+
+        assertEquals(campaign.status(), 'O');
+    }
+
+    @Test
+    void getCampaignStatus_ReturnExpired() {
+        Campaign campaign = new Campaign();
+        campaign.setTitle("Existing Campaign");
+        campaign.setStartDate(LocalDateTime.now().minusDays(1));
+        campaign.setEndDate(LocalDateTime.now().minusMinutes(1));
+
+        assertEquals(campaign.status(), 'E');
+    }
+
+    @Test
     void getCampaign_WithoutFilter_ReturnCampaign() {
         Campaign campaign = new Campaign();
         campaign.setTitle("New Campaign");

@@ -35,6 +35,8 @@ import com.example.Vox.Viridis.repository.CampaignRepository;
 import com.example.Vox.Viridis.repository.RoleRepository;
 import com.example.Vox.Viridis.repository.UsersRepository;
 
+import lombok.Data;
+
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class CampaignIntegrationTest {
     @LocalServerPort
@@ -87,9 +89,9 @@ public class CampaignIntegrationTest {
         user.setLastName("admin2");
         user.setPassword(passwordEncoder.encode("goodpassword"));
         user = users.save(user);
-        Role role = new Role(1l, "ROLE_BUSINESS", user);
+        /*Role role = new Role(2l, "ROLE_BUSINESS", user);
         user.setRoles(List.of(role));
-        roles.save(role);
+        roles.save(role);*/
 
         return user;
     }
@@ -128,6 +130,40 @@ public class CampaignIntegrationTest {
         assertEquals(200, result.getStatusCode().value());
 		campaignArr.forEach(c->c.setCreatedBy(null));
         assertEquals(campaignArr, result.getBody());
+    }
+
+    @Test
+    public void getCampaigns_MustContainStatusField_Sucess() throws Exception {
+        Users user = getUser();
+        URI uri = new URI(baseUrl + port + "/api/campaign");
+
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+        Campaign campaign = new Campaign();
+        campaign.setTitle("Ongoing campaign");
+        campaign.setCreatedBy(user);
+        campaign.setStartDate(LocalDateTime.parse(LocalDateTime.now().minusMinutes(2).format(dateFormat), dateFormat));
+        campaign.setEndDate(LocalDateTime.parse(LocalDateTime.now().plusMinutes(2).plusDays(1).format(dateFormat), dateFormat));
+        campaign.setCreatedOn(LocalDateTime.parse(LocalDateTime.now().format(dateFormat), dateFormat));
+
+        Campaign campaign2 = new Campaign();
+        campaign2.setTitle("Upcoming campaign");
+        campaign2.setCreatedBy(user);
+        campaign2.setStartDate(LocalDateTime.parse(LocalDateTime.now().plusDays(1).format(dateFormat), dateFormat));
+        campaign2.setEndDate(LocalDateTime.parse(LocalDateTime.now().plusDays(2).format(dateFormat), dateFormat));
+        campaign2.setCreatedOn(LocalDateTime.parse(LocalDateTime.now().format(dateFormat), dateFormat));
+        
+        List<Campaign> campaignArr = List.of(campaign, campaign2);
+        campaignArr = campaigns.saveAll(campaignArr);
+        
+        ResponseEntity<List<CampaignStatus>> result = authenticatedRestTemplate().exchange(uri, HttpMethod.GET, null, new ParameterizedTypeReference<List<CampaignStatus>>() {});
+        assertEquals(200, result.getStatusCode().value());
+		List<CampaignStatus> resultArr = result.getBody();
+        assertNotNull(resultArr);
+        resultArr.forEach(c -> {
+            if (c.getTitle().equals("Ongoing campaign"))
+                assertEquals(c.getStatus(), 'O');
+            else assertEquals(c.getStatus(), 'U');
+        });
     }
 
     @Test
@@ -590,4 +626,12 @@ public class CampaignIntegrationTest {
         ResponseEntity<Void> result = authenticatedRestTemplate().exchange(uri + "/" + campaign.getId(), HttpMethod.DELETE, null, Void.class);
         assertEquals(403, result.getStatusCode().value());
     }
+}
+
+// For getCampaigns_MustContainStatusField_Sucess() test
+// To check it returns 'status' field
+@Data
+class CampaignStatus { 
+    private String title; 
+    private char status; 
 }

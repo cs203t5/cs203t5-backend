@@ -24,6 +24,7 @@ import com.example.Vox.Viridis.model.validation.ConsistentDate;
 import com.example.Vox.Viridis.model.validation.FutureOrToday;
 import com.example.Vox.Viridis.model.validation.Location;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @ConsistentDate
 @Entity
@@ -59,7 +60,13 @@ public class Campaign {
     private String location; // North, South, East, West, Central
     
     private String address;
-    private char status;
+
+    @JsonProperty("status")
+    public char status() { // Upcoming, Ongoing, Expired
+        if (LocalDateTime.now().isAfter(endDate)) return 'E'; // expired
+        if (LocalDateTime.now().isBefore(startDate)) return 'U'; // upcoming
+        return 'O'; // ongoing
+    }
     private String image;
 
     @Column(name="category")

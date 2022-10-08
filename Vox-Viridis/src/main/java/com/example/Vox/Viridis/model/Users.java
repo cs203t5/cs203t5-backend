@@ -14,6 +14,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import com.example.Vox.Viridis.model.dto.UsersDTO;
 import com.example.Vox.Viridis.model.validation.Password;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -51,4 +52,8 @@ public class Users {
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
     private List<Role> roles;
     private LocalDate dob;
+
+    public UsersDTO convertToDTO() {
+        return new UsersDTO(account_id, username, firstName, lastName, email, points, image);
+    }
 }

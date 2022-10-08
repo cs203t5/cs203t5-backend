@@ -1,6 +1,7 @@
 package com.example.Vox.Viridis.security;
 
 import java.util.Arrays;
+import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -26,8 +27,8 @@ import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 
-@EnableWebSecurity
 @Configuration
+@EnableWebSecurity
 public class SecurityConfig {
         private final RsaKeyProperties rsaKeys;
         private final JpaUserDetailsService myUserDetailsService;
@@ -39,7 +40,7 @@ public class SecurityConfig {
 
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-                http.cors().and().authorizeRequests(auth -> auth
+                http.cors(Customizer.withDefaults()).authorizeRequests(auth -> auth
                                 .antMatchers("/users/save", "/swagger-ui/**", "/swagger-ui.html")
                                 .permitAll()
                                 .antMatchers(HttpMethod.POST, "/campaign").hasRole("BUSINESS")
@@ -77,6 +78,7 @@ public class SecurityConfig {
                 CorsConfiguration configuration = new CorsConfiguration();
                 configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
                 configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
+                configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
                 UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
                 source.registerCorsConfiguration("/**", configuration);
                 return source;

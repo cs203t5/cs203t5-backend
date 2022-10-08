@@ -46,6 +46,8 @@ public class SecurityConfig {
                                 .antMatchers(HttpMethod.POST, "/campaign").hasRole("BUSINESS")
                                 .antMatchers(HttpMethod.PUT, "/campaign/*").hasRole("BUSINESS")
                                 .antMatchers(HttpMethod.DELETE, "/campaign/*").hasRole("BUSINESS")
+                                .antMatchers(HttpMethod.GET, "/campaign/*").permitAll()
+                                .antMatchers(HttpMethod.GET, "/campaign").permitAll()
                                 .anyRequest().authenticated())
                                 .csrf(csrf -> csrf.disable()).httpBasic(Customizer.withDefaults())
                                 .userDetailsService(myUserDetailsService)

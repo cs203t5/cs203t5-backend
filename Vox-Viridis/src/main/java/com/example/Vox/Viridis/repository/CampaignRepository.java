@@ -13,8 +13,8 @@ public interface CampaignRepository extends JpaRepository<Campaign, Long> {
     List<Campaign> findByTitle(String title);
 
     @Query(nativeQuery = true, 
-        value = "SELECT * FROM campaign WHERE title LIKE %?1% AND (IFNULL(?2,'')='' OR category = ?2) AND (IFNULL(?3,'')='' OR location=?3) AND DATE(start_date) <= CURDATE() AND end_date >= NOW() ORDER BY ?#{#pageable}", 
-        countQuery = "SELECT COUNT(*) FROM campaign WHERE title LIKE %?1% AND (IFNULL(?2,'')='' OR category=?2) AND (IFNULL(?3,'')='' OR location=?3) AND DATE(start_date) <= CURDATE() AND end_date >= NOW()")
+        value = "SELECT * FROM campaign WHERE title LIKE %?1% AND (IFNULL(?2,'')='' OR category = ?2) AND (IFNULL(?3,'')='' OR location=?3) AND end_date >= NOW() ORDER BY ?#{#pageable}", 
+        countQuery = "SELECT COUNT(*) FROM campaign WHERE title LIKE %?1% AND (IFNULL(?2,'')='' OR category=?2) AND (IFNULL(?3,'')='' OR location=?3) AND end_date >= NOW()")
     Page<Campaign> findByTitleAndCategoryAndLocation(String title, String category, String location, Pageable pageable);
 
     @Query(nativeQuery = true, value = "SELECT created_by FROM campaign WHERE id = :id")

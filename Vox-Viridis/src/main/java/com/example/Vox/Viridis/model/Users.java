@@ -52,6 +52,7 @@ public class Users {
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
     private List<Role> roles;
     private LocalDate dob;
+    private boolean enabled;
 
     public UsersDTO convertToDTO() {
         return new UsersDTO(account_id, username, firstName, lastName, email, points, image);

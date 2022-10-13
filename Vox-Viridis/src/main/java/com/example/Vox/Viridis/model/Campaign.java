@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,7 +20,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.springframework.format.annotation.DateTimeFormat;
-
+import com.example.Vox.Viridis.model.dto.CampaignDTO;
 import com.example.Vox.Viridis.model.validation.ConsistentDate;
 import com.example.Vox.Viridis.model.validation.FutureOrToday;
 import com.example.Vox.Viridis.model.validation.Location;
@@ -52,33 +53,44 @@ public class Campaign {
     @NotNull(message = "Campaign's endDate should not be null")
     @DateTimeFormat(pattern = "dd-MM-yyyy HH:mm")
     @FutureOrToday
-    @Column(name="end_date")
+    @Column(name = "end_date")
     private LocalDateTime endDate; // should store 2359 if intending for whole day
-    
-    @Column(name="location")
+
+    @Column(name = "location")
     @Location
     private String location; // North, South, East, West, Central
-    
+
     private String address;
 
     @JsonProperty("status")
     public char status() { // Upcoming, Ongoing, Expired
-        if (LocalDateTime.now().isAfter(endDate)) return 'E'; // expired
-        if (LocalDateTime.now().isBefore(startDate)) return 'U'; // upcoming
+        if (LocalDateTime.now().isAfter(endDate))
+            return 'E'; // expired
+        if (LocalDateTime.now().isBefore(startDate))
+            return 'U'; // upcoming
         return 'O'; // ongoing
     }
+
     private String image;
 
-    @Column(name="category")
+    @Column(name = "category")
     private String category;
 
     private int goal;
 
     @JsonIgnore
     @ManyToOne()
-    @JoinColumn(name="created_by", nullable = false)
+    @JoinColumn(name = "created_by", nullable = false)
     private Users createdBy;
 
-    @Column(name="created_on")
+    @Column(name = "created_on")
     private LocalDateTime createdOn = LocalDateTime.now();
+
+    @Transient
+    private String companyName;
+
+    public CampaignDTO convertToDTO(String name) {
+        return new CampaignDTO(id, title, description, startDate, endDate, location, address, image,
+                category, goal, name);
+    }
 }

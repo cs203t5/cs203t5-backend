@@ -34,10 +34,12 @@ public class CampaignServiceImpl implements CampaignService {
 
     private Users getCurrentUsername() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null) return null;
-        return usersRepository.findByUsername(((SecurityUser) auth.getPrincipal()).getUsername()).orElse(null);
+        if (auth == null)
+            return null;
+        return usersRepository.findByUsername(((SecurityUser) auth.getPrincipal()).getUsername())
+                .orElse(null);
     }
-    
+
     @Override
     public Optional<Campaign> getCampaign(Long id) {
         return campaignRepository.findById(id);
@@ -57,15 +59,26 @@ public class CampaignServiceImpl implements CampaignService {
     }
 
     @Override
-    public List<Campaign> getCampaign(int page, String filterByTitle, String category, String location, boolean isOrderByNewest) {
+    public List<Campaign> getCampaign(int page, String filterByTitle, String category,
+            String location, boolean isOrderByNewest) {
         Sort sort = Sort.by("created_on");
-        if (isOrderByNewest) sort = sort.descending();
-        else sort = sort.ascending();
+        if (isOrderByNewest)
+            sort = sort.descending();
+        else
+            sort = sort.ascending();
         sort = sort.and(Sort.by("title").ascending());
 
         Pageable pageable = PageRequest.of(page, 20, sort);
-        if (filterByTitle == null) filterByTitle = "";
-        return campaignRepository.findByTitleAndCategoryAndLocation(filterByTitle, category, location, pageable).getContent();
+        if (filterByTitle == null)
+            filterByTitle = "";
+        List<Campaign> campaigns = campaignRepository
+                .findByTitleAndCategoryAndLocation(filterByTitle, category, location, pageable)
+                .getContent();
+
+        campaigns.forEach(campaign -> {
+            campaign.setCompanyName(campaign.getCreatedBy().getUsername());
+        });
+        return campaigns;
     }
 
     @Override
@@ -88,9 +101,11 @@ public class CampaignServiceImpl implements CampaignService {
             return null;
         }
 
-        Campaign existingCampaign = getCampaign(id).orElseThrow(() -> new CampaignNotFoundException(id));
+        Campaign existingCampaign =
+                getCampaign(id).orElseThrow(() -> new CampaignNotFoundException(id));
         Users username = getCurrentUsername();
-        if (username != null && !existingCampaign.getCreatedBy().equals(username)) throw new NotOwnerException();
+        if (username != null && !existingCampaign.getCreatedBy().equals(username))
+            throw new NotOwnerException();
 
         updatedCampaign.setId(id);
         updatedCampaign.setImage(existingCampaign.getImage());
@@ -106,7 +121,9 @@ public class CampaignServiceImpl implements CampaignService {
     @Override
     public void deleteCampaign(Long id) {
         Users username = getCurrentUsername();
-        if (username != null && !campaignRepository.getCreatedBy(id).equals(username.getAccount_id())) throw new NotOwnerException();
+        if (username != null
+                && !campaignRepository.getCreatedBy(id).equals(username.getAccount_id()))
+            throw new NotOwnerException();
         log.info("Delete campaign id: " + id);
         campaignRepository.deleteById(id);
     }

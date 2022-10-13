@@ -28,7 +28,7 @@ public class UsersController {
 
     @GetMapping("/name")
     public String getName(Principal principal) {
-        return "Hello, " + principal.getName();
+        return principal.getName();
     }
 
     @PostMapping("/save")

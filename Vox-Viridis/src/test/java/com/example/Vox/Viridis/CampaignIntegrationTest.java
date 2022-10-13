@@ -103,6 +103,12 @@ public class CampaignIntegrationTest {
         return users.findByUsername("admin").get();
     }
 
+    private void modifyCampaignArr(List<Campaign> campaignArr) {
+        campaignArr.forEach(c->{
+            c.setCreatedBy(null);
+        });
+    }
+
     @Test
     public void getCampaigns_Sucess() throws Exception {
         Users user = getUser();
@@ -128,8 +134,43 @@ public class CampaignIntegrationTest {
         
         ResponseEntity<List<Campaign>> result = authenticatedRestTemplate().exchange(uri, HttpMethod.GET, null, new ParameterizedTypeReference<List<Campaign>>() {});
         assertEquals(200, result.getStatusCode().value());
-		campaignArr.forEach(c->c.setCreatedBy(null));
+		modifyCampaignArr(campaignArr);
         assertEquals(campaignArr, result.getBody());
+    }
+
+    @Test
+    public void getCampaigns_MustContainCompanyNameField_Sucess() throws Exception {
+        Users user = getUser();
+        Users user2 = createSecondAccount();
+        URI uri = new URI(baseUrl + port + "/api/campaign");
+
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+        Campaign campaign = new Campaign();
+        campaign.setTitle("user2");
+        campaign.setCreatedBy(user2);
+        campaign.setStartDate(LocalDateTime.parse(LocalDateTime.now().minusMinutes(2).format(dateFormat), dateFormat));
+        campaign.setEndDate(LocalDateTime.parse(LocalDateTime.now().plusMinutes(2).plusDays(1).format(dateFormat), dateFormat));
+        campaign.setCreatedOn(LocalDateTime.parse(LocalDateTime.now().format(dateFormat), dateFormat));
+
+        Campaign campaign2 = new Campaign();
+        campaign2.setTitle("user1");
+        campaign2.setCreatedBy(user);
+        campaign2.setStartDate(LocalDateTime.parse(LocalDateTime.now().plusDays(1).format(dateFormat), dateFormat));
+        campaign2.setEndDate(LocalDateTime.parse(LocalDateTime.now().plusDays(2).format(dateFormat), dateFormat));
+        campaign2.setCreatedOn(LocalDateTime.parse(LocalDateTime.now().format(dateFormat), dateFormat));
+        
+        List<Campaign> campaignArr = List.of(campaign, campaign2);
+        campaignArr = campaigns.saveAll(campaignArr);
+        
+        ResponseEntity<List<CampaignCompanyName>> result = authenticatedRestTemplate().exchange(uri, HttpMethod.GET, null, new ParameterizedTypeReference<List<CampaignCompanyName>>() {});
+        assertEquals(200, result.getStatusCode().value());
+		List<CampaignCompanyName> resultArr = result.getBody();
+        assertNotNull(resultArr);
+        resultArr.forEach(c -> {
+            if (c.getTitle().equals("user1"))
+                assertEquals(c.getCompanyName(), campaign2.companyName());
+            else assertEquals(c.getCompanyName(), campaign.companyName());
+        });
     }
 
     @Test
@@ -190,7 +231,7 @@ public class CampaignIntegrationTest {
         
         ResponseEntity<List<Campaign>> result = authenticatedRestTemplate().exchange(uri, HttpMethod.GET, null, new ParameterizedTypeReference<List<Campaign>>() {});
         assertEquals(200, result.getStatusCode().value());
-        campaignArr.forEach(c->c.setCreatedBy(null));
+		modifyCampaignArr(campaignArr);
 		assertEquals(List.of(campaign2), result.getBody());
     }
     
@@ -220,7 +261,7 @@ public class CampaignIntegrationTest {
         
         ResponseEntity<List<Campaign>> result = authenticatedRestTemplate().exchange(uri, HttpMethod.GET, null, new ParameterizedTypeReference<List<Campaign>>() {});
         assertEquals(200, result.getStatusCode().value());
-        campaignArr.forEach(c->c.setCreatedBy(null));
+		modifyCampaignArr(campaignArr);
 		assertEquals(List.of(campaign), result.getBody());
     }
     
@@ -250,7 +291,7 @@ public class CampaignIntegrationTest {
         
         ResponseEntity<List<Campaign>> result = authenticatedRestTemplate().exchange(uri, HttpMethod.GET, null, new ParameterizedTypeReference<List<Campaign>>() {});
         assertEquals(200, result.getStatusCode().value());
-        campaignArr.forEach(c->c.setCreatedBy(null));
+		modifyCampaignArr(campaignArr);
 		assertEquals(List.of(campaign), result.getBody());
     }
     
@@ -280,7 +321,7 @@ public class CampaignIntegrationTest {
         
         ResponseEntity<List<Campaign>> result = authenticatedRestTemplate().exchange(uri, HttpMethod.GET, null, new ParameterizedTypeReference<List<Campaign>>() {});
         assertEquals(200, result.getStatusCode().value());
-        campaignArr.forEach(c->c.setCreatedBy(null));
+		modifyCampaignArr(campaignArr);
 		assertEquals(List.of(campaign2, campaign), result.getBody());
     }
     
@@ -310,7 +351,7 @@ public class CampaignIntegrationTest {
         
         ResponseEntity<List<Campaign>> result = authenticatedRestTemplate().exchange(uri, HttpMethod.GET, null, new ParameterizedTypeReference<List<Campaign>>() {});
         assertEquals(200, result.getStatusCode().value());
-        campaignArr.forEach(c->c.setCreatedBy(null));
+		modifyCampaignArr(campaignArr);
 		assertEquals(List.of(campaign, campaign2), result.getBody());
     }
 
@@ -338,7 +379,7 @@ public class CampaignIntegrationTest {
         
         ResponseEntity<Campaign> result = authenticatedRestTemplate().exchange(uri + "/" + campaign2.getId(), HttpMethod.GET, null, Campaign.class);
         assertEquals(200, result.getStatusCode().value());
-        campaignArr.forEach(c->c.setCreatedBy(null));
+        modifyCampaignArr(campaignArr);
 		assertEquals(campaign2, result.getBody());
     }
 
@@ -634,4 +675,12 @@ public class CampaignIntegrationTest {
 class CampaignStatus { 
     private String title; 
     private char status; 
+}
+
+// For getCampaigns_MustContainCompanyNameField_Sucess() test
+// To check it returns 'companyName' field
+@Data
+class CampaignCompanyName { 
+    private String title; 
+    private String companyName; 
 }

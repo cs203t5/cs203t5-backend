@@ -23,6 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import com.example.Vox.Viridis.model.Campaign;
+import com.example.Vox.Viridis.model.Users;
 import com.example.Vox.Viridis.repository.CampaignRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,6 +33,24 @@ public class CampaignServiceTest {
 
     @InjectMocks
     private CampaignServiceImpl campaignService;
+
+    @Test
+    void getCampaignCompanyName() {
+        Users user = new Users();
+        user.setAccount_id(1l);
+        user.setEmail("campaign@test.com");
+        user.setFirstName("Admin");
+        user.setLastName("name");
+        user.setUsername("admin123");
+
+        Campaign campaign = new Campaign();
+        campaign.setTitle("Existing Campaign");
+        campaign.setStartDate(LocalDateTime.now().plusDays(1));
+        campaign.setEndDate(LocalDateTime.now().plusDays(2));
+        campaign.setCreatedBy(user);
+
+        assertEquals(campaign.companyName(), user.getUsername());
+    }
 
     @Test
     void getCampaignStatus_ReturnUpcoming() {

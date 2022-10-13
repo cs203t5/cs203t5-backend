@@ -86,8 +86,10 @@ public class Campaign {
     @Column(name = "created_on")
     private LocalDateTime createdOn = LocalDateTime.now();
 
-    @Transient
-    private String companyName;
+    @JsonProperty("companyName")
+    public String companyName() {
+        return getCreatedBy().getUsername();
+    }
 
     public CampaignDTO convertToDTO(String name) {
         return new CampaignDTO(id, title, description, startDate, endDate, location, address, image,

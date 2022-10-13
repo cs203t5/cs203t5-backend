@@ -74,10 +74,6 @@ public class CampaignServiceImpl implements CampaignService {
         List<Campaign> campaigns = campaignRepository
                 .findByTitleAndCategoryAndLocation(filterByTitle, category, location, pageable)
                 .getContent();
-
-        campaigns.forEach(campaign -> {
-            campaign.setCompanyName(campaign.getCreatedBy().getUsername());
-        });
         return campaigns;
     }
 

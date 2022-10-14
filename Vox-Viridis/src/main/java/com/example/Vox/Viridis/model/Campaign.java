@@ -3,6 +3,7 @@ package com.example.Vox.Viridis.model;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -77,7 +78,7 @@ public class Campaign {
     @Column(name = "category")
     private String category;
 
-    @OneToMany(mappedBy = "offeredBy")
+    @OneToMany(mappedBy = "offeredBy", cascade = CascadeType.ALL)
     private List<Reward> rewards;
 
     @JsonIgnore

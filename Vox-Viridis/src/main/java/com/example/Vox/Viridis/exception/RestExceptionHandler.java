@@ -8,6 +8,7 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindException;
 import org.springframework.validation.ObjectError;
@@ -53,11 +54,10 @@ public class RestExceptionHandler {
 
     @ExceptionHandler
     @ResponseBody
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, Object> handle(ValidationException ex) {
+    public ResponseEntity<Map<String,Object>> handle(ValidationException ex) {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("message", ex.getMessage());
-        return body;
+        return new ResponseEntity<>(body, ex.getHttpStatus());
     }
 
     /**

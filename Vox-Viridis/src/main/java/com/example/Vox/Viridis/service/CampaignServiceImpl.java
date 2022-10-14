@@ -47,9 +47,9 @@ public class CampaignServiceImpl implements CampaignService {
     }
 
     @Override
-    public List<Campaign> getCampaign(int page, String filterByTitle, String category,
-            String location, boolean isOrderByNewest) {
-        Sort sort = Sort.by("created_on");
+    public List<Campaign> getCampaign(int page, String filterByTitle, List<String> category,
+            List<String> location, boolean isOrderByNewest) {
+        Sort sort = Sort.by("createdOn");
         if (isOrderByNewest)
             sort = sort.descending();
         else

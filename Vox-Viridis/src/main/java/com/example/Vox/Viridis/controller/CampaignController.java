@@ -60,8 +60,8 @@ public class CampaignController {
 
     @GetMapping()
     public List<Campaign> getCampaign(@RequestParam(value="filterByTitle", required=false) String filterByTitle,
-            @RequestParam(value="category", required=false) String category,
-            @RequestParam(value="location", required=false) String location,
+            @RequestParam(value="category", required=false) List<String> category,
+            @RequestParam(value="location", required=false) List<String> location,
             @RequestParam(value="isOrderByNewest", required=false) Boolean isOrderByNewest,
             @RequestParam(value="pageNum", required=false) Integer pageNum){
         if (isOrderByNewest == null) isOrderByNewest = true;

@@ -31,6 +31,9 @@ public class CampaignServiceTest {
     @Mock
     private CampaignRepository campaigns;
 
+    @Mock
+    private UsersService usersService;
+
     @InjectMocks
     private CampaignServiceImpl campaignService;
 
@@ -87,7 +90,7 @@ public class CampaignServiceTest {
         Campaign campaign = new Campaign();
         campaign.setTitle("New Campaign");
 
-        Sort sort = Sort.by("created_on").descending().and(Sort.by("title").ascending());
+        Sort sort = Sort.by("createdOn").descending().and(Sort.by("title").ascending());
         Pageable pageable = PageRequest.of(0, 20, sort);
 
         Page<Campaign> page = new PageImpl<>(List.of(campaign));
@@ -106,7 +109,7 @@ public class CampaignServiceTest {
         Campaign campaign = new Campaign();
         campaign.setTitle("New Campaign");
 
-        Sort sort = Sort.by("created_on").descending().and(Sort.by("title").ascending());
+        Sort sort = Sort.by("createdOn").descending().and(Sort.by("title").ascending());
         Pageable pageable = PageRequest.of(0, 20, sort);
 
         when(campaigns.findByTitleAndCategoryAndLocationAndReward("New", null, null, null, pageable)).thenReturn(new PageImpl<>(List.of(campaign)));
@@ -128,6 +131,7 @@ public class CampaignServiceTest {
 
         when(campaigns.findByTitle(any(String.class))).thenReturn(new ArrayList<Campaign>());
         when(campaigns.save(any(Campaign.class))).thenReturn(campaign);
+        when(usersService.getCurrentUser()).thenReturn(null);
 
         Campaign savedCampaign = campaignService.addCampaign(campaign);
 
@@ -167,6 +171,7 @@ public class CampaignServiceTest {
         when(campaigns.findByTitle(any(String.class))).thenReturn(new ArrayList<Campaign>());
         when(campaigns.findById(2l)).thenReturn(Optional.of(campaign));
         when(campaigns.save(any(Campaign.class))).thenReturn(updatedCampaign);
+        when(usersService.getCurrentUser()).thenReturn(null);
 
         Campaign savedCampaign = campaignService.updateCampaign(updatedCampaign, 2l);
 
@@ -193,6 +198,7 @@ public class CampaignServiceTest {
         when(campaigns.findByTitle(any(String.class))).thenReturn(List.of(campaign));
         when(campaigns.findById(2l)).thenReturn(Optional.of(campaign));
         when(campaigns.save(any(Campaign.class))).thenReturn(updatedCampaign);
+        when(usersService.getCurrentUser()).thenReturn(null);
 
         Campaign savedCampaign = campaignService.updateCampaign(updatedCampaign, 2l);
 

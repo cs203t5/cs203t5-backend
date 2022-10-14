@@ -182,13 +182,11 @@ public class CampaignServiceTest {
         Campaign campaign = new Campaign();
         campaign.setId(2l);
         campaign.setTitle("New Campaign");
-        campaign.setGoal(1);
         campaign.setStartDate(LocalDateTime.now());
         campaign.setEndDate(LocalDateTime.now().plusDays(1));
 
         Campaign updatedCampaign = new Campaign();
         updatedCampaign.setTitle("New Campaign");
-        updatedCampaign.setGoal(2);
         updatedCampaign.setStartDate(LocalDateTime.now());
         updatedCampaign.setEndDate(LocalDateTime.now().plusDays(1));
 

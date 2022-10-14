@@ -1,11 +1,9 @@
 package com.example.Vox.Viridis.exception;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(HttpStatus.FORBIDDEN)
-public class NotOwnerException extends RuntimeException {
+public class NotOwnerException extends ValidationException {
     public NotOwnerException() {
-        super("Not Authorised. You are not the owner of this.");
+        super(HttpStatus.FORBIDDEN, "Not Authorised. You are not the owner of this.");
     }
 }

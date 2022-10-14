@@ -1,11 +1,15 @@
 package com.example.Vox.Viridis.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,10 +24,15 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.Vox.Viridis.exception.CampaignTitleExistsException;
-import com.example.Vox.Viridis.exception.CampaignNotFoundException;
+import com.example.Vox.Viridis.exception.ResourceNotFoundException;
 import com.example.Vox.Viridis.exception.InvalidFileTypeException;
+import com.example.Vox.Viridis.exception.InvalidJsonException;
 import com.example.Vox.Viridis.model.Campaign;
+import com.example.Vox.Viridis.model.Reward;
+import com.example.Vox.Viridis.model.RewardType;
 import com.example.Vox.Viridis.service.CampaignService;
+import com.example.Vox.Viridis.service.RewardService;
+import com.example.Vox.Viridis.service.RewardTypeService;
 import com.example.Vox.Viridis.service.StorageService;
 
 import lombok.RequiredArgsConstructor;
@@ -35,11 +44,13 @@ public class CampaignController {
     private final CampaignService campaignService;
     private final StorageService storageService;
     private final EntityManager entityManager;
+    private final RewardTypeService rewardTypeService;
+    private final RewardService rewardService;
 
     @GetMapping("{id}")
     public Campaign getCampaign(@PathVariable Long id){
         Campaign result =  campaignService.getCampaign(id)
-            .orElseThrow(() -> new CampaignNotFoundException(id));
+            .orElseThrow(() -> new ResourceNotFoundException("Campaign id " + id));
         entityManager.detach(result);
         String image = result.getImage();
         if (image != null)
@@ -70,7 +81,9 @@ public class CampaignController {
     @Transactional
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping()
-    public Campaign addCampaign(@ModelAttribute @Valid Campaign campaign, @RequestParam(value="imageFile", required=false) MultipartFile image) {
+    public Campaign addCampaign(@ModelAttribute @Valid Campaign campaign, 
+            @RequestParam(value="imageFile", required=false) MultipartFile image, 
+            @RequestParam("rewardsArr")String rewardsJson) {
         if (image != null && !image.isEmpty()) {
             if (image.getContentType() == null || !image.getContentType().startsWith("image/"))
                 throw new InvalidFileTypeException("Image file like jpeg");
@@ -78,6 +91,27 @@ public class CampaignController {
 
         Campaign result = campaignService.addCampaign(campaign);
         if (result == null) throw new CampaignTitleExistsException(campaign.getTitle());
+
+        // create array of rewards
+        List<Reward> rewardsArr = new ArrayList<>();
+        try {
+            JSONArray rewardsJsonArr = new JSONArray(rewardsJson);
+            for (int i = 0; i < rewardsJsonArr.length(); i++) {
+                JSONObject current = rewardsJsonArr.getJSONObject(i);
+                String rewardName = current.getString("rewardName");
+                String rewardTypeName = current.getString("rewardType");
+                RewardType rewardType = rewardTypeService.getRewardTypeByName(rewardTypeName).orElseThrow(() -> new ResourceNotFoundException("Reward type ''" + rewardTypeName + "'"));
+                
+                Reward reward = new Reward();
+                reward.setRewardName(rewardName);
+                reward.setRewardType(rewardType);
+                rewardsArr.add(reward);
+            }
+        } catch (JSONException e) {
+            throw new InvalidJsonException("rewardsArr", e);
+        }
+        rewardsArr = rewardService.addReward(rewardsArr, result);
+        result.setRewards(rewardsArr);
         
         if (image != null && !image.isEmpty()) {
             String filename = StorageService.CAMPAIGNS_DIR + result.getId() + image.getOriginalFilename().substring(image.getOriginalFilename().lastIndexOf("."));
@@ -85,6 +119,9 @@ public class CampaignController {
 
             storageService.putObject(filename, image);
         }
+
+        entityManager.detach(result);
+        result.setImage(storageService.getUrl(result.getImage()));
 
         return result;
     }
@@ -110,12 +147,15 @@ public class CampaignController {
             storageService.putObject(filename, image);
         }
 
+        entityManager.detach(result);
+        result.setImage(storageService.getUrl(result.getImage()));
+
         return result;
     }
 
     @DeleteMapping("{id}")
     public void deleteCampaign(@PathVariable Long id){
-        Campaign campaign = campaignService.getCampaign(id).orElseThrow(() -> new CampaignNotFoundException(id));
+        Campaign campaign = campaignService.getCampaign(id).orElseThrow(() -> new ResourceNotFoundException("Campaign id " + id));
         if (campaign.getImage() != null && !campaign.getImage().isBlank())
             storageService.deleteObject(campaign.getImage());
         campaignService.deleteCampaign(id);

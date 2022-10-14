@@ -11,7 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import com.example.Vox.Viridis.exception.CampaignNotFoundException;
+import com.example.Vox.Viridis.exception.ResourceNotFoundException;
 import com.example.Vox.Viridis.exception.NotOwnerException;
 import com.example.Vox.Viridis.model.Campaign;
 import com.example.Vox.Viridis.model.Users;
@@ -86,7 +86,7 @@ public class CampaignServiceImpl implements CampaignService {
         }
 
         Campaign existingCampaign =
-                getCampaign(id).orElseThrow(() -> new CampaignNotFoundException(id));
+                getCampaign(id).orElseThrow(() -> new ResourceNotFoundException("Campaign id " + id));
         Users username = usersService.getCurrentUser();
         if (username != null && !existingCampaign.getCreatedBy().equals(username))
             throw new NotOwnerException();

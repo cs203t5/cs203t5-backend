@@ -62,11 +62,12 @@ public class CampaignController {
     public List<Campaign> getCampaign(@RequestParam(value="filterByTitle", required=false) String filterByTitle,
             @RequestParam(value="category", required=false) List<String> category,
             @RequestParam(value="location", required=false) List<String> location,
+            @RequestParam(value="reward", required=false) List<String> reward,
             @RequestParam(value="isOrderByNewest", required=false) Boolean isOrderByNewest,
             @RequestParam(value="pageNum", required=false) Integer pageNum){
         if (isOrderByNewest == null) isOrderByNewest = true;
         if (pageNum == null) pageNum = 0;
-        List<Campaign> result = campaignService.getCampaign(pageNum, filterByTitle, category, location, isOrderByNewest);
+        List<Campaign> result = campaignService.getCampaign(pageNum, filterByTitle, category, location, reward, isOrderByNewest);
         
         result.forEach(campaign -> {
                 String image = campaign.getImage();

@@ -7,7 +7,7 @@ import com.example.Vox.Viridis.model.Campaign;
 
 public interface CampaignService {
     Optional<Campaign> getCampaign(Long id);
-    List<Campaign> getCampaign(int page, String filterByTitle, List<String> category, List<String> location, boolean isOrderByNewest);
+    List<Campaign> getCampaign(int page, String filterByTitle, List<String> category, List<String> location, List<String> reward, boolean isOrderByNewest);
     Campaign addCampaign(Campaign campaign);
     Campaign updateCampaignImage(Campaign campaign, String imageFilename);
     Campaign updateCampaign(Campaign updatedCampaign, Long id);

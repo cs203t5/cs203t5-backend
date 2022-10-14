@@ -48,7 +48,7 @@ public class CampaignServiceImpl implements CampaignService {
 
     @Override
     public List<Campaign> getCampaign(int page, String filterByTitle, List<String> category,
-            List<String> location, boolean isOrderByNewest) {
+            List<String> location, List<String> reward, boolean isOrderByNewest) {
         Sort sort = Sort.by("createdOn");
         if (isOrderByNewest)
             sort = sort.descending();
@@ -60,7 +60,7 @@ public class CampaignServiceImpl implements CampaignService {
         if (filterByTitle == null)
             filterByTitle = "";
         List<Campaign> campaigns = campaignRepository
-                .findByTitleAndCategoryAndLocation(filterByTitle, category, location, pageable)
+                .findByTitleAndCategoryAndLocationAndReward(filterByTitle, category, location, reward, pageable)
                 .getContent();
         return campaigns;
     }

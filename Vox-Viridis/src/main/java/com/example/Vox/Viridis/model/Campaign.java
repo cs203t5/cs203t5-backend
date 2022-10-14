@@ -21,6 +21,8 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.springframework.format.annotation.DateTimeFormat;
 import com.example.Vox.Viridis.model.dto.CampaignDTO;
 import com.example.Vox.Viridis.model.validation.ConsistentDate;
@@ -78,6 +80,7 @@ public class Campaign {
     @Column(name = "category")
     private String category;
 
+    @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(mappedBy = "offeredBy", cascade = CascadeType.ALL)
     private List<Reward> rewards;
 

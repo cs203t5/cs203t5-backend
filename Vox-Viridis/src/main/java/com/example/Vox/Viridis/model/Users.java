@@ -8,6 +8,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -53,6 +54,9 @@ public class Users {
     private List<Role> roles;
     private LocalDate dob;
     private boolean enabled;
+
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "users")
+    private List<Reward> userRewards; // for customer
 
     public UsersDTO convertToDTO() {
         return new UsersDTO(account_id, username, firstName, lastName, email, points, image);

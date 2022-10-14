@@ -55,6 +55,8 @@ public class SecurityConfig {
                                 .antMatchers(HttpMethod.POST, "/campaign/*/reward").hasRole("BUSINESS")
                                 .antMatchers(HttpMethod.PUT, "/campaign/*/reward/*").hasRole("BUSINESS")
                                 .antMatchers(HttpMethod.DELETE, "/campaign/*/reward/*").hasRole("BUSINESS")
+                                .antMatchers(HttpMethod.POST, "/campaign/*/reward/*/join").hasRole("CUSTOMER")
+                                
                                 .anyRequest().authenticated())
                                 .csrf(csrf -> csrf.disable()).httpBasic(Customizer.withDefaults())
                                 .userDetailsService(myUserDetailsService)

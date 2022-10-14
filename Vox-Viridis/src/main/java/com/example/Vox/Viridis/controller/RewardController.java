@@ -49,6 +49,11 @@ public class RewardController {
         return rewardService.addReward(rewards, campaignId);
     }
 
+    @PostMapping("{id}/join")
+    public void joinReward(@PathVariable Long campaignId, @PathVariable Long id) {
+        rewardService.addUserToReward(id, campaignId);
+    }
+
     @PutMapping("{id}")
     public Reward updateReward(@PathVariable Long campaignId, @PathVariable Long id, @RequestBody @Valid RewardInputModel input) {
         return rewardService.updateReward(id, campaignId, input.convertToReward(rewardTypeService));

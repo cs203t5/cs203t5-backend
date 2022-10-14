@@ -67,6 +67,17 @@ public class RewardService {
         return rewards.saveAll(rewardsArr);
     }
 
+    public Reward addUserToReward(long rewardId, long campaignId) {
+        Reward reward = rewards.findByIdAndOfferedBy(rewardId, campaignId)
+            .orElseThrow(() -> new ResourceNotFoundException("Reward id " + rewardId + " with campaign id " + campaignId));
+        
+        Users user = usersService.getCurrentUser();
+        reward.getUsers().add(user);
+        Reward result = rewards.save(reward);
+        log.info("username '" + user.getUsername() + "' added to reward id " + rewardId + " (campaign id " + campaignId + ")");
+        return result;
+    }
+
     /**
      * Update reward by id
      * @throws NotOwnerException if current user isn't the owner of this campaign's reward

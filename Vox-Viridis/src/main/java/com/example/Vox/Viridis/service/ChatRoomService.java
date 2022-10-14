@@ -12,29 +12,29 @@ public class ChatRoomService {
     private ChatRoomRespository chatRoomRepository;
 
     public Optional<String> getChatId(
-            String senderId, String recipientId, boolean createIfNotExist) {
+            String senderName, String recipientName, boolean createIfNotExist) {
 
         return chatRoomRepository
-                .findBySenderIdAndRecipientId(senderId, recipientId)
+                .findBySenderNameAndRecipientName(senderName, recipientName)
                 .map(ChatRoom::getChatId)
                 .or(() -> {
                     if (!createIfNotExist) {
                         return Optional.empty();
                     }
-                    var chatId = String.format("%s_%s", senderId, recipientId);
+                    var chatId = String.format("%s_%s", senderName, recipientName);
 
                     ChatRoom senderRecipient = ChatRoom
                             .builder()
                             .chatId(chatId)
-                            .senderId(senderId)
-                            .recipientId(recipientId)
+                            .senderName(senderName)
+                            .recipientName(recipientName)
                             .build();
 
                     ChatRoom recipientSender = ChatRoom
                             .builder()
                             .chatId(chatId)
-                            .senderId(recipientId)
-                            .recipientId(senderId)
+                            .senderName(recipientName)
+                            .recipientName(senderName)
                             .build();
                     chatRoomRepository.save(senderRecipient);
                     chatRoomRepository.save(recipientSender);

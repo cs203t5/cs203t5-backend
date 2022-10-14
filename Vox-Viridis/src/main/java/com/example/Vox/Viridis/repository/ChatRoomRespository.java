@@ -5,5 +5,5 @@ import com.example.Vox.Viridis.model.ChatRoom;
 import java.util.Optional;
 
 public interface ChatRoomRespository extends JpaRepository<ChatRoom, String>{
-    Optional<ChatRoom> findBySenderIdAndRecipientId(String senderId, String recipientId);
+    Optional<ChatRoom> findBySenderNameAndRecipientName(String senderName, String recipientName);
 }

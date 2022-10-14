@@ -6,8 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, String>{
-    long countBySenderIdAndRecipientIdAndStatus(
-            String senderId, String recipientId, MessageStatus status);
+    long countBySenderNameAndRecipientNameAndStatus(
+            String senderName, String recipientName, MessageStatus status);
 
     List<ChatMessage> findByChatId(String chatId);
 
@@ -15,6 +15,6 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, String
     // @Query("update ChatMessage u set u.MessageStatus = ?1 where u.senderId = ?2 and u.recipientId=?3")
     // void updateStatus(MessageStatus status,String senderId, String recipientId);
 
-    ChatMessage[] findBySenderIdAndRecipientId(String SenderId, String recipientId);
+    ChatMessage[] findBySenderNameAndRecipientName(String SenderName, String recipientName);
 
 }

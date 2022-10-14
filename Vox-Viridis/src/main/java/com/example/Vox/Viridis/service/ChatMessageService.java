@@ -21,19 +21,19 @@ public class ChatMessageService {
         return chatMessage;
     }
 
-    public long countNewMessages(String senderId, String recipientId) {
-        return repository.countBySenderIdAndRecipientIdAndStatus(
-                senderId, recipientId, MessageStatus.RECEIVED);
+    public long countNewMessages(String senderName, String recipientName) {
+        return repository.countBySenderNameAndRecipientNameAndStatus(
+                senderName, recipientName, MessageStatus.RECEIVED);
     }
 
-    public List<ChatMessage> findChatMessages(String senderId, String recipientId) {
-        var chatId = chatRoomService.getChatId(senderId, recipientId, false);
+    public List<ChatMessage> findChatMessages(String senderName, String recipientName) {
+        var chatId = chatRoomService.getChatId(senderName, recipientName, false);
 
         var messages =
                 chatId.map(cId -> repository.findByChatId(cId)).orElse(new ArrayList<>());
 
         if(messages.size() > 0) {
-            ChatMessage[] cm = repository.findBySenderIdAndRecipientId(senderId, recipientId);
+            ChatMessage[] cm = repository.findBySenderNameAndRecipientName(senderName, recipientName);
             for(ChatMessage c : cm) {
             c.setStatus(MessageStatus.DELIVERED);
             repository.save(c);

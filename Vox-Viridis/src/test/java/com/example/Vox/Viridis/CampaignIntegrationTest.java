@@ -106,6 +106,7 @@ public class CampaignIntegrationTest {
     private void modifyCampaignArr(List<Campaign> campaignArr) {
         campaignArr.forEach(c->{
             c.setCreatedBy(null);
+            c.setRewards(List.of());
         });
     }
 

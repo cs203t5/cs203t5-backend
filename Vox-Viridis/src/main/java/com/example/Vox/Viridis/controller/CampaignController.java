@@ -84,7 +84,7 @@ public class CampaignController {
     @PostMapping()
     public Campaign addCampaign(@ModelAttribute @Valid Campaign campaign, 
             @RequestParam(value="imageFile", required=false) MultipartFile image, 
-            @RequestParam("rewardsArr")String rewardsJson) {
+            @RequestParam(value = "rewardsArr", required = false)String rewardsJson) {
         if (image != null && !image.isEmpty()) {
             if (image.getContentType() == null || !image.getContentType().startsWith("image/"))
                 throw new InvalidFileTypeException("Image file like jpeg");
@@ -94,25 +94,27 @@ public class CampaignController {
         if (result == null) throw new CampaignTitleExistsException(campaign.getTitle());
 
         // create array of rewards
-        List<Reward> rewardsArr = new ArrayList<>();
-        try {
-            JSONArray rewardsJsonArr = new JSONArray(rewardsJson);
-            for (int i = 0; i < rewardsJsonArr.length(); i++) {
-                JSONObject current = rewardsJsonArr.getJSONObject(i);
-                String rewardName = current.getString("rewardName");
-                String rewardTypeName = current.getString("rewardType");
-                RewardType rewardType = rewardTypeService.getRewardTypeByName(rewardTypeName).orElseThrow(() -> new ResourceNotFoundException("Reward type ''" + rewardTypeName + "'"));
-                
-                Reward reward = new Reward();
-                reward.setRewardName(rewardName);
-                reward.setRewardType(rewardType);
-                rewardsArr.add(reward);
+        if (rewardsJson != null) {
+            List<Reward> rewardsArr = new ArrayList<>();
+            try {
+                JSONArray rewardsJsonArr = new JSONArray(rewardsJson);
+                for (int i = 0; i < rewardsJsonArr.length(); i++) {
+                    JSONObject current = rewardsJsonArr.getJSONObject(i);
+                    String rewardName = current.getString("rewardName");
+                    String rewardTypeName = current.getString("rewardType");
+                    RewardType rewardType = rewardTypeService.getRewardTypeByName(rewardTypeName).orElseThrow(() -> new ResourceNotFoundException("Reward type ''" + rewardTypeName + "'"));
+                    
+                    Reward reward = new Reward();
+                    reward.setRewardName(rewardName);
+                    reward.setRewardType(rewardType);
+                    rewardsArr.add(reward);
+                }
+            } catch (JSONException e) {
+                throw new InvalidJsonException("rewardsArr", e);
             }
-        } catch (JSONException e) {
-            throw new InvalidJsonException("rewardsArr", e);
+            rewardsArr = rewardService.addReward(rewardsArr, result);
+            result.setRewards(rewardsArr);
         }
-        rewardsArr = rewardService.addReward(rewardsArr, result);
-        result.setRewards(rewardsArr);
         
         if (image != null && !image.isEmpty()) {
             String filename = StorageService.CAMPAIGNS_DIR + result.getId() + image.getOriginalFilename().substring(image.getOriginalFilename().lastIndexOf("."));

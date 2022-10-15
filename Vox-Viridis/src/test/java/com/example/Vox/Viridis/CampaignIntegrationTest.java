@@ -89,9 +89,7 @@ public class CampaignIntegrationTest {
         user.setLastName("admin2");
         user.setPassword(passwordEncoder.encode("goodpassword"));
         user = users.save(user);
-        /*Role role = new Role(2l, "ROLE_BUSINESS", user);
-        user.setRoles(List.of(role));
-        roles.save(role);*/
+        user.setRoles(List.of(roles.findByName("ROLE_BUSINESS")));
 
         return user;
     }

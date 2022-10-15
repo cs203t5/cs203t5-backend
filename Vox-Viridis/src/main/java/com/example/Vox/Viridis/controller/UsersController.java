@@ -2,7 +2,7 @@ package com.example.Vox.Viridis.controller;
 
 import java.net.URI;
 import java.security.Principal;
-
+import javax.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,7 +32,7 @@ public class UsersController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<UsersDTO> saveUser(@RequestBody Users user) {
+    public ResponseEntity<UsersDTO> saveUser(@Valid @RequestBody Users user) {
         URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/api/user/save").toUriString());
         return ResponseEntity.created(uri).body(usersService.saveUser(user));

@@ -9,17 +9,13 @@ import javax.transaction.Transactional;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import com.example.Vox.Viridis.exception.CampaignNotFoundException;
+import com.example.Vox.Viridis.exception.ResourceNotFoundException;
 import com.example.Vox.Viridis.exception.NotOwnerException;
 import com.example.Vox.Viridis.model.Campaign;
-import com.example.Vox.Viridis.model.SecurityUser;
 import com.example.Vox.Viridis.model.Users;
 import com.example.Vox.Viridis.repository.CampaignRepository;
-import com.example.Vox.Viridis.repository.UsersRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,15 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class CampaignServiceImpl implements CampaignService {
     private final CampaignRepository campaignRepository;
-    private final UsersRepository usersRepository;
-
-    private Users getCurrentUsername() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null)
-            return null;
-        return usersRepository.findByUsername(((SecurityUser) auth.getPrincipal()).getUsername())
-                .orElse(null);
-    }
+    private final UsersService usersService;
 
     @Override
     public Optional<Campaign> getCampaign(Long id) {
@@ -54,14 +42,14 @@ public class CampaignServiceImpl implements CampaignService {
 
         log.info("Campaign created: " + title);
         campaign.setCreatedOn(LocalDateTime.now());
-        campaign.setCreatedBy(getCurrentUsername());
+        campaign.setCreatedBy(usersService.getCurrentUser());
         return campaignRepository.save(campaign);
     }
 
     @Override
-    public List<Campaign> getCampaign(int page, String filterByTitle, String category,
-            String location, boolean isOrderByNewest) {
-        Sort sort = Sort.by("created_on");
+    public List<Campaign> getCampaign(int page, String filterByTitle, List<String> category,
+            List<String> location, List<String> reward, boolean isOrderByNewest) {
+        Sort sort = Sort.by("createdOn");
         if (isOrderByNewest)
             sort = sort.descending();
         else
@@ -72,12 +60,8 @@ public class CampaignServiceImpl implements CampaignService {
         if (filterByTitle == null)
             filterByTitle = "";
         List<Campaign> campaigns = campaignRepository
-                .findByTitleAndCategoryAndLocation(filterByTitle, category, location, pageable)
+                .findByTitleAndCategoryAndLocationAndReward(filterByTitle, category, location, reward, pageable)
                 .getContent();
-
-        campaigns.forEach(campaign -> {
-            campaign.setCompanyName(campaign.getCreatedBy().getUsername());
-        });
         return campaigns;
     }
 
@@ -102,8 +86,8 @@ public class CampaignServiceImpl implements CampaignService {
         }
 
         Campaign existingCampaign =
-                getCampaign(id).orElseThrow(() -> new CampaignNotFoundException(id));
-        Users username = getCurrentUsername();
+                getCampaign(id).orElseThrow(() -> new ResourceNotFoundException("Campaign id " + id));
+        Users username = usersService.getCurrentUser();
         if (username != null && !existingCampaign.getCreatedBy().equals(username))
             throw new NotOwnerException();
 
@@ -120,7 +104,7 @@ public class CampaignServiceImpl implements CampaignService {
      */
     @Override
     public void deleteCampaign(Long id) {
-        Users username = getCurrentUsername();
+        Users username = usersService.getCurrentUser();
         if (username != null
                 && !campaignRepository.getCreatedBy(id).equals(username.getAccount_id()))
             throw new NotOwnerException();

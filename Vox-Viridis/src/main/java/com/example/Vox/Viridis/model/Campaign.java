@@ -1,7 +1,9 @@
 package com.example.Vox.Viridis.model;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -9,8 +11,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,6 +21,8 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.springframework.format.annotation.DateTimeFormat;
 import com.example.Vox.Viridis.model.dto.CampaignDTO;
 import com.example.Vox.Viridis.model.validation.ConsistentDate;
@@ -76,7 +80,9 @@ public class Campaign {
     @Column(name = "category")
     private String category;
 
-    private int goal;
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @OneToMany(mappedBy = "offeredBy", cascade = CascadeType.ALL)
+    private List<Reward> rewards;
 
     @JsonIgnore
     @ManyToOne()
@@ -86,11 +92,13 @@ public class Campaign {
     @Column(name = "created_on")
     private LocalDateTime createdOn = LocalDateTime.now();
 
-    @Transient
-    private String companyName;
+    @JsonProperty("companyName")
+    public String companyName() {
+        return getCreatedBy().getUsername();
+    }
 
     public CampaignDTO convertToDTO(String name) {
         return new CampaignDTO(id, title, description, startDate, endDate, location, address, image,
-                category, goal, name);
+                category, rewards, name);
     }
 }

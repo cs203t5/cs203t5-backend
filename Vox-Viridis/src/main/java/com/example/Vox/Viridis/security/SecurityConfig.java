@@ -43,11 +43,20 @@ public class SecurityConfig {
                 http.cors(Customizer.withDefaults()).authorizeRequests(auth -> auth
                                 .antMatchers("/users/save", "/swagger-ui/**", "/swagger-ui.html")
                                 .permitAll()
+                                // Campaign API
                                 .antMatchers(HttpMethod.POST, "/campaign").hasRole("BUSINESS")
                                 .antMatchers(HttpMethod.PUT, "/campaign/*").hasRole("BUSINESS")
                                 .antMatchers(HttpMethod.DELETE, "/campaign/*").hasRole("BUSINESS")
                                 .antMatchers(HttpMethod.GET, "/campaign/*").permitAll()
                                 .antMatchers(HttpMethod.GET, "/campaign").permitAll()
+                                
+                                // reward API
+                                .antMatchers(HttpMethod.GET, "/campaign/*/reward").permitAll()
+                                .antMatchers(HttpMethod.POST, "/campaign/*/reward").hasRole("BUSINESS")
+                                .antMatchers(HttpMethod.PUT, "/campaign/*/reward/*").hasRole("BUSINESS")
+                                .antMatchers(HttpMethod.DELETE, "/campaign/*/reward/*").hasRole("BUSINESS")
+                                .antMatchers(HttpMethod.POST, "/campaign/*/reward/*/join").hasRole("CUSTOMER")
+                                
                                 .anyRequest().authenticated())
                                 .csrf(csrf -> csrf.disable()).httpBasic(Customizer.withDefaults())
                                 .userDetailsService(myUserDetailsService)

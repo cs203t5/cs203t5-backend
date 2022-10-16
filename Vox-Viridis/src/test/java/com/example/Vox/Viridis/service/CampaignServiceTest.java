@@ -23,6 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import com.example.Vox.Viridis.model.Campaign;
+import com.example.Vox.Viridis.model.Users;
 import com.example.Vox.Viridis.repository.CampaignRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -30,8 +31,29 @@ public class CampaignServiceTest {
     @Mock
     private CampaignRepository campaigns;
 
+    @Mock
+    private UsersService usersService;
+
     @InjectMocks
     private CampaignServiceImpl campaignService;
+
+    @Test
+    void getCampaignCompanyName() {
+        Users user = new Users();
+        user.setAccount_id(1l);
+        user.setEmail("campaign@test.com");
+        user.setFirstName("Admin");
+        user.setLastName("name");
+        user.setUsername("admin123");
+
+        Campaign campaign = new Campaign();
+        campaign.setTitle("Existing Campaign");
+        campaign.setStartDate(LocalDateTime.now().plusDays(1));
+        campaign.setEndDate(LocalDateTime.now().plusDays(2));
+        campaign.setCreatedBy(user);
+
+        assertEquals(campaign.companyName(), user.getUsername());
+    }
 
     @Test
     void getCampaignStatus_ReturnUpcoming() {
@@ -68,18 +90,18 @@ public class CampaignServiceTest {
         Campaign campaign = new Campaign();
         campaign.setTitle("New Campaign");
 
-        Sort sort = Sort.by("created_on").descending().and(Sort.by("title").ascending());
+        Sort sort = Sort.by("createdOn").descending().and(Sort.by("title").ascending());
         Pageable pageable = PageRequest.of(0, 20, sort);
 
         Page<Campaign> page = new PageImpl<>(List.of(campaign));
-        when(campaigns.findByTitleAndCategoryAndLocation("", null, null, pageable)).thenReturn(page);
+        when(campaigns.findByTitleAndCategoryAndLocationAndReward("", null, null, null, pageable)).thenReturn(page);
 
-        List<Campaign> result = campaignService.getCampaign(0, null, null, null, true);
+        List<Campaign> result = campaignService.getCampaign(0, null, null, null, null, true);
 
         assertNotNull(result);
         assertEquals(result.size(), 1);
         assertEquals(result.get(0), campaign);
-        verify(campaigns).findByTitleAndCategoryAndLocation("", null, null, pageable);
+        verify(campaigns).findByTitleAndCategoryAndLocationAndReward("", null, null, null, pageable);
     }
 
     @Test
@@ -87,17 +109,17 @@ public class CampaignServiceTest {
         Campaign campaign = new Campaign();
         campaign.setTitle("New Campaign");
 
-        Sort sort = Sort.by("created_on").descending().and(Sort.by("title").ascending());
+        Sort sort = Sort.by("createdOn").descending().and(Sort.by("title").ascending());
         Pageable pageable = PageRequest.of(0, 20, sort);
 
-        when(campaigns.findByTitleAndCategoryAndLocation("New", null, null, pageable)).thenReturn(new PageImpl<>(List.of(campaign)));
+        when(campaigns.findByTitleAndCategoryAndLocationAndReward("New", null, null, null, pageable)).thenReturn(new PageImpl<>(List.of(campaign)));
 
-        List<Campaign> result = campaignService.getCampaign(0, "New", (String)null, (String)null, true);
+        List<Campaign> result = campaignService.getCampaign(0, "New", null, null, null, true);
 
         assertNotNull(result);
         assertEquals(result.size(), 1);
         assertEquals(result.get(0), campaign);
-        verify(campaigns).findByTitleAndCategoryAndLocation("New", null, null, pageable);
+        verify(campaigns).findByTitleAndCategoryAndLocationAndReward("New", null, null, null, pageable);
     }
 
     @Test
@@ -109,6 +131,7 @@ public class CampaignServiceTest {
 
         when(campaigns.findByTitle(any(String.class))).thenReturn(new ArrayList<Campaign>());
         when(campaigns.save(any(Campaign.class))).thenReturn(campaign);
+        when(usersService.getCurrentUser()).thenReturn(null);
 
         Campaign savedCampaign = campaignService.addCampaign(campaign);
 
@@ -148,6 +171,7 @@ public class CampaignServiceTest {
         when(campaigns.findByTitle(any(String.class))).thenReturn(new ArrayList<Campaign>());
         when(campaigns.findById(2l)).thenReturn(Optional.of(campaign));
         when(campaigns.save(any(Campaign.class))).thenReturn(updatedCampaign);
+        when(usersService.getCurrentUser()).thenReturn(null);
 
         Campaign savedCampaign = campaignService.updateCampaign(updatedCampaign, 2l);
 
@@ -163,19 +187,18 @@ public class CampaignServiceTest {
         Campaign campaign = new Campaign();
         campaign.setId(2l);
         campaign.setTitle("New Campaign");
-        campaign.setGoal(1);
         campaign.setStartDate(LocalDateTime.now());
         campaign.setEndDate(LocalDateTime.now().plusDays(1));
 
         Campaign updatedCampaign = new Campaign();
         updatedCampaign.setTitle("New Campaign");
-        updatedCampaign.setGoal(2);
         updatedCampaign.setStartDate(LocalDateTime.now());
         updatedCampaign.setEndDate(LocalDateTime.now().plusDays(1));
 
         when(campaigns.findByTitle(any(String.class))).thenReturn(List.of(campaign));
         when(campaigns.findById(2l)).thenReturn(Optional.of(campaign));
         when(campaigns.save(any(Campaign.class))).thenReturn(updatedCampaign);
+        when(usersService.getCurrentUser()).thenReturn(null);
 
         Campaign savedCampaign = campaignService.updateCampaign(updatedCampaign, 2l);
 

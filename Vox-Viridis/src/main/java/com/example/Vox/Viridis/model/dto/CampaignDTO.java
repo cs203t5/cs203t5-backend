@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import com.example.Vox.Viridis.model.Reward;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,6 +22,6 @@ public class CampaignDTO {
     private String address;
     private String image;
     private String category;
-    private int goal;
+    private List<Reward> goal;
     private String name;
 }

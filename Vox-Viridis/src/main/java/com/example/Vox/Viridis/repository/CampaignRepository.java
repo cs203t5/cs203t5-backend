@@ -12,10 +12,8 @@ import com.example.Vox.Viridis.model.Campaign;
 public interface CampaignRepository extends JpaRepository<Campaign, Long> {
     List<Campaign> findByTitle(String title);
 
-    @Query(nativeQuery = true, 
-        value = "SELECT * FROM campaign WHERE title LIKE %?1% AND (IFNULL(?2,'')='' OR category = ?2) AND (IFNULL(?3,'')='' OR location=?3) AND end_date >= NOW() ORDER BY ?#{#pageable}", 
-        countQuery = "SELECT COUNT(*) FROM campaign WHERE title LIKE %?1% AND (IFNULL(?2,'')='' OR category=?2) AND (IFNULL(?3,'')='' OR location=?3) AND end_date >= NOW()")
-    Page<Campaign> findByTitleAndCategoryAndLocation(String title, String category, String location, Pageable pageable);
+    @Query(value = "SELECT c FROM Campaign c WHERE c.title LIKE %:title% AND (COALESCE(:category) IS NULL OR c.category IN :category) AND (COALESCE(:location) IS NULL OR c.location IN :location) AND (COALESCE(:reward) IS NULL OR (SELECT COUNT(rt) FROM c.rewards r JOIN r.rewardType rt WHERE rt.rewardType IN :reward)>0) AND c.endDate >= NOW()")
+    Page<Campaign> findByTitleAndCategoryAndLocationAndReward(String title, List<String> category, List<String> location, List<String> reward, Pageable pageable);
 
     @Query(nativeQuery = true, value = "SELECT created_by FROM campaign WHERE id = :id")
     Long getCreatedBy(Long id);

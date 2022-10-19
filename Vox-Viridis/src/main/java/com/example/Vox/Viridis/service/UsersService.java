@@ -2,6 +2,8 @@ package com.example.Vox.Viridis.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
 import javax.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -34,5 +36,19 @@ public class UsersService {
         usersDTO.setUsername(saveUser.getUsername());
         usersDTO.setAccount_id(saveUser.getAccount_id());
         return usersDTO;
+    }
+    public List<Users> findAll() {
+        log.info("retrieving all users");
+        return usersRepository.findAll();
+    }
+
+    public Optional<Users> findByUsername(String username) {
+        log.info("retrieving user {}", username);
+        return usersRepository.findByUsername(username);
+    }
+
+    public Optional<Users> findById(Long id) {
+        log.info("retrieving user {}", id);
+        return usersRepository.findById(id);
     }
 }

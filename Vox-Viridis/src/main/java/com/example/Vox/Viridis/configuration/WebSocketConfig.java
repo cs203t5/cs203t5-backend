@@ -10,6 +10,7 @@ import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
 
 import java.util.List;
 
@@ -29,6 +30,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer{
         registry
                 .addEndpoint("/ws")
                 .setAllowedOrigins("*")
+                .setHandshakeHandler(new DefaultHandshakeHandler())
                 .withSockJS();
     }
 
@@ -37,7 +39,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer{
         DefaultContentTypeResolver resolver = new DefaultContentTypeResolver();
         resolver.setDefaultMimeType(MimeTypeUtils.APPLICATION_JSON);
         MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
-        converter.setObjectMapper(new ObjectMapper());
+        converter.setObjectMapper(new ObjectMapper());  
         converter.setContentTypeResolver(resolver);
         messageConverters.add(converter);
         return false;

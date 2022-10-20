@@ -6,6 +6,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.Vox.Viridis.exception.ResourceNotFoundException;
 import com.example.Vox.Viridis.model.Reward;
+import com.example.Vox.Viridis.model.Users;
 import com.example.Vox.Viridis.service.RewardService;
 import com.example.Vox.Viridis.service.RewardTypeService;
 
@@ -34,18 +36,24 @@ public class RewardController {
     private final RewardService rewardService;
     private final RewardTypeService rewardTypeService;
 
+    @GetMapping("/{userid}")
+    public List<Reward> getRewardsByUserId(Authentication authentication) {
+        return rewardService
+                .getRewardsByUserId(((Users) authentication.getPrincipal()).getAccount_id());
+    }
+
     @GetMapping()
-    public List<Reward> getRewards(@PathVariable Long campaignId){
+    public List<Reward> getRewards(@PathVariable Long campaignId) {
         return rewardService.getRewards(campaignId);
     }
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    public List<Reward> createRewards(@PathVariable Long campaignId, @Valid @RequestBody List<RewardInputModel> input){
+    public List<Reward> createRewards(@PathVariable Long campaignId,
+            @Valid @RequestBody List<RewardInputModel> input) {
         List<Reward> rewards = input.stream()
-            .map(rewardInput -> rewardInput.convertToReward(rewardTypeService))
-            .toList();
-        
+                .map(rewardInput -> rewardInput.convertToReward(rewardTypeService)).toList();
+
         return rewardService.addReward(rewards, campaignId);
     }
 
@@ -55,7 +63,8 @@ public class RewardController {
     }
 
     @PutMapping("{id}")
-    public Reward updateReward(@PathVariable Long campaignId, @PathVariable Long id, @RequestBody @Valid RewardInputModel input) {
+    public Reward updateReward(@PathVariable Long campaignId, @PathVariable Long id,
+            @RequestBody @Valid RewardInputModel input) {
         return rewardService.updateReward(id, campaignId, input.convertToReward(rewardTypeService));
     }
 
@@ -65,22 +74,23 @@ public class RewardController {
     }
 }
 
+
 @Getter
 @Setter
 class RewardInputModel {
     @NotBlank(message = "rewardType can't be empty")
     private String rewardType;
-    
+
     @NotBlank(message = "rewardName can't be empty")
     private String rewardName;
 
     public Reward convertToReward(RewardTypeService rewardTypeService) {
         Reward reward = new Reward();
         reward.setRewardName(this.getRewardName());
-        reward.setRewardType(
-            rewardTypeService.getRewardTypeByName(this.getRewardType())
-                .orElseThrow(() -> new ResourceNotFoundException("Reward type '" + this.getRewardType() + "'")));
-        
-        return reward; 
+        reward.setRewardType(rewardTypeService.getRewardTypeByName(this.getRewardType())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Reward type '" + this.getRewardType() + "'")));
+
+        return reward;
     }
 }

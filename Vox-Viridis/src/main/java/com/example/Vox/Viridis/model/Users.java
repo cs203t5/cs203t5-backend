@@ -1,13 +1,17 @@
 package com.example.Vox.Viridis.model;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -51,4 +55,8 @@ public class Users {
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
     private List<Role> roles;
     private LocalDate dob;
+
+    //added 
+    @ManyToMany(mappedBy = "users")
+    private Set<ChatRoom> chatroom = new HashSet<>();
 }

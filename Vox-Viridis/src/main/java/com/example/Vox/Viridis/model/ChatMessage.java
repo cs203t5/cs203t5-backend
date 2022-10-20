@@ -3,6 +3,9 @@ package com.example.Vox.Viridis.model;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Builder;
@@ -25,4 +28,9 @@ public class ChatMessage {
     private String content;
     private Date timestamp;
     private MessageStatus status;
+
+    //added
+    @ManyToOne
+    @JoinColumn(name = "chatroom_id")
+    private ChatRoom chatRoom;
 }

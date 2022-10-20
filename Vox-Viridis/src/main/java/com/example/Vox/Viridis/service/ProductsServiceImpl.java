@@ -10,8 +10,11 @@ import org.springframework.stereotype.Service;
 import com.example.Vox.Viridis.model.Products;
 import com.example.Vox.Viridis.repository.ProductsRepository;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class ProductsServiceImpl implements ProductsService{
     private final ProductsRepository productsRepository;
     

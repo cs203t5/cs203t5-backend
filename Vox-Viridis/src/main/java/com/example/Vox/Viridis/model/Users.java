@@ -32,7 +32,7 @@ public class Users {
     @Id
     @SequenceGenerator(name = "users_seq", sequenceName = "users_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_seq")
-    private Long account_id;
+    private Long accountId;
     @Column(unique = true)
     @NotNull(message = "Username is required!")
     @NotBlank(message = "Username is required!")
@@ -53,7 +53,7 @@ public class Users {
     private int points = 0;
     private String image;
     @ManyToOne
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "role_id")
     private Role roles;
     private LocalDate dob;
     private boolean enabled;
@@ -62,6 +62,6 @@ public class Users {
     private List<Reward> userRewards; // for customer
 
     public UsersDTO convertToDTO() {
-        return new UsersDTO(account_id, username, firstName, lastName, email, points, image);
+        return new UsersDTO(accountId, username, firstName, lastName, email, points, image);
     }
 }

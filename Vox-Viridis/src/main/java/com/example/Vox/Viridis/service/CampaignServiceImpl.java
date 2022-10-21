@@ -59,9 +59,9 @@ public class CampaignServiceImpl implements CampaignService {
         Pageable pageable = PageRequest.of(page, 20, sort);
         if (filterByTitle == null)
             filterByTitle = "";
-        List<Campaign> campaigns = campaignRepository
-                .findByTitleAndCategoryAndLocationAndReward(filterByTitle, category, location, reward, pageable)
-                .getContent();
+        List<Campaign> campaigns =
+                campaignRepository.findByTitleAndCategoryAndLocationAndReward(filterByTitle,
+                        category, location, reward, pageable).getContent();
         return campaigns;
     }
 
@@ -85,8 +85,8 @@ public class CampaignServiceImpl implements CampaignService {
             return null;
         }
 
-        Campaign existingCampaign =
-                getCampaign(id).orElseThrow(() -> new ResourceNotFoundException("Campaign id " + id));
+        Campaign existingCampaign = getCampaign(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Campaign id " + id));
         Users username = usersService.getCurrentUser();
         if (username != null && !existingCampaign.getCreatedBy().equals(username))
             throw new NotOwnerException();
@@ -106,7 +106,7 @@ public class CampaignServiceImpl implements CampaignService {
     public void deleteCampaign(Long id) {
         Users username = usersService.getCurrentUser();
         if (username != null
-                && !campaignRepository.getCreatedBy(id).equals(username.getAccount_id()))
+                && !campaignRepository.getCreatedBy(id).equals(username.getAccountId()))
             throw new NotOwnerException();
         log.info("Delete campaign id: " + id);
         campaignRepository.deleteById(id);

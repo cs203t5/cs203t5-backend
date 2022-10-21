@@ -27,7 +27,7 @@ public class Role {
     @Id
     @SequenceGenerator(name = "roles_seq", sequenceName = "roles_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "roles_seq")
-    private Long id;
+    private Long roleId;
     @Column(unique = true)
     @NotNull(message = "Role name is required!")
     @NotBlank(message = "Role name is required!")

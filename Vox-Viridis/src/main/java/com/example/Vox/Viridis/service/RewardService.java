@@ -34,7 +34,7 @@ public class RewardService {
     }
 
     public List<Reward> getRewardsByUserId(Long userid) {
-        return rewards.findByUserId(userid);
+        return rewards.findByUsers_accountId(userid);
     }
 
     /**
@@ -130,7 +130,7 @@ public class RewardService {
             throw new NotOwnerException();
 
         log.info("Deleted record id " + id + " with campaignId " + campaignId + "by user id "
-                + (user != null ? user.getAccount_id() : "null"));
+                + (user != null ? user.getAccountId() : "null"));
         rewards.delete(reward);
     }
 }

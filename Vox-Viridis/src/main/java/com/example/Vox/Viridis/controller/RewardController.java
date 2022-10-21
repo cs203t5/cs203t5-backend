@@ -39,7 +39,7 @@ public class RewardController {
     @GetMapping("/{userid}")
     public List<Reward> getRewardsByUserId(Authentication authentication) {
         return rewardService
-                .getRewardsByUserId(((Users) authentication.getPrincipal()).getAccount_id());
+                .getRewardsByUserId(((Users) authentication.getPrincipal()).getAccountId());
     }
 
     @GetMapping()

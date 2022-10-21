@@ -40,7 +40,7 @@ public class CampaignServiceTest {
     @Test
     void getCampaignCompanyName() {
         Users user = new Users();
-        user.setAccount_id(1l);
+        user.setAccountId(1l);
         user.setEmail("campaign@test.com");
         user.setFirstName("Admin");
         user.setLastName("name");
@@ -94,14 +94,16 @@ public class CampaignServiceTest {
         Pageable pageable = PageRequest.of(0, 20, sort);
 
         Page<Campaign> page = new PageImpl<>(List.of(campaign));
-        when(campaigns.findByTitleAndCategoryAndLocationAndReward("", null, null, null, pageable)).thenReturn(page);
+        when(campaigns.findByTitleAndCategoryAndLocationAndReward("", null, null, null, pageable))
+                .thenReturn(page);
 
         List<Campaign> result = campaignService.getCampaign(0, null, null, null, null, true);
 
         assertNotNull(result);
         assertEquals(result.size(), 1);
         assertEquals(result.get(0), campaign);
-        verify(campaigns).findByTitleAndCategoryAndLocationAndReward("", null, null, null, pageable);
+        verify(campaigns).findByTitleAndCategoryAndLocationAndReward("", null, null, null,
+                pageable);
     }
 
     @Test
@@ -112,14 +114,16 @@ public class CampaignServiceTest {
         Sort sort = Sort.by("createdOn").descending().and(Sort.by("title").ascending());
         Pageable pageable = PageRequest.of(0, 20, sort);
 
-        when(campaigns.findByTitleAndCategoryAndLocationAndReward("New", null, null, null, pageable)).thenReturn(new PageImpl<>(List.of(campaign)));
+        when(campaigns.findByTitleAndCategoryAndLocationAndReward("New", null, null, null,
+                pageable)).thenReturn(new PageImpl<>(List.of(campaign)));
 
         List<Campaign> result = campaignService.getCampaign(0, "New", null, null, null, true);
 
         assertNotNull(result);
         assertEquals(result.size(), 1);
         assertEquals(result.get(0), campaign);
-        verify(campaigns).findByTitleAndCategoryAndLocationAndReward("New", null, null, null, pageable);
+        verify(campaigns).findByTitleAndCategoryAndLocationAndReward("New", null, null, null,
+                pageable);
     }
 
     @Test

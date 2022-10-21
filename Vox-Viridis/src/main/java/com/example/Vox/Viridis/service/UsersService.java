@@ -1,7 +1,5 @@
 package com.example.Vox.Viridis.service;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.transaction.Transactional;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

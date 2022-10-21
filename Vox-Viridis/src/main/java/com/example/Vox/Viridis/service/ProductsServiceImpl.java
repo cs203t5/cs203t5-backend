@@ -69,7 +69,8 @@ public class ProductsServiceImpl implements ProductsService{
         }
         else {
             log.info("Product with id " + id + " purchased");
-
+            buyer.setPoints(leftOverPoint);
+            usersService.updateUser(buyer);
         }
     }
 }

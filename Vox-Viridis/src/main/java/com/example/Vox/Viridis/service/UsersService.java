@@ -36,13 +36,20 @@ public class UsersService {
     public UsersDTO saveUser(Users user) {
         log.info("Saving new user to the database");
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        List<Role> roles = new ArrayList<>();
         Role consumer = roleRepository.findByName("CONSUMER");
-        roles.add(consumer);
-        user.setRoles(roles);
+        user.setRoles(consumer);
         Users saveUser = usersRepository.save(user);
 
         return saveUser.convertToDTO();
     }
 
+    public String getRole() {
+        Users user = getCurrentUser();
+        return user.getRoles().getName();
+    }
+
+    public UsersDTO updateUser(Users user) {
+        log.info("Updating user info");
+        return usersRepository.save(user).convertToDTO();
+    }
 }

@@ -1,12 +1,15 @@
 package com.example.Vox.Viridis.model;
 
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
@@ -24,15 +27,14 @@ public class Role {
     @Id
     @SequenceGenerator(name = "roles_seq", sequenceName = "roles_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "roles_seq")
-    private Long id;
+    private Long roleId;
     @Column(unique = true)
     @NotNull(message = "Role name is required!")
     @NotBlank(message = "Role name is required!")
     private String name;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private Users user;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "roles")
+    private List<Users> user;
 }
 
 

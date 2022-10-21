@@ -45,4 +45,9 @@ public class UsersController {
         log.debug("Token granted {}", token);
         return token;
     }
+
+    @GetMapping("/role")
+    public String role(Authentication authentication) {
+        return usersService.getRole();
+    }
 }

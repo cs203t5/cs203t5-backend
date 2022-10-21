@@ -8,7 +8,9 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -30,7 +32,7 @@ public class Users {
     @Id
     @SequenceGenerator(name = "users_seq", sequenceName = "users_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_seq")
-    private Long account_id;
+    private Long accountId;
     @Column(unique = true)
     @NotNull(message = "Username is required!")
     @NotBlank(message = "Username is required!")
@@ -50,8 +52,9 @@ public class Users {
     private String email;
     private int points = 0;
     private String image;
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
-    private List<Role> roles;
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    private Role roles;
     private LocalDate dob;
     private boolean enabled;
 
@@ -62,6 +65,6 @@ public class Users {
     private List<Products> userProducts;
 
     public UsersDTO convertToDTO() {
-        return new UsersDTO(account_id, username, firstName, lastName, email, points, image);
+        return new UsersDTO(accountId, username, firstName, lastName, email, points, image);
     }
 }

@@ -25,10 +25,9 @@ public class UsersService {
 
     public Users getCurrentUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null)
-            return null;
-        return usersRepository.findByUsername(((SecurityUser) auth.getPrincipal()).getUsername())
-                .orElse(null);
+        Jwt jwt = (Jwt) auth.getPrincipal();
+        Users user1 = usersRepository.findByUsername(jwt.getSubject()).orElse(null);
+        return user1;
     }
 
     public UsersDTO saveUser(Users user) {

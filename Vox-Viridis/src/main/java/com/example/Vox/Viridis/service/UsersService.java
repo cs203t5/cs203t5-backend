@@ -47,4 +47,9 @@ public class UsersService {
         Users user = getCurrentUser();
         return user.getRoles().getName();
     }
+
+    public UsersDTO updateUser(Users user) {
+        log.info("Updating user info");
+        return usersRepository.save(user).convertToDTO();
+    }
 }

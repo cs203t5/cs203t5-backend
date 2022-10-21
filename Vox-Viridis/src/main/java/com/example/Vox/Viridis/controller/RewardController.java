@@ -23,7 +23,7 @@ import com.example.Vox.Viridis.model.Reward;
 import com.example.Vox.Viridis.model.Users;
 import com.example.Vox.Viridis.service.RewardService;
 import com.example.Vox.Viridis.service.RewardTypeService;
-
+import com.example.Vox.Viridis.service.UsersService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -35,11 +35,11 @@ import lombok.Setter;
 public class RewardController {
     private final RewardService rewardService;
     private final RewardTypeService rewardTypeService;
+    private final UsersService usersService;
 
     @GetMapping("/{userid}")
     public List<Reward> getRewardsByUserId(Authentication authentication) {
-        return rewardService
-                .getRewardsByUserId(((Users) authentication.getPrincipal()).getAccountId());
+        return rewardService.getRewardsByUserId(usersService.getCurrentUser().getAccountId());
     }
 
     @GetMapping()

@@ -1,11 +1,17 @@
 package com.example.Vox.Viridis.service;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import com.example.Vox.Viridis.model.Role;
 import com.example.Vox.Viridis.model.Users;
@@ -27,10 +33,9 @@ public class UsersService {
 
     public Users getCurrentUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null)
-            return null;
-        return usersRepository.findByUsername(((SecurityUser) auth.getPrincipal()).getUsername())
-                .orElse(null);
+        Jwt jwt = (Jwt) auth.getPrincipal();
+        Users user1 = usersRepository.findByUsername(jwt.getSubject()).orElse(null);
+        return user1;
     }
 
     public UsersDTO saveUser(Users user) {

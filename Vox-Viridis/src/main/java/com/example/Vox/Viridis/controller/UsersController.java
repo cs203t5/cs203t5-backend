@@ -47,7 +47,7 @@ public class UsersController {
     }
 
     @GetMapping("/role")
-    public String role(Authentication authentication) {
+    public String role(Principal principal) {
         return usersService.getRole();
     }
 }

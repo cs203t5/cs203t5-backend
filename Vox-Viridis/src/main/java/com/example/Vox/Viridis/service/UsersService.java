@@ -7,7 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.example.Vox.Viridis.model.Role;
 import com.example.Vox.Viridis.model.Users;
-import com.example.Vox.Viridis.model.SecurityUser;
+import org.springframework.security.oauth2.jwt.Jwt;
 import com.example.Vox.Viridis.model.dto.UsersDTO;
 import com.example.Vox.Viridis.repository.RoleRepository;
 import com.example.Vox.Viridis.repository.UsersRepository;

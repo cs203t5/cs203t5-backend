@@ -4,13 +4,11 @@ import javax.persistence.GeneratedValue;
 
 
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import com.example.Vox.Viridis.model.dto.ProductsDTO;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.JoinColumn;
 import javax.persistence.Id;

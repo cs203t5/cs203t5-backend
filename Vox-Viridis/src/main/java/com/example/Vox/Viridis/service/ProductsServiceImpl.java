@@ -12,7 +12,6 @@ import com.example.Vox.Viridis.exception.ResourceNotFoundException;
 import com.example.Vox.Viridis.model.Products;
 import com.example.Vox.Viridis.model.Users;
 import com.example.Vox.Viridis.repository.ProductsRepository;
-import com.example.Vox.Viridis.repository.UsersRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -70,7 +69,7 @@ public class ProductsServiceImpl implements ProductsService{
         }
         else {
             log.info("Product with id " + id + " purchased");
-            
+
         }
     }
 }

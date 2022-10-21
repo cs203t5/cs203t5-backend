@@ -64,6 +64,7 @@ public class SecurityConfig {
                                 .antMatchers(HttpMethod.POST, "/campaign/*/reward/*/join")
                                 .hasAnyAuthority("SCOPE_CUSTOMER")
 
+
                                 .anyRequest().authenticated()).csrf(csrf -> csrf.disable())
                                 .httpBasic(Customizer.withDefaults())
                                 .userDetailsService(myUserDetailsService)

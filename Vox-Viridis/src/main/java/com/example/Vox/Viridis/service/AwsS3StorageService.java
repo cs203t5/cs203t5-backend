@@ -33,6 +33,7 @@ public class AwsS3StorageService implements StorageService {
     }
 
     public String getUrl(String filename) {
+        if (filename == null) return null;
         return baseUrl + filename;
     }
 

@@ -1,7 +1,6 @@
 package com.example.Vox.Viridis.model;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -11,7 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -41,7 +40,7 @@ public class Campaign {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, name = "title")
+    @Column(name = "title")
     @NotNull(message = "Campaign's title should not be null")
     @Size(min = 5, max = 255, message = "Campaign's title should be at least 5 characters long")
     private String title;
@@ -61,6 +60,7 @@ public class Campaign {
 
     @Column(name = "location")
     @Location
+    @NotNull(message = "Location cannot be null")
     private String location; // North, South, East, West, Central
 
     private String address;
@@ -80,8 +80,8 @@ public class Campaign {
     private String category;
 
     @LazyCollection(LazyCollectionOption.FALSE)
-    @OneToMany(mappedBy = "offeredBy", cascade = CascadeType.ALL)
-    private List<Reward> rewards;
+    @OneToOne(mappedBy = "offeredBy", cascade = CascadeType.ALL)
+    private Reward rewards;
 
     @JsonIgnore
     @ManyToOne()
@@ -95,4 +95,5 @@ public class Campaign {
     public String companyName() {
         return getCreatedBy().getUsername();
     }
+
 }

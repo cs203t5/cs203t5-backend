@@ -1,13 +1,11 @@
 package com.example.Vox.Viridis.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
@@ -23,7 +21,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.Vox.Viridis.exception.CampaignTitleExistsException;
 import com.example.Vox.Viridis.exception.ResourceNotFoundException;
 import com.example.Vox.Viridis.exception.InvalidFileTypeException;
 import com.example.Vox.Viridis.exception.InvalidJsonException;
@@ -84,36 +81,31 @@ public class CampaignController {
     @PostMapping()
     public Campaign addCampaign(@ModelAttribute @Valid Campaign campaign, 
             @RequestParam(value="imageFile", required=false) MultipartFile image, 
-            @RequestParam(value = "rewardsArr", required = false)String rewardsJson) {
+            @RequestParam(value = "reward", required = false) String rewardJson) {
         if (image != null && !image.isEmpty()) {
             if (image.getContentType() == null || !image.getContentType().startsWith("image/"))
                 throw new InvalidFileTypeException("Image file like jpeg");
         }
 
         Campaign result = campaignService.addCampaign(campaign);
-        if (result == null) throw new CampaignTitleExistsException(campaign.getTitle());
 
         // create array of rewards
-        if (rewardsJson != null) {
-            List<Reward> rewardsArr = new ArrayList<>();
+        if (rewardJson != null) {
+            Reward reward;
             try {
-                JSONArray rewardsJsonArr = new JSONArray(rewardsJson);
-                for (int i = 0; i < rewardsJsonArr.length(); i++) {
-                    JSONObject current = rewardsJsonArr.getJSONObject(i);
-                    String rewardName = current.getString("rewardName");
-                    String rewardTypeName = current.getString("rewardType");
-                    RewardType rewardType = rewardTypeService.getRewardTypeByName(rewardTypeName).orElseThrow(() -> new ResourceNotFoundException("Reward type ''" + rewardTypeName + "'"));
-                    
-                    Reward reward = new Reward();
-                    reward.setRewardName(rewardName);
-                    reward.setRewardType(rewardType);
-                    rewardsArr.add(reward);
-                }
+                JSONObject rewardJsonObj = new JSONObject(rewardJson);
+                String rewardName = rewardJsonObj.getString("rewardName");
+                String rewardTypeName = rewardJsonObj.getString("rewardType");
+                RewardType rewardType = rewardTypeService.getRewardTypeByName(rewardTypeName).orElseThrow(() -> new ResourceNotFoundException("Reward type ''" + rewardTypeName + "'"));
+                
+                reward = new Reward();
+                reward.setRewardName(rewardName);
+                reward.setRewardType(rewardType);
             } catch (JSONException e) {
                 throw new InvalidJsonException("rewardsArr", e);
             }
-            rewardsArr = rewardService.addReward(rewardsArr, result);
-            result.setRewards(rewardsArr);
+            reward = rewardService.addReward(reward, result);
+            result.setRewards(reward);
         }
         
         if (image != null && !image.isEmpty()) {
@@ -138,7 +130,6 @@ public class CampaignController {
         }
 
         Campaign result = campaignService.updateCampaign(campaign, id);
-        if (result == null) throw new CampaignTitleExistsException(campaign.getTitle());
         
         if (image != null && !image.isEmpty()) {
             if (result.getImage() != null)

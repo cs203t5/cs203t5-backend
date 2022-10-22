@@ -11,7 +11,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -37,7 +39,7 @@ public class Reward {
     private String rewardName;
 
     @JsonIgnore
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "offered_by")
     private Campaign offeredBy;
 
@@ -46,6 +48,10 @@ public class Reward {
     @ManyToOne
     @JoinColumn(name = "reward_type_id")
     private RewardType rewardType;
+
+    @Min(value = 1, message = "goal must be at least 1")
+    @NotNull
+    private int goal; // This is used to store the max points that a person can save
 
     @JsonProperty("rewardType")
     public String rewardType() {

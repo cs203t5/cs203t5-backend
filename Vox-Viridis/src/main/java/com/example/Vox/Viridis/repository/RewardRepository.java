@@ -10,10 +10,7 @@ import com.example.Vox.Viridis.model.Reward;
 
 public interface RewardRepository extends JpaRepository<Reward, Long> {
     @Query(value = "SELECT r FROM Reward r WHERE offered_by=:campaignId")
-    List<Reward> findByOfferedBy(long campaignId);
-
-    @Query("SELECT r FROM Reward r WHERE id=:id AND offered_by=:campaignId")
-    Optional<Reward> findByIdAndOfferedBy(long id, long campaignId);
+    Optional<Reward> findByOfferedBy(long campaignId);
 
     List<Reward> findByUsers_accountId(long userId);
 }

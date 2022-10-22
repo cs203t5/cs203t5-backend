@@ -24,7 +24,6 @@ import javax.validation.constraints.Size;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.springframework.format.annotation.DateTimeFormat;
-import com.example.Vox.Viridis.model.dto.CampaignDTO;
 import com.example.Vox.Viridis.model.validation.ConsistentDate;
 import com.example.Vox.Viridis.model.validation.FutureOrToday;
 import com.example.Vox.Viridis.model.validation.Location;
@@ -95,10 +94,5 @@ public class Campaign {
     @JsonProperty("companyName")
     public String companyName() {
         return getCreatedBy().getUsername();
-    }
-
-    public CampaignDTO convertToDTO(String name) {
-        return new CampaignDTO(id, title, description, startDate, endDate, location, address, image,
-                category, rewards, name);
     }
 }

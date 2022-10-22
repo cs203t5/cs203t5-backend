@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.Vox.Viridis.exception.ResourceNotFoundException;
 import com.example.Vox.Viridis.model.Reward;
+import com.example.Vox.Viridis.model.RewardInputModel;
 import com.example.Vox.Viridis.service.RewardService;
 import com.example.Vox.Viridis.service.RewardTypeService;
 import com.example.Vox.Viridis.service.UsersService;
@@ -72,31 +73,5 @@ public class RewardController {
     @DeleteMapping("{id}")
     public void deleteReward(@PathVariable Long id) {
         rewardService.deleteReward(id);
-    }
-}
-
-
-@Getter
-@Setter
-class RewardInputModel {
-    @NotBlank(message = "rewardType can't be empty")
-    private String rewardType;
-
-    @NotBlank(message = "rewardName can't be empty")
-    private String rewardName;
-
-    @Min(value = 1, message = "goal must be at least 1")
-    @NotNull
-    private Integer goal;
-
-    public Reward convertToReward(RewardTypeService rewardTypeService) {
-        Reward reward = new Reward();
-        reward.setRewardName(this.getRewardName());
-        reward.setGoal(this.getGoal());
-        reward.setRewardType(rewardTypeService.getRewardTypeByName(this.getRewardType())
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Reward type '" + this.getRewardType() + "'")));
-
-        return reward;
     }
 }

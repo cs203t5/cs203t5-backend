@@ -6,8 +6,6 @@ import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,10 +21,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.Vox.Viridis.exception.ResourceNotFoundException;
 import com.example.Vox.Viridis.exception.InvalidFileTypeException;
-import com.example.Vox.Viridis.exception.InvalidJsonException;
 import com.example.Vox.Viridis.model.Campaign;
 import com.example.Vox.Viridis.model.Reward;
-import com.example.Vox.Viridis.model.RewardType;
+import com.example.Vox.Viridis.model.RewardInputModel;
 import com.example.Vox.Viridis.service.CampaignService;
 import com.example.Vox.Viridis.service.RewardService;
 import com.example.Vox.Viridis.service.RewardTypeService;
@@ -81,7 +78,7 @@ public class CampaignController {
     @PostMapping()
     public Campaign addCampaign(@ModelAttribute @Valid Campaign campaign, 
             @RequestParam(value="imageFile", required=false) MultipartFile image, 
-            @RequestParam(value = "reward", required = false) String rewardJson) {
+            @Valid @RequestParam(value = "reward", required = false) RewardInputModel rewardInput) {
         if (image != null && !image.isEmpty()) {
             if (image.getContentType() == null || !image.getContentType().startsWith("image/"))
                 throw new InvalidFileTypeException("Image file like jpeg");
@@ -90,20 +87,8 @@ public class CampaignController {
         Campaign result = campaignService.addCampaign(campaign);
 
         // create array of rewards
-        if (rewardJson != null) {
-            Reward reward;
-            try {
-                JSONObject rewardJsonObj = new JSONObject(rewardJson);
-                String rewardName = rewardJsonObj.getString("rewardName");
-                String rewardTypeName = rewardJsonObj.getString("rewardType");
-                RewardType rewardType = rewardTypeService.getRewardTypeByName(rewardTypeName).orElseThrow(() -> new ResourceNotFoundException("Reward type ''" + rewardTypeName + "'"));
-                
-                reward = new Reward();
-                reward.setRewardName(rewardName);
-                reward.setRewardType(rewardType);
-            } catch (JSONException e) {
-                throw new InvalidJsonException("rewardsArr", e);
-            }
+        if (rewardInput != null) {
+            Reward reward = rewardInput.convertToReward(rewardTypeService);
             reward = rewardService.addReward(reward, result);
             result.setRewards(reward);
         }

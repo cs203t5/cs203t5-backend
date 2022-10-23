@@ -7,11 +7,15 @@ import javax.validation.constraints.NotNull;
 import com.example.Vox.Viridis.service.RewardTypeService;
 import com.example.Vox.Viridis.exception.ResourceNotFoundException;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class RewardInputModel {
     @NotBlank(message = "rewardType can't be empty")
     private String rewardType;
@@ -20,7 +24,7 @@ public class RewardInputModel {
     private String rewardName;
 
     @Min(value = 1, message = "goal must be at least 1")
-    @NotNull
+    @NotNull(message = "goal cannot be null")
     private Integer goal;
 
     public Reward convertToReward(RewardTypeService rewardTypeService) {

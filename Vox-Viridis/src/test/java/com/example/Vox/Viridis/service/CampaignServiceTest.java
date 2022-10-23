@@ -187,7 +187,7 @@ public class CampaignServiceTest {
     }
 
     @Test
-    void updateCampaign_SaneTitle_ReturnSavedCampaign() {
+    void updateCampaign_SameTitle_ReturnSavedCampaign() {
         Campaign campaign = new Campaign();
         campaign.setId(2l);
         campaign.setTitle("New Campaign");

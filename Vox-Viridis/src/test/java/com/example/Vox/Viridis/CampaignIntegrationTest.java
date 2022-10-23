@@ -29,11 +29,15 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import com.example.Vox.Viridis.model.Campaign;
+import com.example.Vox.Viridis.model.RewardType;
 import com.example.Vox.Viridis.model.Role;
 import com.example.Vox.Viridis.model.Users;
 import com.example.Vox.Viridis.repository.CampaignRepository;
+import com.example.Vox.Viridis.repository.RewardTypeRepository;
 import com.example.Vox.Viridis.repository.RoleRepository;
 import com.example.Vox.Viridis.repository.UsersRepository;
+
+import org.json.JSONObject;
 
 import lombok.Data;
 
@@ -58,10 +62,14 @@ public class CampaignIntegrationTest {
         @Autowired
         private RoleRepository roles;
 
+        @Autowired
+        private RewardTypeRepository rewardTypes;
+
         @AfterEach
         void tearDown() {
                 // clear the database after each test
                 campaigns.deleteAll();
+                rewardTypes.deleteAll();
         }
 
         @BeforeEach
@@ -120,6 +128,12 @@ public class CampaignIntegrationTest {
                 campaignArr.forEach(c -> {
                         c.setCreatedBy(null);
                 });
+        }
+
+        private void createRewardType() {
+                rewardTypes.saveAll(List.of(
+                        new RewardType(null, "Points", null), 
+                        new RewardType(null, "Cards", null)));
         }
 
         @Test
@@ -521,7 +535,8 @@ public class CampaignIntegrationTest {
                 ResponseEntity<Campaign> result = restTemplate.exchange(uri,
                                 HttpMethod.GET, null, Campaign.class);
                 assertEquals(404, result.getStatusCode().value());
-                assertNull(result.getBody().getTitle());
+                Campaign campaignResult = result.getBody();
+                assertNull(campaignResult == null ? campaignResult : campaignResult.getTitle());
         }
 
         @Test
@@ -552,6 +567,109 @@ public class CampaignIntegrationTest {
                 assertEquals(startDate, campaign.getStartDate().format(dateformat));
                 assertEquals(endDate, campaign.getEndDate().format(dateformat));
                 assertEquals("north", campaign.getLocation());
+        }
+
+        @Test
+        public void addCampaign_WithReward_Sucess() throws Exception {
+                URI uri = new URI(baseUrl + port + "/api/campaign");
+
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+                DateTimeFormatter dateformat = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+                String startDate = LocalDateTime.now().plusMinutes(20).format(dateformat);
+                String endDate = LocalDateTime.now().plusMinutes(20).plusDays(1).format(dateformat);
+                MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
+                map.add("title", "New campaign");
+                map.add("startDate", startDate);
+                map.add("endDate", endDate);
+                map.add("location", "north");
+
+                createRewardType();
+                JSONObject rewardJson = new JSONObject();
+                rewardJson.put("rewardType", "Points");
+                rewardJson.put("rewardName", "Reward test");
+                rewardJson.put("goal", 10);
+                map.add("reward", rewardJson.toString());
+
+                HttpEntity<MultiValueMap<String, String>> request =
+                                new HttpEntity<MultiValueMap<String, String>>(map, headers);
+
+                ResponseEntity<Campaign> result = authenticatedRestTemplate().postForEntity(uri,
+                                request, Campaign.class);
+                assertEquals(201, result.getStatusCode().value());
+                Campaign campaign = result.getBody();
+                assertNotNull(campaign);
+                assertEquals("New campaign", campaign.getTitle());
+                assertEquals(startDate, campaign.getStartDate().format(dateformat));
+                assertEquals(endDate, campaign.getEndDate().format(dateformat));
+                assertEquals("north", campaign.getLocation());
+                assertEquals(rewardJson.get("rewardName"), campaign.getRewards().getRewardName());
+                assertEquals(rewardJson.get("goal"), campaign.getRewards().getGoal());
+        }
+
+        // To test Reward Type that don't exist --> should return 404 not found
+        @Test
+        public void addCampaign_WithRewardTypeNotFound_Fail() throws Exception {
+                URI uri = new URI(baseUrl + port + "/api/campaign");
+
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+                DateTimeFormatter dateformat = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+                String startDate = LocalDateTime.now().plusMinutes(20).format(dateformat);
+                String endDate = LocalDateTime.now().plusMinutes(20).plusDays(1).format(dateformat);
+                MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
+                map.add("title", "New campaign");
+                map.add("startDate", startDate);
+                map.add("endDate", endDate);
+                map.add("location", "north");
+
+                createRewardType();
+                JSONObject rewardJson = new JSONObject();
+                rewardJson.put("rewardType", "doesn't exist");
+                rewardJson.put("rewardName", "Reward test");
+                rewardJson.put("goal", 10);
+                map.add("reward", rewardJson.toString());
+
+                HttpEntity<MultiValueMap<String, String>> request =
+                                new HttpEntity<MultiValueMap<String, String>>(map, headers);
+
+                ResponseEntity<Campaign> result = authenticatedRestTemplate().postForEntity(uri,
+                                request, Campaign.class);
+                assertEquals(404, result.getStatusCode().value());
+        }
+
+        // To test Reward Type that don't exist --> should return 404 not found
+        @Test
+        public void addCampaign_WithInvalidReward_Fail() throws Exception {
+                URI uri = new URI(baseUrl + port + "/api/campaign");
+
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+                DateTimeFormatter dateformat = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+                String startDate = LocalDateTime.now().plusMinutes(20).format(dateformat);
+                String endDate = LocalDateTime.now().plusMinutes(20).plusDays(1).format(dateformat);
+                MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
+                map.add("title", "New campaign");
+                map.add("startDate", startDate);
+                map.add("endDate", endDate);
+                map.add("location", "north");
+
+                createRewardType();
+                JSONObject rewardJson = new JSONObject();
+                rewardJson.put("rewardType", "Points");
+                rewardJson.put("rewardName", "Reward test");
+                //rewardJson.put("goal", 10);
+                map.add("reward", rewardJson.toString());
+
+                HttpEntity<MultiValueMap<String, String>> request =
+                                new HttpEntity<MultiValueMap<String, String>>(map, headers);
+
+                ResponseEntity<Campaign> result = authenticatedRestTemplate().postForEntity(uri,
+                                request, Campaign.class);
+                assertEquals(400, result.getStatusCode().value());
         }
 
         @Test
@@ -692,8 +810,10 @@ public class CampaignIntegrationTest {
                 ResponseEntity<Campaign> result = authenticatedRestTemplate().postForEntity(uri,
                                 request, Campaign.class);
                 assertEquals(201, result.getStatusCode().value());
-                assertEquals("South", result.getBody().getLocation());
-                assertEquals(campaign.getTitle(), result.getBody().getTitle());
+                Campaign campaignResult = result.getBody();
+                assertNotNull(campaignResult);
+                assertEquals("South", campaignResult.getLocation());
+                assertEquals(campaign.getTitle(), campaignResult.getTitle());
         }
 
         @Test
@@ -773,8 +893,10 @@ public class CampaignIntegrationTest {
                                 authenticatedRestTemplate().exchange(uri + "/" + campaign2.getId(),
                                                 HttpMethod.PUT, request, Campaign.class);
                 assertEquals(200, result.getStatusCode().value());
-                assertEquals("South", result.getBody().getLocation());
-                assertEquals(campaign.getTitle(), result.getBody().getTitle());
+                Campaign campaignResult = result.getBody();
+                assertNotNull(campaignResult);
+                assertEquals("South", campaignResult.getLocation());
+                assertEquals(campaign.getTitle(), campaignResult.getTitle());
         }
 
         @Test

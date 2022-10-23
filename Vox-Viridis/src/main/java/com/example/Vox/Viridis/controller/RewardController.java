@@ -3,9 +3,6 @@ package com.example.Vox.Viridis.controller;
 import java.util.List;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -26,9 +23,7 @@ import com.example.Vox.Viridis.model.RewardInputModel;
 import com.example.Vox.Viridis.service.RewardService;
 import com.example.Vox.Viridis.service.RewardTypeService;
 import com.example.Vox.Viridis.service.UsersService;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 @Validated
 @RestController()

@@ -59,6 +59,15 @@ public class CampaignServiceImpl implements CampaignService {
         return campaigns;
     }
 
+    /**
+     * Will return a list of campaigns created by current user
+     * @return list of campaign created by current user
+     */
+    @Override
+    public List<Campaign> getCampaignCreatedByCurrentUser() {
+        return campaignRepository.findByCreatedBy(usersService.getCurrentUser());
+    }
+
     @Override
     public Campaign updateCampaignImage(Campaign campaign, String imageFilename) {
         campaign.setImage(imageFilename);

@@ -49,15 +49,22 @@ public class CampaignController {
     private final RewardService rewardService;
     private final Validator validator;
 
-
     @GetMapping("{id}")
     public Campaign getCampaign(@PathVariable Long id){
         Campaign result =  campaignService.getCampaign(id)
             .orElseThrow(() -> new ResourceNotFoundException("Campaign id " + id));
         entityManager.detach(result);
-        String image = result.getImage();
-        if (image != null)
-            result.setImage(storageService.getUrl(image));
+        result.setImage(storageService.getUrl(result.getImage()));
+        return result;
+    }
+
+    @GetMapping("myCampaign")
+    public List<Campaign> getMyCampaign(){
+        List<Campaign> result =  campaignService.getCampaignCreatedByCurrentUser();
+        result.forEach(campaign -> {
+            entityManager.detach(campaign);
+            campaign.setImage(storageService.getUrl(campaign.getImage()));
+        });
         return result;
     }
 

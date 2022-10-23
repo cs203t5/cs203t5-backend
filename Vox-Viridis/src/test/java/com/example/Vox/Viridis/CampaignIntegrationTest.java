@@ -486,7 +486,7 @@ public class CampaignIntegrationTest {
                 modifyCampaignArr(campaignArr);
                 assertEquals(List.of(campaign, campaign2), result.getBody());
         }
-
+        
         @Test
         public void getCampaignById_Sucess() throws Exception {
                 URI uri = new URI(baseUrl + port + "/api/campaign");
@@ -526,6 +526,60 @@ public class CampaignIntegrationTest {
                 assertEquals(200, result.getStatusCode().value());
                 modifyCampaignArr(campaignArr);
                 assertEquals(campaign2, result.getBody());
+        }
+
+        @Test
+        public void getMyCampaign_Sucess() throws Exception {
+                URI uri = new URI(baseUrl + port + "/api/campaign/myCampaign");
+
+                DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+                Campaign campaign = new Campaign();
+                campaign.setTitle("New campaign");
+                campaign.setCreatedBy(getUser());
+                campaign.setStartDate(LocalDateTime.parse(
+                                LocalDateTime.now().plusMinutes(2).format(dateFormat), dateFormat));
+                campaign.setEndDate(LocalDateTime.parse(
+                                LocalDateTime.now().plusMinutes(2).plusDays(1).format(dateFormat),
+                                dateFormat));
+                campaign.setCreatedOn(LocalDateTime.parse(LocalDateTime.now().format(dateFormat),
+                                dateFormat));
+                campaign.setLocation("North");
+
+                Campaign campaign2 = new Campaign();
+                campaign2.setTitle("New campaign 2");
+                campaign2.setCreatedBy(getUser());
+                campaign2.setStartDate(LocalDateTime.parse(
+                                LocalDateTime.now().plusMinutes(12).format(dateFormat),
+                                dateFormat));
+                campaign2.setEndDate(LocalDateTime.parse(
+                                LocalDateTime.now().plusMinutes(12).plusDays(1).format(dateFormat),
+                                dateFormat));
+                campaign2.setCreatedOn(LocalDateTime.parse(LocalDateTime.now().format(dateFormat),
+                                dateFormat));
+                campaign2.setLocation("North");
+
+                Campaign campaign3 = new Campaign();
+                campaign3.setTitle("From other user");
+                campaign3.setCreatedBy(createSecondAccount());
+                campaign3.setStartDate(LocalDateTime.parse(
+                                LocalDateTime.now().plusMinutes(12).format(dateFormat),
+                                dateFormat));
+                campaign3.setEndDate(LocalDateTime.parse(
+                                LocalDateTime.now().plusMinutes(12).plusDays(1).format(dateFormat),
+                                dateFormat));
+                campaign3.setCreatedOn(LocalDateTime.parse(LocalDateTime.now().format(dateFormat),
+                                dateFormat));
+                campaign3.setLocation("North");
+
+                List<Campaign> campaignArr = List.of(campaign, campaign2, campaign3);
+                campaignArr = campaigns.saveAll(campaignArr);
+
+                ResponseEntity<List<Campaign>> result = authenticatedRestTemplate().exchange(uri, 
+                        HttpMethod.GET, null, 
+                        new ParameterizedTypeReference<List<Campaign>>() {});
+                assertEquals(200, result.getStatusCode().value());
+                modifyCampaignArr(campaignArr);
+                assertEquals(List.of(campaign, campaign2), result.getBody());
         }
 
         @Test

@@ -1,11 +1,17 @@
 package com.example.Vox.Viridis.controller;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
+import javax.validation.Validator;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.Vox.Viridis.exception.ResourceNotFoundException;
 import com.example.Vox.Viridis.exception.InvalidFileTypeException;
+import com.example.Vox.Viridis.exception.InvalidJsonException;
 import com.example.Vox.Viridis.model.Campaign;
 import com.example.Vox.Viridis.model.Reward;
 import com.example.Vox.Viridis.model.RewardInputModel;
@@ -40,6 +47,8 @@ public class CampaignController {
     private final EntityManager entityManager;
     private final RewardTypeService rewardTypeService;
     private final RewardService rewardService;
+    private final Validator validator;
+
 
     @GetMapping("{id}")
     public Campaign getCampaign(@PathVariable Long id){
@@ -78,7 +87,7 @@ public class CampaignController {
     @PostMapping()
     public Campaign addCampaign(@ModelAttribute @Valid Campaign campaign, 
             @RequestParam(value="imageFile", required=false) MultipartFile image, 
-            @Valid @RequestParam(value = "reward", required = false) RewardInputModel rewardInput) {
+            @RequestParam(value = "reward", required = false) String rewardJson) {
         if (image != null && !image.isEmpty()) {
             if (image.getContentType() == null || !image.getContentType().startsWith("image/"))
                 throw new InvalidFileTypeException("Image file like jpeg");
@@ -87,10 +96,25 @@ public class CampaignController {
         Campaign result = campaignService.addCampaign(campaign);
 
         // create array of rewards
-        if (rewardInput != null) {
-            Reward reward = rewardInput.convertToReward(rewardTypeService);
-            reward = rewardService.addReward(reward, result);
-            result.setRewards(reward);
+        if (rewardJson != null) {
+            try {
+                JSONObject rewardJsonObj = new JSONObject(rewardJson);
+                String rewardName = rewardJsonObj.getString("rewardName");
+                String rewardTypeName = rewardJsonObj.getString("rewardType");
+                Integer goal;
+                if (!rewardJsonObj.has("goal")) goal = null;
+                else goal = rewardJsonObj.getInt("goal");
+                RewardInputModel rewardInput = new RewardInputModel(rewardTypeName, rewardName, goal);
+                
+                Set<ConstraintViolation<RewardInputModel>> constraintViolation =  validator.validate(rewardInput);
+                if (!constraintViolation.isEmpty()) throw new ConstraintViolationException(constraintViolation);
+
+                Reward reward = rewardInput.convertToReward(rewardTypeService);
+                reward = rewardService.addReward(reward, result);
+                result.setRewards(reward);
+            } catch (JSONException e) {
+                throw new InvalidJsonException("reward", e);
+            }
         }
         
         if (image != null && !image.isEmpty()) {

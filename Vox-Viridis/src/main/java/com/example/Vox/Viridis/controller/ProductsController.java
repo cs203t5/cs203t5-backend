@@ -24,10 +24,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.Vox.Viridis.exception.InvalidFileTypeException;
-import com.example.Vox.Viridis.exception.NotEnoughPointException;
 import com.example.Vox.Viridis.exception.ResourceNotFoundException;
 import com.example.Vox.Viridis.model.Products;
 import com.example.Vox.Viridis.model.dto.ProductsDTO;
+import com.example.Vox.Viridis.model.dto.UsersDTO;
 import com.example.Vox.Viridis.service.ProductsService;
 import com.example.Vox.Viridis.service.StorageService;
 
@@ -42,7 +42,6 @@ public class ProductsController {
     public Products getProducts(@PathVariable Long id) {
         Products product = productsService.getProducts(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Products id " + id));
-        //entityManager.detach(product);
         String image = product.getImage();
         if (image != null)
             product.setImage(storageService.getUrl(image));
@@ -106,9 +105,8 @@ public class ProductsController {
     }
 
     @PostMapping("buy/{id}")
-    public int buyProducts(@PathVariable Long id) {
-        return productsService.buyProducts(id);
-        
+    public UsersDTO buyProducts(@PathVariable Long id) {
+        return productsService.buyProducts(id).convertToDTO();
     }
 
 }

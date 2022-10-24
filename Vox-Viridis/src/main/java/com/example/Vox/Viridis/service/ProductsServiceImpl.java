@@ -66,7 +66,7 @@ public class ProductsServiceImpl implements ProductsService{
     }
 
     @Override
-    public int buyProducts(Long id){
+    public Users buyProducts(Long id){
         Products products = getProducts(id).orElseThrow(() -> new ResourceNotFoundException("Products not found"));
         int cost = products.getPoint();
         Users buyer = usersService.getCurrentUser();
@@ -79,7 +79,7 @@ public class ProductsServiceImpl implements ProductsService{
             log.info("Product with id " + id + " purchased");
             buyer.setPoints(leftOverPoint);
             usersService.updateUser(buyer);
-            return leftOverPoint;
+            return buyer;
         }
     }
 }

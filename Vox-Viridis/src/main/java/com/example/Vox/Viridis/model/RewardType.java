@@ -12,6 +12,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -30,6 +32,7 @@ public class RewardType {
     @Column(unique = true)
     private String rewardType;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "rewardType", fetch = FetchType.LAZY)
     private List<Reward> rewards;
 }

@@ -65,6 +65,9 @@ public class SecurityConfig {
                                 .antMatchers(HttpMethod.POST, "/campaign/*/reward/*/join")
                                 .hasAnyAuthority("SCOPE_CUSTOMER")
 
+                                // RewardType API
+                                .antMatchers(HttpMethod.GET, "/rewardType").permitAll()
+
 
                                 .anyRequest().authenticated()).csrf(csrf -> csrf.disable())
                                 .httpBasic(Customizer.withDefaults())

@@ -57,7 +57,7 @@ public class ProductsController {
     @Transactional
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping()
-    public ProductsDTO addProducts(@Valid @RequestBody Products products,
+    public ProductsDTO addProducts(@Valid @ModelAttribute Products products,
             @RequestParam(value = "imageFile", required = false) MultipartFile image) {
             Products result = productsService.addProducts(products);
         if (image != null && !image.isEmpty()) {

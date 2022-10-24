@@ -9,6 +9,7 @@ public interface ProductsService {
     List<Products> getAllProducts();
     Products addProducts(Products products);
     Products updateProducts(Products products, Long id);
+    Products updateProductsImage(Products product, String imageFilename);
     void deleteProducts(Long id);
-    void buyProducts(Long id);
+    int buyProducts(Long id);
 }

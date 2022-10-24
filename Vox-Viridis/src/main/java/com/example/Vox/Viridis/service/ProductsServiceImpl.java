@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import javax.transaction.Transactional;
 
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 
 import com.example.Vox.Viridis.exception.NotEnoughPointException;
@@ -43,7 +44,7 @@ public class ProductsServiceImpl implements ProductsService{
 
     @Override
     public Products updateProducts(Products updatedProducts, Long id) {
-        Products existingProducts = getProducts(id).orElseThrow(() -> new ResourceNotFoundException("Products id: " + id));
+        Products existingProducts = getProducts(id).orElseThrow(() -> new ResourceNotFoundException("Products not found"));
         updatedProducts.setId(id);
         updatedProducts.setImage(existingProducts.getImage());
         updatedProducts.setCreatedBy(existingProducts.getCreatedBy());
@@ -58,8 +59,15 @@ public class ProductsServiceImpl implements ProductsService{
     }
 
     @Override
-    public void buyProducts(Long id){
-        Products products = getProducts(id).orElseThrow(() -> new ResourceNotFoundException("Products id: " + id));
+    public Products updateProductsImage(Products product, String imageFilename) {
+        product.setImage(imageFilename);
+        log.info("updated product image to '" + imageFilename + "'' for id: " + product.getId());
+        return productsRepository.save(product);
+    }
+
+    @Override
+    public int buyProducts(Long id){
+        Products products = getProducts(id).orElseThrow(() -> new ResourceNotFoundException("Products not found"));
         int cost = products.getPoint();
         Users buyer = usersService.getCurrentUser();
         int buyerPoint = buyer.getPoints();
@@ -71,6 +79,7 @@ public class ProductsServiceImpl implements ProductsService{
             log.info("Product with id " + id + " purchased");
             buyer.setPoints(leftOverPoint);
             usersService.updateUser(buyer);
+            return leftOverPoint;
         }
     }
 }

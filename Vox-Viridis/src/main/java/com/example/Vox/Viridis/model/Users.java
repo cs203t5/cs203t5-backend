@@ -61,7 +61,7 @@ public class Users {
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "users")
     private List<Reward> userRewards; // for customer
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "users")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "createdBy")
     private List<Products> userProducts;
 
     public UsersDTO convertToDTO() {

@@ -4,11 +4,13 @@ import javax.persistence.GeneratedValue;
 
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import com.example.Vox.Viridis.model.dto.ProductsDTO;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.JoinColumn;
 import javax.persistence.Id;
@@ -23,7 +25,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "Products")
-
 public class Products {
     @Id @GeneratedValue
     private Long id;    
@@ -40,7 +41,7 @@ public class Products {
     private int point;
     private String category;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by", nullable = false)
     private Users createdBy;
 

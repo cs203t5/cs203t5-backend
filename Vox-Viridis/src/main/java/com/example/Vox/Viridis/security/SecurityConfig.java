@@ -64,6 +64,10 @@ public class SecurityConfig {
                                 .antMatchers(HttpMethod.POST, "/campaign/*/reward/*/join")
                                 .hasAnyAuthority("SCOPE_CUSTOMER")
 
+                                // users API
+                                .antMatchers(HttpMethod.PUT, "/users/role/*")
+                                .hasAnyAuthority("SCOPE_ADMIN")
+
 
                                 .anyRequest().authenticated()).csrf(csrf -> csrf.disable())
                                 .httpBasic(Customizer.withDefaults())

@@ -78,6 +78,15 @@ public class UsersIntegrationTest {
         user.setRoles(consumer);
         users.save(user);
 
+        Users user2 = new Users();
+        user2.setUsername("admin1");
+        user2.setEmail("admin1@test.com");
+        user2.setFirstName("Admin");
+        user2.setLastName("admin");
+        user2.setPassword(passwordEncoder.encode("goodpassword"));
+        Role admin = roles.findByName("ADMIN");
+        user2.setRoles(admin);
+        users.save(user);
     }
 
     private TestRestTemplate authenticatedRestTemplate() {
@@ -198,10 +207,32 @@ public class UsersIntegrationTest {
     public void getToken_Fail() throws Exception {
         URI uri = new URI(baseUrl + port + "/api/users/save");
 
-
         ResponseEntity<String> result =
                 authenticatedRestTemplate().postForEntity(uri, null, String.class);
 
         assertEquals(400, result.getStatusCode().value());
+    }
+
+    @Test
+    public void upgradeRole_Success() throws Exception {
+        URI uri = new URI(baseUrl + port + "/api/users/role/upgrade");
+
+        Users user = new Users();
+        user.setUsername("consumer1");
+        user.setEmail("consumer1@test.com");
+        user.setFirstName("Admin");
+        user.setLastName("admin");
+        user.setPassword(passwordEncoder.encode("goodpassword"));
+        Role role = roles.findByName("CONSUMER");
+        user.setRoles(role);
+        users.save(user);
+
+        HttpEntity<Users> request = new HttpEntity<Users>(user);
+
+        ResponseEntity<UsersDTO> result =
+                authenticatedRestTemplate().exchange(uri, HttpMethod.PUT, request, UsersDTO.class);
+
+        assertEquals(200, result.getStatusCode());
+        assertEquals("consumer1", result.getBody().getUsername());
     }
 }

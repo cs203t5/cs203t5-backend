@@ -57,4 +57,19 @@ public class UsersService {
         log.info("Updating user info");
         return usersRepository.save(user).convertToDTO();
     }
+
+    public UsersDTO upgradeRole(long userId) {
+        Users user = usersRepository.findById(userId).orElseThrow();
+        Role role = roleRepository.findByName("BUSINESS");
+        user.setRoles(role);
+        return usersRepository.save(user).convertToDTO();
+    }
+
+    public UsersDTO downgradeRole(long userId) {
+        Users user = usersRepository.findById(userId).orElseThrow();
+        Role role = roleRepository.findByName("CONSUMER");
+        user.setRoles(role);
+        usersRepository.save(user);
+        return user.convertToDTO();
+    }
 }

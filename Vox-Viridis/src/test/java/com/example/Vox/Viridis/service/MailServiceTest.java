@@ -1,6 +1,8 @@
 package com.example.Vox.Viridis.service;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,7 +22,9 @@ public class MailServiceTest {
         simpleMailMessage.setSubject("test subject");
         simpleMailMessage.setText("test text");
 
+        when(mailService.sendMailMessage(simpleMailMessage)).thenReturn(true);
         boolean isSent = mailService.sendMailMessage(simpleMailMessage);
         assertTrue(isSent);
+        verify(mailService).sendMailMessage(simpleMailMessage);
     }
 }

@@ -110,7 +110,7 @@ public class CampaignIntegrationTest {
         }
 
         @Test
-        public void getCampaigns_Sucess() throws Exception {
+        public void getCampaigns_Success() throws Exception {
                 Users user = getUser();
                 URI uri = new URI(baseUrl + port + "/api/campaign");
 

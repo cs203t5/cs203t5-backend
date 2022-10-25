@@ -68,6 +68,11 @@ public class SecurityConfig {
                                 // RewardType API
                                 .antMatchers(HttpMethod.GET, "/rewardType").permitAll()
 
+                                // Participation API
+                                .antMatchers(HttpMethod.GET, "/participation", "/participation/myPoints").hasAnyAuthority("SCOPE_CUSTOMER")
+                                .antMatchers(HttpMethod.POST, "/participation/*").hasAnyAuthority("SCOPE_CUSTOMER")
+                                .antMatchers(HttpMethod.POST, "/participation/addPoints/*").hasAnyAuthority("SCOPE_BUSINESS")
+
 
                                 .anyRequest().authenticated()).csrf(csrf -> csrf.disable())
                                 .httpBasic(Customizer.withDefaults())

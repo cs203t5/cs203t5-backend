@@ -1,7 +1,6 @@
 package com.example.Vox.Viridis.service;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityNotFoundException;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
@@ -20,7 +19,15 @@ import lombok.extern.slf4j.Slf4j;
 public class ParticipationService {
     private final ParticipationRepository participations;
     private final UsersService usersService;
-    private final EntityManager entityManager;
+    private final RewardService rewardService;
+
+    public List<Participation> getMyParticipation() {
+        return participations.findByUser(usersService.getCurrentUser());
+    }
+
+    public int getMyPoints() {
+        return usersService.getCurrentUser().getPoints();
+    }
 
     /**
      * Create participation for this user, if Participation.reward doesn't exist for current user
@@ -30,19 +37,16 @@ public class ParticipationService {
      */
     public Participation createParticipation(Long rewardId) {
         Users currentUser = usersService.getCurrentUser();
-        Reward reward = entityManager.getReference(Reward.class, rewardId);
+        Reward reward = rewardService.getReward(rewardId)
+            .orElseThrow(() -> new ResourceNotFoundException("Reward id " + rewardId));
         if (participations.findByRewardAndUser(reward, currentUser).isPresent()) {
-            log.error("Reward id " + rewardId + " doesn't exist");
+            log.error("Participation record already exists for Reward id " + rewardId + " for user id " + currentUser.getAccountId());
             return null;
         }
 
         Participation participation = new Participation();
         participation.setUser(currentUser);
-        try {
-            participation.setReward(reward);
-        } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException("Reward id " + rewardId, e);
-        }
+        participation.setReward(reward);
 
         log.info("Created Participation with rewardId " + rewardId + " and userId " + currentUser.getAccountId());
         return participations.save(participation);
@@ -58,6 +62,15 @@ public class ParticipationService {
     public Participation addNoOfStamps(long id, int noOfStamp) {
         Participation participation = participations.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Participation id " + id));
+        
+        if (!participation.getReward().getRewardType().getRewardType().equals("Cards")) {
+            // If RewardType = Points, should update users.points instead
+            Users customer = participation.getUser();
+            customer.setPoints(customer.getPoints() + noOfStamp);
+            usersService.updateUser(customer);
+            return participation;
+        }
+        
         participation.setNoOfStamp(participation.getNoOfStamp() + noOfStamp);
         return participations.save(participation);
     }

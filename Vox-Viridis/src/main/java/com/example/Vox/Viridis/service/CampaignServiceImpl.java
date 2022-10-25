@@ -34,13 +34,7 @@ public class CampaignServiceImpl implements CampaignService {
     }
 
     public Campaign addCampaign(Campaign campaign) {
-        String title = campaign.getTitle();
-        if (!campaignRepository.findByTitle(title).isEmpty()) {
-            log.error("Error creating Campaign: duplicate title: " + title);
-            return null;
-        }
-
-        log.info("Campaign created: " + title);
+        log.info("Campaign created: " + campaign.getTitle());
         campaign.setCreatedOn(LocalDateTime.now());
         campaign.setCreatedBy(usersService.getCurrentUser());
         return campaignRepository.save(campaign);
@@ -65,10 +59,19 @@ public class CampaignServiceImpl implements CampaignService {
         return campaigns;
     }
 
+    /**
+     * Will return a list of campaigns created by current user
+     * @return list of campaign created by current user
+     */
+    @Override
+    public List<Campaign> getCampaignCreatedByCurrentUser() {
+        return campaignRepository.findByCreatedBy(usersService.getCurrentUser());
+    }
+
     @Override
     public Campaign updateCampaignImage(Campaign campaign, String imageFilename) {
         campaign.setImage(imageFilename);
-        log.info("updated campaign image to '" + imageFilename + "'' for id: " + campaign.getId());
+        log.info("updated campaign image to '" + imageFilename + "' for id: " + campaign.getId());
         return campaignRepository.save(campaign);
     }
 
@@ -79,12 +82,6 @@ public class CampaignServiceImpl implements CampaignService {
      */
     @Override
     public Campaign updateCampaign(Campaign updatedCampaign, Long id) {
-        List<Campaign> tmp = campaignRepository.findByTitle(updatedCampaign.getTitle());
-        if (!((tmp.size() == 1 && tmp.get(0).getId() == id) || tmp.size() == 0)) {
-            log.error("Error creating Campaign: duplicate title: " + updatedCampaign.getTitle());
-            return null;
-        }
-
         Campaign existingCampaign = getCampaign(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Campaign id " + id));
         Users username = usersService.getCurrentUser();

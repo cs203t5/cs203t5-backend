@@ -52,17 +52,26 @@ public class SecurityConfig {
                                 .hasAnyAuthority("SCOPE_BUSINESS")
                                 .antMatchers(HttpMethod.GET, "/campaign/*").permitAll()
                                 .antMatchers(HttpMethod.GET, "/campaign").permitAll()
+                                .antMatchers(HttpMethod.GET, "/campaign/myCampaign").hasAnyAuthority("SCOPE_BUSINESS")
 
                                 // reward API
-                                .antMatchers(HttpMethod.GET, "/campaign/*/reward").permitAll()
-                                .antMatchers(HttpMethod.POST, "/campaign/*/reward")
+                                .antMatchers(HttpMethod.GET, "/reward", "/reward/*").permitAll()
+                                .antMatchers(HttpMethod.POST, "/reward/*")
                                 .hasAnyAuthority("SCOPE_BUSINESS")
-                                .antMatchers(HttpMethod.PUT, "/campaign/*/reward/*")
+                                .antMatchers(HttpMethod.PUT, "/reward/*")
                                 .hasAnyAuthority("SCOPE_BUSINESS")
-                                .antMatchers(HttpMethod.DELETE, "/campaign/*/reward/*")
+                                .antMatchers(HttpMethod.DELETE, "/reward/*")
                                 .hasAnyAuthority("SCOPE_BUSINESS")
-                                .antMatchers(HttpMethod.POST, "/campaign/*/reward/*/join")
+                                .antMatchers(HttpMethod.POST, "/reward/*/join")
                                 .hasAnyAuthority("SCOPE_CUSTOMER")
+
+                                // RewardType API
+                                .antMatchers(HttpMethod.GET, "/rewardType").permitAll()
+
+                                // Participation API
+                                .antMatchers(HttpMethod.GET, "/participation", "/participation/myPoints").hasAnyAuthority("SCOPE_CUSTOMER")
+                                .antMatchers(HttpMethod.POST, "/participation/*").hasAnyAuthority("SCOPE_CUSTOMER")
+                                .antMatchers(HttpMethod.POST, "/participation/addPoints/*").hasAnyAuthority("SCOPE_BUSINESS")
 
 
                                 .anyRequest().authenticated()).csrf(csrf -> csrf.disable())

@@ -3,10 +3,8 @@ package com.example.Vox.Viridis.controller;
 import java.util.List;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,77 +18,58 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.Vox.Viridis.exception.ResourceNotFoundException;
 import com.example.Vox.Viridis.model.Reward;
-import com.example.Vox.Viridis.model.Users;
+import com.example.Vox.Viridis.model.RewardInputModel;
 import com.example.Vox.Viridis.service.RewardService;
 import com.example.Vox.Viridis.service.RewardTypeService;
-import com.example.Vox.Viridis.service.UsersService;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 @Validated
 @RestController()
-@RequestMapping("campaign/{campaignId}/reward")
+@RequestMapping("reward")
 @RequiredArgsConstructor
 public class RewardController {
     private final RewardService rewardService;
     private final RewardTypeService rewardTypeService;
-    private final UsersService usersService;
 
-    @GetMapping("/{userid}")
-    public List<Reward> getRewardsByUserId(Authentication authentication) {
-        return rewardService.getRewardsByUserId(usersService.getCurrentUser().getAccountId());
+    @GetMapping("myReward")
+    public List<Reward> getRewardsByUserId() {
+        return rewardService.getRewardsByCurrentUser();
     }
 
     @GetMapping()
-    public List<Reward> getRewards(@PathVariable Long campaignId) {
-        return rewardService.getRewards(campaignId);
+    public List<Reward> getRewards() {
+        return rewardService.getRewards();
     }
 
-    @PostMapping()
+    @GetMapping("byCampaign/{campaignId}")
+    public Reward getRewards(@PathVariable Long campaignId) {
+        return rewardService.getRewardByCampaignId(campaignId).orElseThrow(() -> new ResourceNotFoundException(
+            "Reward with campaign id " + campaignId));
+    }
+
+    @GetMapping("{id}")
+    public Reward getRewardById(@PathVariable Long id) {
+        return rewardService.getReward(id).orElseThrow(() -> new ResourceNotFoundException(
+            "Reward id " + id));
+    }
+
+    @PostMapping("{campaignId}")
     @ResponseStatus(HttpStatus.CREATED)
-    public List<Reward> createRewards(@PathVariable Long campaignId,
-            @Valid @RequestBody List<RewardInputModel> input) {
-        List<Reward> rewards = input.stream()
-                .map(rewardInput -> rewardInput.convertToReward(rewardTypeService)).toList();
+    public Reward createRewards(@PathVariable Long campaignId,
+            @Valid @RequestBody RewardInputModel input) {
+        Reward reward = input.convertToReward(rewardTypeService);
 
-        return rewardService.addReward(rewards, campaignId);
-    }
-
-    @PostMapping("{id}/join")
-    public void joinReward(@PathVariable Long campaignId, @PathVariable Long id) {
-        rewardService.addUserToReward(id, campaignId);
+        return rewardService.addReward(reward, campaignId);
     }
 
     @PutMapping("{id}")
-    public Reward updateReward(@PathVariable Long campaignId, @PathVariable Long id,
+    public Reward updateReward(@PathVariable Long id,
             @RequestBody @Valid RewardInputModel input) {
-        return rewardService.updateReward(id, campaignId, input.convertToReward(rewardTypeService));
+        return rewardService.updateReward(id, input.convertToReward(rewardTypeService));
     }
 
     @DeleteMapping("{id}")
-    public void deleteReward(@PathVariable Long campaignId, @PathVariable Long id) {
-        rewardService.deleteReward(id, campaignId);
-    }
-}
-
-
-@Getter
-@Setter
-class RewardInputModel {
-    @NotBlank(message = "rewardType can't be empty")
-    private String rewardType;
-
-    @NotBlank(message = "rewardName can't be empty")
-    private String rewardName;
-
-    public Reward convertToReward(RewardTypeService rewardTypeService) {
-        Reward reward = new Reward();
-        reward.setRewardName(this.getRewardName());
-        reward.setRewardType(rewardTypeService.getRewardTypeByName(this.getRewardType())
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Reward type '" + this.getRewardType() + "'")));
-
-        return reward;
+    public void deleteReward(@PathVariable Long id) {
+        rewardService.deleteReward(id);
     }
 }

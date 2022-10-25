@@ -27,23 +27,30 @@ public class UsersController {
     private final TokenService tokenService;
 
     @GetMapping("/name")
-    public String getName(Principal principal) {
-        return principal.getName();
+    public ResponseEntity<String> getName(Principal principal) {
+        return ResponseEntity.ok(principal.getName());
     }
 
     @PostMapping("/save")
     public ResponseEntity<UsersDTO> saveUser(@Valid @RequestBody Users user) {
         URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/api/user/save").toUriString());
-        return ResponseEntity.created(uri).body(usersService.saveUser(user));
+        try {
+            UsersDTO userDto = usersService.saveUser(user);
+            return ResponseEntity.created(uri).body(userDto);
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @PostMapping("/token")
-    public String token(Authentication authentication) {
+    public ResponseEntity<String> token(Authentication authentication) {
         log.debug("Token requested for user: '{}'", authentication.getName());
         String token = tokenService.generateToken(authentication);
         log.debug("Token granted {}", token);
-        return token;
+
+        return ResponseEntity.ok(token);
     }
 
     @GetMapping("/role")

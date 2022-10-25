@@ -7,6 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import com.example.Vox.Viridis.model.Role;
+import com.example.Vox.Viridis.model.SecurityUser;
 import com.example.Vox.Viridis.model.Users;
 import com.example.Vox.Viridis.model.dto.UsersDTO;
 import com.example.Vox.Viridis.repository.RoleRepository;
@@ -25,8 +26,15 @@ public class UsersService {
 
     public Users getCurrentUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Jwt jwt = (Jwt) auth.getPrincipal();
-        Users user1 = usersRepository.findByUsername(jwt.getSubject()).orElse(null);
+        Users user1;
+        if (auth.getPrincipal() instanceof Jwt) {
+            Jwt jwt = (Jwt) auth.getPrincipal();
+            user1 = usersRepository.findByUsername(jwt.getSubject()).orElse(null);
+        } else {
+            SecurityUser user = (SecurityUser) auth.getPrincipal();
+            user1 = usersRepository.findByUsername(user.getUsername()).orElse(null);
+        }
+
         return user1;
     }
 

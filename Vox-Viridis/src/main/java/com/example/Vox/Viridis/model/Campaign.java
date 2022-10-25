@@ -12,6 +12,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,6 +27,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import com.example.Vox.Viridis.model.validation.ConsistentDate;
 import com.example.Vox.Viridis.model.validation.FutureOrToday;
 import com.example.Vox.Viridis.model.validation.Location;
+import com.example.Vox.Viridis.service.StorageService;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -74,6 +76,7 @@ public class Campaign {
         return 'O'; // ongoing
     }
 
+    @JsonIgnore
     private String image;
 
     @Column(name = "category")
@@ -94,6 +97,12 @@ public class Campaign {
     @JsonProperty("companyName")
     public String companyName() {
         return getCreatedBy().getUsername();
+    }
+
+    @Transient
+    private String imageUrl;
+    public void constructImageUrl(StorageService storageService) {
+        imageUrl = storageService.getUrl(getImage());
     }
 
 }

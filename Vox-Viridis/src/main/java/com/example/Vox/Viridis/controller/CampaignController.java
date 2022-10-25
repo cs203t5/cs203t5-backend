@@ -3,7 +3,6 @@ package com.example.Vox.Viridis.controller;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
@@ -44,7 +43,6 @@ import lombok.RequiredArgsConstructor;
 public class CampaignController {
     private final CampaignService campaignService;
     private final StorageService storageService;
-    private final EntityManager entityManager;
     private final RewardTypeService rewardTypeService;
     private final RewardService rewardService;
     private final Validator validator;
@@ -53,8 +51,7 @@ public class CampaignController {
     public Campaign getCampaign(@PathVariable Long id){
         Campaign result =  campaignService.getCampaign(id)
             .orElseThrow(() -> new ResourceNotFoundException("Campaign id " + id));
-        entityManager.detach(result);
-        result.setImage(storageService.getUrl(result.getImage()));
+        result.constructImageUrl(storageService);
         return result;
     }
 
@@ -62,8 +59,7 @@ public class CampaignController {
     public List<Campaign> getMyCampaign(){
         List<Campaign> result =  campaignService.getCampaignCreatedByCurrentUser();
         result.forEach(campaign -> {
-            entityManager.detach(campaign);
-            campaign.setImage(storageService.getUrl(campaign.getImage()));
+            campaign.constructImageUrl(storageService);
         });
         return result;
     }
@@ -80,16 +76,11 @@ public class CampaignController {
         List<Campaign> result = campaignService.getCampaign(pageNum, filterByTitle, category, location, reward, isOrderByNewest);
         
         result.forEach(campaign -> {
-                String image = campaign.getImage();
-                if (image != null) {
-                    entityManager.detach(campaign);
-                    campaign.setImage(storageService.getUrl(image));
-                }
+                campaign.constructImageUrl(storageService);
             });
         return result;
     }
 
-    @Transactional
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping()
     public Campaign addCampaign(@ModelAttribute @Valid Campaign campaign, 
@@ -128,12 +119,11 @@ public class CampaignController {
         if (image != null && !image.isEmpty()) {
             String filename = StorageService.CAMPAIGNS_DIR + result.getId() + image.getOriginalFilename().substring(image.getOriginalFilename().lastIndexOf("."));
             result = campaignService.updateCampaignImage(campaign, filename);
-
+            
             storageService.putObject(filename, image);
         }
 
-        entityManager.detach(result);
-        result.setImage(storageService.getUrl(result.getImage()));
+        result.constructImageUrl(storageService);
 
         return result;
     }
@@ -158,9 +148,7 @@ public class CampaignController {
             storageService.putObject(filename, image);
         }
 
-        entityManager.detach(result);
-        result.setImage(storageService.getUrl(result.getImage()));
-
+        result.constructImageUrl(storageService);
         return result;
     }
 

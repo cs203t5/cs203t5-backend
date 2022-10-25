@@ -1,8 +1,8 @@
 package com.example.Vox.Viridis.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -39,18 +39,23 @@ public class ProductsController {
     private final StorageService storageService;
 
     @GetMapping("{id}")
-    public Products getProducts(@PathVariable Long id) {
+    public ProductsDTO getProducts(@PathVariable Long id) {
         Products product = productsService.getProducts(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Products id " + id));
         String image = product.getImage();
         if (image != null)
             product.setImage(storageService.getUrl(image));
-        return product;
+        return product.convertToDTO();
     }
 
     @GetMapping()
-    public @NotNull List<Products> getAllProducts() {
-        return productsService.getAllProducts();
+    public @NotNull List<ProductsDTO> getAllProducts() {
+        List<ProductsDTO> result = new ArrayList<ProductsDTO>();
+        for (Products product : productsService.getAllProducts()) {
+        ProductsDTO temp = product.convertToDTO();
+        result.add(temp);
+        }
+        return result;
     }
 
     @Transactional
@@ -75,7 +80,7 @@ public class ProductsController {
 
     @Transactional
     @PutMapping("{id}")
-    public Products updateProducts(@RequestBody Products products,@PathVariable Long id, @RequestParam(value="imageFile", required=false) MultipartFile image) {
+    public ProductsDTO updateProducts(@RequestBody Products products,@PathVariable Long id, @RequestParam(value="imageFile", required=false) MultipartFile image) {
         if (image != null && !image.isEmpty()) {
             if (image.getContentType() == null || !image.getContentType().startsWith("image/"))
                 throw new InvalidFileTypeException("Image file like jpeg");
@@ -92,7 +97,7 @@ public class ProductsController {
         }
         //entityManager.detach(result);
         result.setImage(storageService.getUrl(result.getImage()));
-        return result;
+        return result.convertToDTO();
     }
 
     @DeleteMapping("{id}")

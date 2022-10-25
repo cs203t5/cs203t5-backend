@@ -55,7 +55,7 @@ public class SecurityConfig {
                                 .antMatchers(HttpMethod.GET, "/campaign/myCampaign").hasAnyAuthority("SCOPE_BUSINESS")
 
                                 // reward API
-                                .antMatchers(HttpMethod.GET, "/reward", "/reward/*").permitAll()
+                                .antMatchers(HttpMethod.GET, "/reward", "/reward/*", "/reward/byCampaign/*").permitAll()
                                 .antMatchers(HttpMethod.POST, "/reward/*")
                                 .hasAnyAuthority("SCOPE_BUSINESS")
                                 .antMatchers(HttpMethod.PUT, "/reward/*")

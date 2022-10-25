@@ -63,14 +63,14 @@ public class SecurityConfig {
                                 .antMatchers(HttpMethod.DELETE, "/reward/*")
                                 .hasAnyAuthority("SCOPE_BUSINESS")
                                 .antMatchers(HttpMethod.POST, "/reward/*/join")
-                                .hasAnyAuthority("SCOPE_CUSTOMER")
+                                .hasAnyAuthority("SCOPE_CONSUMER")
 
                                 // RewardType API
                                 .antMatchers(HttpMethod.GET, "/rewardType").permitAll()
 
                                 // Participation API
-                                .antMatchers(HttpMethod.GET, "/participation", "/participation/myPoints").hasAnyAuthority("SCOPE_CUSTOMER")
-                                .antMatchers(HttpMethod.POST, "/participation/*").hasAnyAuthority("SCOPE_CUSTOMER")
+                                .antMatchers(HttpMethod.GET, "/participation", "/participation/myPoints").hasAnyAuthority("SCOPE_CONSUMER")
+                                .antMatchers(HttpMethod.POST, "/participation/*").hasAnyAuthority("SCOPE_CONSUMER")
                                 .antMatchers(HttpMethod.POST, "/participation/addPoints/*").hasAnyAuthority("SCOPE_BUSINESS")
 
 

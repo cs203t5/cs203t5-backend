@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,27 +28,38 @@ import lombok.RequiredArgsConstructor;
 
 @Validated
 @RestController()
-@RequestMapping("campaign/{campaignId}/reward")
+@RequestMapping("reward")
 @RequiredArgsConstructor
 public class RewardController {
     private final RewardService rewardService;
     private final RewardTypeService rewardTypeService;
     private final UsersService usersService;
 
-    @GetMapping("/{userid}")
-    public List<Reward> getRewardsByUserId(Authentication authentication) {
+    @GetMapping("myReward")
+    public List<Reward> getRewardsByUserId() {
         return rewardService.getRewardsByUserId(usersService.getCurrentUser().getAccountId());
     }
 
     @GetMapping()
+    public List<Reward> getRewards() {
+        return rewardService.getRewards();
+    }
+
+    @GetMapping("byCampaign/{campaignId}")
     public Reward getRewards(@PathVariable Long campaignId) {
         return rewardService.getRewardByCampaignId(campaignId).orElseThrow(() -> new ResourceNotFoundException(
             "Reward with campaign id " + campaignId));
     }
 
+    @GetMapping("{id}")
+    public Reward getRewardById(@PathVariable Long id) {
+        return rewardService.getReward(id).orElseThrow(() -> new ResourceNotFoundException(
+            "Reward id " + id));
+    }
+
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    public Reward createRewards(@PathVariable Long campaignId,
+    public Reward createRewards(@RequestParam(value="campaignId", required=true) Long campaignId,
             @Valid @RequestBody RewardInputModel input) {
         Reward reward = input.convertToReward(rewardTypeService);
 

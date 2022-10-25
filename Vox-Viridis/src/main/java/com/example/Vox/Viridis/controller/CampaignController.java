@@ -111,7 +111,8 @@ public class CampaignController {
                 Integer goal;
                 if (!rewardJsonObj.has("goal")) goal = null;
                 else goal = rewardJsonObj.getInt("goal");
-                RewardInputModel rewardInput = new RewardInputModel(rewardTypeName, rewardName, goal);
+                String tnc = rewardJsonObj.getString("tnc");
+                RewardInputModel rewardInput = new RewardInputModel(rewardTypeName, rewardName, goal, tnc);
                 
                 Set<ConstraintViolation<RewardInputModel>> constraintViolation =  validator.validate(rewardInput);
                 if (!constraintViolation.isEmpty()) throw new ConstraintViolationException(constraintViolation);

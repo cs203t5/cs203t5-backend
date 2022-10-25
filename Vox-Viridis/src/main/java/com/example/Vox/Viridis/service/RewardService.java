@@ -24,6 +24,14 @@ public class RewardService {
     private final CampaignService campaignService;
 
     /**
+     * Will get rewards that are not expired (or hasn't ended)
+     * @return List of rewards that hasn't ended
+     */
+    public List<Reward> getRewards() {
+        return rewards.findAllNotEnded();
+    }
+
+    /**
      * Get reward by offeredBy (campaignId)
      * 
      * @param campaignId

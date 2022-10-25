@@ -11,11 +11,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -50,8 +52,12 @@ public class Reward {
     private RewardType rewardType;
 
     @Min(value = 1, message = "goal must be at least 1")
-    @NotNull
+    @NotNull(message = "goal cannot be null")
     private int goal; // This is used to store the max points that a person can save
+
+    @NotNull(message = "tnc cannot be null")
+    @Size(min = 5, message = "tnc must be at least 5 letters")
+    private String tnc; // terms and conditions
 
     @JsonProperty("rewardType")
     public String rewardType() {

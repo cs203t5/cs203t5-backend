@@ -9,6 +9,9 @@ import org.springframework.data.jpa.repository.Query;
 import com.example.Vox.Viridis.model.Reward;
 
 public interface RewardRepository extends JpaRepository<Reward, Long> {
+    @Query(value = "SELECT r FROM Reward r WHERE (SELECT COUNT(c) FROM r.offeredBy c) > 0")
+    List<Reward> findAllNotEnded();
+
     @Query(value = "SELECT r FROM Reward r WHERE offered_by=:campaignId")
     Optional<Reward> findByOfferedBy(long campaignId);
 

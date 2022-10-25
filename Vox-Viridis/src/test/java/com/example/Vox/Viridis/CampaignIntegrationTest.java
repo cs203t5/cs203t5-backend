@@ -644,6 +644,7 @@ public class CampaignIntegrationTest {
                 rewardJson.put("rewardType", "Points");
                 rewardJson.put("rewardName", "Reward test");
                 rewardJson.put("goal", 10);
+                rewardJson.put("tnc", "Terms and Conditions testing");
                 map.add("reward", rewardJson.toString());
 
                 HttpEntity<MultiValueMap<String, String>> request =
@@ -660,6 +661,7 @@ public class CampaignIntegrationTest {
                 assertEquals("north", campaign.getLocation());
                 assertEquals(rewardJson.get("rewardName"), campaign.getRewards().getRewardName());
                 assertEquals(rewardJson.get("goal"), campaign.getRewards().getGoal());
+                assertEquals(rewardJson.get("tnc"), campaign.getRewards().getTnc());
         }
 
         // To test Reward Type that don't exist --> should return 404 not found
@@ -684,6 +686,7 @@ public class CampaignIntegrationTest {
                 rewardJson.put("rewardType", "doesn't exist");
                 rewardJson.put("rewardName", "Reward test");
                 rewardJson.put("goal", 10);
+                rewardJson.put("tnc", "Terms and Conditions testing");
                 map.add("reward", rewardJson.toString());
 
                 HttpEntity<MultiValueMap<String, String>> request =
@@ -715,6 +718,7 @@ public class CampaignIntegrationTest {
                 JSONObject rewardJson = new JSONObject();
                 rewardJson.put("rewardType", "Points");
                 rewardJson.put("rewardName", "Reward test");
+                rewardJson.put("tnc", "Terms and Conditions testing");
                 //rewardJson.put("goal", 10);
                 map.add("reward", rewardJson.toString());
 

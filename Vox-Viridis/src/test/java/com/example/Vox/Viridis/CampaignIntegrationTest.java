@@ -52,6 +52,7 @@ public class CampaignIntegrationTest {
 
         @Autowired
         private UsersRepository users;
+
         @Autowired
         private PasswordEncoder passwordEncoder;
 
@@ -150,7 +151,7 @@ public class CampaignIntegrationTest {
         }
 
         @Test
-        public void getCampaigns_MustContainCompanyNameField_Sucess() throws Exception {
+        public void getCampaigns_MustContainCompanyNameField_Success() throws Exception {
                 Users user = getUser();
                 Users user2 = createSecondAccount();
                 URI uri = new URI(baseUrl + port + "/api/campaign");
@@ -196,7 +197,7 @@ public class CampaignIntegrationTest {
         }
 
         @Test
-        public void getCampaigns_MustContainStatusField_Sucess() throws Exception {
+        public void getCampaigns_MustContainStatusField_Success() throws Exception {
                 Users user = getUser();
                 URI uri = new URI(baseUrl + port + "/api/campaign");
 
@@ -241,7 +242,7 @@ public class CampaignIntegrationTest {
         }
 
         @Test
-        public void getCampaigns_FilterTitle_Sucess() throws Exception {
+        public void getCampaigns_FilterTitle_Success() throws Exception {
                 URI uri = new URI(baseUrl + port + "/api/campaign?filterByTitle=2");
 
                 DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
@@ -280,7 +281,7 @@ public class CampaignIntegrationTest {
         }
 
         @Test
-        public void getCampaigns_FilterCategory_Sucess() throws Exception {
+        public void getCampaigns_FilterCategory_Success() throws Exception {
                 URI uri = new URI(baseUrl + port + "/api/campaign?category=clothing");
 
                 DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
@@ -321,7 +322,7 @@ public class CampaignIntegrationTest {
         }
 
         @Test
-        public void getCampaigns_FilterLocation_Sucess() throws Exception {
+        public void getCampaigns_FilterLocation_Success() throws Exception {
                 URI uri = new URI(baseUrl + port + "/api/campaign/?location=North");
 
                 DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
@@ -362,7 +363,7 @@ public class CampaignIntegrationTest {
         }
 
         @Test
-        public void getCampaigns_OrderByNewest_Sucess() throws Exception {
+        public void getCampaigns_OrderByNewest_Success() throws Exception {
                 URI uri = new URI(baseUrl + port + "/api/campaign?isOrderByNewest=true");
 
                 DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
@@ -404,7 +405,7 @@ public class CampaignIntegrationTest {
         }
 
         @Test
-        public void getCampaigns_OrderByOldest_Sucess() throws Exception {
+        public void getCampaigns_OrderByOldest_Success() throws Exception {
                 URI uri = new URI(baseUrl + port + "/api/campaign?isOrderByNewest=false");
 
                 DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
@@ -446,7 +447,7 @@ public class CampaignIntegrationTest {
         }
 
         @Test
-        public void getCampaignById_Sucess() throws Exception {
+        public void getCampaignById_Success() throws Exception {
                 URI uri = new URI(baseUrl + port + "/api/campaign");
 
                 DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
@@ -495,7 +496,7 @@ public class CampaignIntegrationTest {
         }
 
         @Test
-        public void addCampaign_Sucess() throws Exception {
+        public void addCampaign_Success() throws Exception {
                 URI uri = new URI(baseUrl + port + "/api/campaign");
 
                 HttpHeaders headers = new HttpHeaders();
@@ -549,7 +550,7 @@ public class CampaignIntegrationTest {
         }
 
         @Test
-        public void addCampaign_WithoutTime_Sucess() throws Exception {
+        public void addCampaign_WithoutTime_Success() throws Exception {
                 URI uri = new URI(baseUrl + port + "/api/campaign");
 
                 HttpHeaders headers = new HttpHeaders();

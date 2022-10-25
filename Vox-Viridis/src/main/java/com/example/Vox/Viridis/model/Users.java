@@ -58,8 +58,8 @@ public class Users {
     private LocalDate dob;
     private boolean enabled;
 
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "users")
-    private List<Reward> userRewards; // for customer
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    private List<Participation> userParticipation; // for customer
 
     public UsersDTO convertToDTO() {
         return new UsersDTO(accountId, username, firstName, lastName, email, points, image);

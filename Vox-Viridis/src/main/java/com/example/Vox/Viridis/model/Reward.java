@@ -14,11 +14,15 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.example.Vox.Viridis.service.StorageService;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -64,10 +68,26 @@ public class Reward {
         return rewardType.getRewardType();
     }
 
+    @JsonProperty("campaignTitle")
+    public String campaignTitle() {
+        return getOfferedBy().getTitle();
+    }
+
+    @JsonProperty("campaignDescription")
+    public String campaignDescription() {
+        return getOfferedBy().getDescription();
+    }
+
+    @JsonProperty("campaignImage")
+    public String campaignImage() {
+        return getOfferedBy().getImageUrl();
+    }
+    
+    public void constructCampaignImage(StorageService storageService) {
+        this.getOfferedBy().constructImageUrl(storageService);
+    }
+
     @JsonIgnore
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "user_reward", 
-        joinColumns = @JoinColumn(name = "user_id"),
-        inverseJoinColumns = @JoinColumn(name = "reward_id"))
-    private List<Users> users;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "reward")
+    private List<Participation> participations;
 }

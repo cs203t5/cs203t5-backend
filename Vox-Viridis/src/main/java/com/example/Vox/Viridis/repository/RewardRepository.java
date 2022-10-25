@@ -15,5 +15,6 @@ public interface RewardRepository extends JpaRepository<Reward, Long> {
     @Query(value = "SELECT r FROM Reward r WHERE offered_by=:campaignId")
     Optional<Reward> findByOfferedBy(long campaignId);
 
-    List<Reward> findByUsers_accountId(long userId);
+    @Query(value = "SELECT r FROM Reward r WHERE (SELECT COUNT(p) FROM r.participations p WHERE p.user.accountId = :user) > 0")
+    List<Reward> findByUsers_accountId(long user);
 }

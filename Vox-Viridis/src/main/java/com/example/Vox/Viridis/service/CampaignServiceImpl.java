@@ -71,7 +71,7 @@ public class CampaignServiceImpl implements CampaignService {
     @Override
     public Campaign updateCampaignImage(Campaign campaign, String imageFilename) {
         campaign.setImage(imageFilename);
-        log.info("updated campaign image to '" + imageFilename + "'' for id: " + campaign.getId());
+        log.info("updated campaign image to '" + imageFilename + "' for id: " + campaign.getId());
         return campaignRepository.save(campaign);
     }
 

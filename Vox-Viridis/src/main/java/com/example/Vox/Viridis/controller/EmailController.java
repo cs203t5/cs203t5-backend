@@ -20,8 +20,8 @@ public class EmailController {
     @PostMapping
     public ResponseEntity<Object> sendEmail(@Valid @RequestBody Contact email) {
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
-        simpleMailMessage.setFrom("voxviridis5@gmail.com");
-        simpleMailMessage.setTo("voxviridis5@gmail.com");
+        simpleMailMessage.setFrom("${VOX_VIRIDIS_EMAIL}");
+        simpleMailMessage.setTo("${VOX_VIRIDIS_EMAIL}");
         simpleMailMessage
                 .setSubject("Question from " + email.getFirstName() + " " + email.getLastName());
         simpleMailMessage.setText("Email: " + email.getEmail() + "\n" + "First Name: "

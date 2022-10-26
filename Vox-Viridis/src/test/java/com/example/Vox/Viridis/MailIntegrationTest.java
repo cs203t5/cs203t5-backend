@@ -1,30 +1,27 @@
-package com.example.Vox.Viridis.service;
+package com.example.Vox.Viridis;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.mail.SimpleMailMessage;
+import com.example.Vox.Viridis.service.MailService;
 
-@SpringBootTest
-public class MailServiceTest {
-
-    @Mock
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+public class MailIntegrationTest {
+    @Autowired
     private MailService mailService;
 
     @Test
-    void sendEmail_validFormat_returnTrue() {
+    public void sendEmail_success() {
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
-        simpleMailMessage.setFrom("${VOX_VIRIDIS_EMAIL}");
-        simpleMailMessage.setTo("${VOX_VIRIDIS_EMAIL}");
+        simpleMailMessage.setFrom("voxviridis5@gmail.com");
+        simpleMailMessage.setTo("voxviridis5@gmail.com");
         simpleMailMessage.setSubject("test subject");
         simpleMailMessage.setText("test text");
 
-        when(mailService.sendMailMessage(simpleMailMessage)).thenReturn(true);
         boolean isSent = mailService.sendMailMessage(simpleMailMessage);
         assertTrue(isSent);
-        verify(mailService).sendMailMessage(simpleMailMessage);
     }
 }

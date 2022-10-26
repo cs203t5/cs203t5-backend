@@ -1,21 +1,14 @@
 package com.example.Vox.Viridis.service;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import com.example.Vox.Viridis.model.Role;
-import com.example.Vox.Viridis.model.Users;
 import com.example.Vox.Viridis.model.SecurityUser;
+import com.example.Vox.Viridis.model.Users;
 import com.example.Vox.Viridis.model.dto.UsersDTO;
 import com.example.Vox.Viridis.repository.RoleRepository;
 import com.example.Vox.Viridis.repository.UsersRepository;
@@ -33,8 +26,15 @@ public class UsersService {
 
     public Users getCurrentUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Jwt jwt = (Jwt) auth.getPrincipal();
-        Users user1 = usersRepository.findByUsername(jwt.getSubject()).orElse(null);
+        Users user1;
+        if (auth.getPrincipal() instanceof Jwt) {
+            Jwt jwt = (Jwt) auth.getPrincipal();
+            user1 = usersRepository.findByUsername(jwt.getSubject()).orElse(null);
+        } else {
+            SecurityUser user = (SecurityUser) auth.getPrincipal();
+            user1 = usersRepository.findByUsername(user.getUsername()).orElse(null);
+        }
+
         return user1;
     }
 
@@ -56,5 +56,20 @@ public class UsersService {
     public UsersDTO updateUser(Users user) {
         log.info("Updating user info");
         return usersRepository.save(user).convertToDTO();
+    }
+
+    public UsersDTO upgradeRole(String username) {
+        Users user = usersRepository.findByUsername(username).orElseThrow();
+        Role role = roleRepository.findByName("BUSINESS");
+        user.setRoles(role);
+        return usersRepository.save(user).convertToDTO();
+    }
+
+    public UsersDTO downgradeRole(String username) {
+        Users user = usersRepository.findByUsername(username).orElseThrow();
+        Role role = roleRepository.findByName("CONSUMER");
+        user.setRoles(role);
+        usersRepository.save(user);
+        return user.convertToDTO();
     }
 }

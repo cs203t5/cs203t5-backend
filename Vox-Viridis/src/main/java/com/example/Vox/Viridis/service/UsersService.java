@@ -58,15 +58,15 @@ public class UsersService {
         return usersRepository.save(user).convertToDTO();
     }
 
-    public UsersDTO upgradeRole(long userId) {
-        Users user = usersRepository.findById(userId).orElseThrow();
+    public UsersDTO upgradeRole(String username) {
+        Users user = usersRepository.findByUsername(username).orElseThrow();
         Role role = roleRepository.findByName("BUSINESS");
         user.setRoles(role);
         return usersRepository.save(user).convertToDTO();
     }
 
-    public UsersDTO downgradeRole(long userId) {
-        Users user = usersRepository.findById(userId).orElseThrow();
+    public UsersDTO downgradeRole(String username) {
+        Users user = usersRepository.findByUsername(username).orElseThrow();
         Role role = roleRepository.findByName("CONSUMER");
         user.setRoles(role);
         usersRepository.save(user);

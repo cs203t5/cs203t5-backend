@@ -6,6 +6,7 @@ import javax.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import com.example.Vox.Viridis.model.Role;
 import com.example.Vox.Viridis.model.Users;
 import com.example.Vox.Viridis.model.dto.UsersDTO;
 import com.example.Vox.Viridis.service.TokenService;
@@ -61,13 +61,13 @@ public class UsersController {
         return ResponseEntity.ok(usersService.getRole());
     }
 
-    @PutMapping("/role/upgrade/{userId}")
-    public ResponseEntity<UsersDTO> upgradeRole(@RequestParam long userId) {
-        return ResponseEntity.ok(usersService.upgradeRole(userId));
+    @PutMapping("/role/upgrade/{username}")
+    public ResponseEntity<UsersDTO> upgradeRole(@PathVariable String username) {
+        return ResponseEntity.ok(usersService.upgradeRole(username));
     }
 
-    @PutMapping("/role/downgrade/{userId}")
-    public ResponseEntity<UsersDTO> downgradeRole(@RequestParam long userId) {
-        return ResponseEntity.ok(usersService.downgradeRole(userId));
+    @PutMapping("/role/downgrade/{username}")
+    public ResponseEntity<UsersDTO> downgradeRole(@PathVariable String username) {
+        return ResponseEntity.ok(usersService.downgradeRole(username));
     }
 }

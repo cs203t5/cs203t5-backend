@@ -86,7 +86,7 @@ public class UsersIntegrationTest {
         user2.setPassword(passwordEncoder.encode("goodpassword"));
         Role admin = roles.findByName("ADMIN");
         user2.setRoles(admin);
-        users.save(user);
+        users.save(user2);
     }
 
     private TestRestTemplate authenticatedRestTemplate() {
@@ -215,7 +215,6 @@ public class UsersIntegrationTest {
 
     @Test
     public void upgradeRole_Success() throws Exception {
-        URI uri = new URI(baseUrl + port + "/api/users/role/upgrade");
 
         Users user = new Users();
         user.setUsername("consumer1");
@@ -223,16 +222,84 @@ public class UsersIntegrationTest {
         user.setFirstName("Admin");
         user.setLastName("admin");
         user.setPassword(passwordEncoder.encode("goodpassword"));
-        Role role = roles.findByName("CONSUMER");
-        user.setRoles(role);
+
         users.save(user);
+
+        URI uri = new URI(baseUrl + port + "/api/users/role/upgrade/" + user.getUsername());
+
+        HttpEntity<Users> request = new HttpEntity<Users>(user);
+
+        ResponseEntity<UsersDTO> result = restTemplate.withBasicAuth("admin1", "goodpassword")
+                .exchange(uri, HttpMethod.PUT, request, UsersDTO.class);
+
+        assertEquals(200, result.getStatusCode().value());
+        assertEquals("consumer1", result.getBody().getUsername());
+    }
+
+    @Test
+    public void upgradeRole_unauthorized() throws Exception {
+
+        Users user = new Users();
+        user.setUsername("consumer1");
+        user.setEmail("consumer1@test.com");
+        user.setFirstName("Admin");
+        user.setLastName("admin");
+        user.setPassword(passwordEncoder.encode("goodpassword"));
+
+        users.save(user);
+
+        URI uri = new URI(baseUrl + port + "/api/users/role/upgrade/" + user.getUsername());
 
         HttpEntity<Users> request = new HttpEntity<Users>(user);
 
         ResponseEntity<UsersDTO> result =
                 authenticatedRestTemplate().exchange(uri, HttpMethod.PUT, request, UsersDTO.class);
 
-        assertEquals(200, result.getStatusCode());
+        assertEquals(403, result.getStatusCode().value());
+    }
+
+    @Test
+    public void downgradeRole_Success() throws Exception {
+
+        Users user = new Users();
+        user.setUsername("consumer1");
+        user.setEmail("consumer1@test.com");
+        user.setFirstName("Admin");
+        user.setLastName("admin");
+        user.setPassword(passwordEncoder.encode("goodpassword"));
+
+        users.save(user);
+
+        URI uri = new URI(baseUrl + port + "/api/users/role/downgrade/" + user.getUsername());
+
+        HttpEntity<Users> request = new HttpEntity<Users>(user);
+
+        ResponseEntity<UsersDTO> result = restTemplate.withBasicAuth("admin1", "goodpassword")
+                .exchange(uri, HttpMethod.PUT, request, UsersDTO.class);
+
+        assertEquals(200, result.getStatusCode().value());
         assertEquals("consumer1", result.getBody().getUsername());
+    }
+
+    @Test
+    public void downgradeRole_unauthorized() throws Exception {
+
+        Users user = new Users();
+        user.setUsername("consumer1");
+        user.setEmail("consumer1@test.com");
+        user.setFirstName("Admin");
+        user.setLastName("admin");
+        user.setPassword(passwordEncoder.encode("goodpassword"));
+
+        users.save(user);
+
+        URI uri = new URI(baseUrl + port + "/api/users/role/downgrade/" + user.getUsername());
+
+        HttpEntity<Users> request = new HttpEntity<Users>(user);
+
+        ResponseEntity<UsersDTO> result =
+                authenticatedRestTemplate().exchange(uri, HttpMethod.PUT, request, UsersDTO.class);
+
+        assertEquals(403, result.getStatusCode().value());
     }
 }

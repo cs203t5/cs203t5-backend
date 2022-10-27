@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.example.Vox.Viridis.exception.CampaignAlreadyHasReward;
 import com.example.Vox.Viridis.exception.NotOwnerException;
 import com.example.Vox.Viridis.exception.ResourceNotFoundException;
 import com.example.Vox.Viridis.model.Campaign;
@@ -22,25 +23,42 @@ public class RewardService {
     private final UsersService usersService;
     private final RewardRepository rewards;
     private final CampaignService campaignService;
+    private final StorageService storageService;
+
+    /**
+     * Will get rewards that are not expired (or hasn't ended)
+     * @return List of rewards that hasn't ended
+     */
+    public List<Reward> getRewards() {
+        List<Reward> result = rewards.findAllNotEnded();
+        result.forEach(reward -> reward.constructCampaignImage(storageService));
+        return result;
+    }
 
     /**
      * Get reward by offeredBy (campaignId)
      * 
      * @param campaignId
      */
-    public List<Reward> getRewards(long campaignId) {
-        return rewards.findByOfferedBy(campaignId);
+    public Optional<Reward> getRewardByCampaignId(long campaignId) {
+        Optional<Reward> result = rewards.findByOfferedBy(campaignId);
+        result.ifPresent(reward -> reward.constructCampaignImage(storageService));
+        return result;
     }
 
-    public List<Reward> getRewardsByUserId(Long userid) {
-        return rewards.findByUsers_accountId(userid);
+    public List<Reward> getRewardsByCurrentUser() {
+        List<Reward> result = rewards.findByUsers_accountId(usersService.getCurrentUser().getAccountId());
+        result.forEach(reward -> reward.constructCampaignImage(storageService));
+        return result;
     }
 
     /**
-     * Get reward by id and offeredBy (campaignId)
+     * Get reward by id
      */
-    public Optional<Reward> getReward(long rewardId, long campaignId) {
-        return rewards.findByIdAndOfferedBy(rewardId, campaignId);
+    public Optional<Reward> getReward(long rewardId) {
+        Optional<Reward> result = rewards.findById(rewardId);
+        result.ifPresent(reward -> reward.constructCampaignImage(storageService));
+        return result;
     }
 
     /**
@@ -49,11 +67,11 @@ public class RewardService {
      * @throws NotOwnerException if current user isn't the owner of the campaign
      * @throws ResourceNotFoundException if campaign isn't found
      */
-    public List<Reward> addReward(List<Reward> rewardsArr, long offeredByCampaignId) {
+    public Reward addReward(Reward reward, long offeredByCampaignId) {
         Campaign offeredBy = campaignService.getCampaign(offeredByCampaignId).orElseThrow(
                 () -> new ResourceNotFoundException("Campaign id " + offeredByCampaignId));
 
-        return addReward(rewardsArr, offeredBy);
+        return addReward(reward, offeredBy);
     }
 
     /**
@@ -61,32 +79,47 @@ public class RewardService {
      * 
      * @throws NotOwnerException if current user isn't the owner of the campaign
      */
-    public List<Reward> addReward(List<Reward> rewardsArr, Campaign offeredBy) {
+    public Reward addReward(Reward reward, Campaign offeredBy) {
         // validate that the campaign object belongs to the current logged in user
         Users user = usersService.getCurrentUser();
         if (user != null && !offeredBy.getCreatedBy().equals(user))
             throw new NotOwnerException();
 
-        rewardsArr.forEach(reward -> {
-            reward.setOfferedBy(offeredBy);
-        });
+            // check if campaign alr has reward
+            if (offeredBy.getRewards() != null) 
+                throw new CampaignAlreadyHasReward(offeredBy.getId(), offeredBy.getRewards().getId());
 
-        log.info("Created " + rewardsArr.size() + " rewards for campaign id " + offeredBy.getId());
-        return rewards.saveAll(rewardsArr);
+        reward.setOfferedBy(offeredBy);
+
+        Reward result = rewards.save(reward);
+        result.constructCampaignImage(storageService);
+        log.info("Created reward id " + reward.getId() + " for campaign id " + offeredBy.getId());
+        return result;
     }
 
-    public Reward addUserToReward(long rewardId, long campaignId) {
-        Reward reward = rewards.findByIdAndOfferedBy(rewardId, campaignId)
+    /*public Reward addUserToReward(long rewardId) {
+        Reward reward = rewards.findById(rewardId)
                 .orElseThrow(() -> new ResourceNotFoundException(
-                        "Reward id " + rewardId + " with campaign id " + campaignId));
+                        "Reward id " + rewardId));
 
         Users user = usersService.getCurrentUser();
         reward.getUsers().add(user);
         Reward result = rewards.save(reward);
-        log.info("username '" + user.getUsername() + "' added to reward id " + rewardId
-                + " (campaign id " + campaignId + ")");
+        log.info("username '" + user.getUsername() + "' added to reward id " + rewardId);
         return result;
     }
+
+    public Reward addUserToRewardByCampaignId(long campaignId) {
+        Reward reward = rewards.findByOfferedBy(campaignId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Reward with Campaign id " + campaignId));
+
+        Users user = usersService.getCurrentUser();
+        reward.getUsers().add(user);
+        Reward result = rewards.save(reward);
+        log.info("username '" + user.getUsername() + "' added to reward id " + reward.getId() + " (campaign id" + campaignId + ")");
+        return result;
+    }*/
 
     /**
      * Update reward by id
@@ -95,21 +128,23 @@ public class RewardService {
      * @throws ResourceNotFoundException if reward isn't found
      * @return updated reward
      */
-    public Reward updateReward(long id, long campaignId, Reward updatedReward) {
-        Reward reward = rewards.findByIdAndOfferedBy(id, campaignId)
+    public Reward updateReward(long id, Reward updatedReward) {
+        Reward reward = rewards.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
-                        "Reward id " + id + " with campaign id " + campaignId));
+                        "Reward id " + id));
         updatedReward.setId(id);
         updatedReward.setOfferedBy(reward.getOfferedBy());
-        updatedReward.setUsers(reward.getUsers());
+        updatedReward.setParticipations(reward.getParticipations());
 
         // validate it belongs to current logged in user
         Users user = usersService.getCurrentUser();
         if (user != null && !updatedReward.getOfferedBy().getCreatedBy().equals(user))
             throw new NotOwnerException();
 
-        log.info("Updated record id " + id + " with campaignId " + campaignId);
-        return rewards.save(updatedReward);
+        updatedReward = rewards.save(updatedReward);
+        log.info("Updated record id " + id);
+        updatedReward.constructCampaignImage(storageService);
+        return updatedReward;
     }
 
     /**
@@ -118,17 +153,17 @@ public class RewardService {
      * @throws NotOwnerException if current user isn't the owner of this campaign's reward
      * @throws ResourceNotFoundException if reward isn't found
      */
-    public void deleteReward(long id, long campaignId) {
-        Reward reward = rewards.findByIdAndOfferedBy(id, campaignId)
+    public void deleteReward(long id) {
+        Reward reward = rewards.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
-                        "Reward id " + id + " with campaign id " + campaignId));
+                        "Reward id " + id));
 
         // validate it belongs to current logged in user
         Users user = usersService.getCurrentUser();
         if (user != null && !reward.getOfferedBy().getCreatedBy().equals(user))
             throw new NotOwnerException();
 
-        log.info("Deleted record id " + id + " with campaignId " + campaignId + "by user id "
+        log.info("Deleted record id " + id + " with campaignId " + reward.getOfferedBy().getId() + "by user id "
                 + (user != null ? user.getAccountId() : "null"));
         rewards.delete(reward);
     }

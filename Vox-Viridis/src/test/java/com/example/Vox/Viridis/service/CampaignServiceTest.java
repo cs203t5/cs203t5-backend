@@ -127,40 +127,23 @@ public class CampaignServiceTest {
     }
 
     @Test
-    void addCampaign_NewTitle_ReturnSavedCampaign() {
+    void addCampaign_ReturnSavedCampaign() {
         Campaign campaign = new Campaign();
         campaign.setTitle("New Campaign");
         campaign.setStartDate(LocalDateTime.now());
         campaign.setEndDate(LocalDateTime.now().plusDays(1));
 
-        when(campaigns.findByTitle(any(String.class))).thenReturn(new ArrayList<Campaign>());
         when(campaigns.save(any(Campaign.class))).thenReturn(campaign);
         when(usersService.getCurrentUser()).thenReturn(null);
 
         Campaign savedCampaign = campaignService.addCampaign(campaign);
 
         assertNotNull(savedCampaign);
-        verify(campaigns).findByTitle(campaign.getTitle());
         verify(campaigns).save(campaign);
     }
 
     @Test
-    void addCampaign_SameTitle_ReturnNull() {
-        Campaign campaign = new Campaign();
-        campaign.setTitle("Existing Campaign");
-        campaign.setStartDate(LocalDateTime.now());
-        campaign.setEndDate(LocalDateTime.now().plusDays(1));
-
-        when(campaigns.findByTitle(any(String.class))).thenReturn(List.of(campaign));
-
-        Campaign savedCampaign = campaignService.addCampaign(campaign);
-
-        assertNull(savedCampaign);
-        verify(campaigns).findByTitle(campaign.getTitle());
-    }
-
-    @Test
-    void updateCampaign_NewTitle_ReturnSavedCampaign() {
+    void updateCampaign_ReturnSavedCampaign() {
         Campaign campaign = new Campaign();
         campaign.setId(2l);
         campaign.setTitle("New Campaign");
@@ -172,7 +155,6 @@ public class CampaignServiceTest {
         updatedCampaign.setStartDate(LocalDateTime.now());
         updatedCampaign.setEndDate(LocalDateTime.now().plusDays(1));
 
-        when(campaigns.findByTitle(any(String.class))).thenReturn(new ArrayList<Campaign>());
         when(campaigns.findById(2l)).thenReturn(Optional.of(campaign));
         when(campaigns.save(any(Campaign.class))).thenReturn(updatedCampaign);
         when(usersService.getCurrentUser()).thenReturn(null);
@@ -180,57 +162,8 @@ public class CampaignServiceTest {
         Campaign savedCampaign = campaignService.updateCampaign(updatedCampaign, 2l);
 
         assertEquals(savedCampaign, updatedCampaign);
-        verify(campaigns).findByTitle(updatedCampaign.getTitle());
         verify(campaigns).findById(2l);
         updatedCampaign.setId(2l);
         verify(campaigns).save(updatedCampaign);
-    }
-
-    @Test
-    void updateCampaign_SaneTitle_ReturnSavedCampaign() {
-        Campaign campaign = new Campaign();
-        campaign.setId(2l);
-        campaign.setTitle("New Campaign");
-        campaign.setStartDate(LocalDateTime.now());
-        campaign.setEndDate(LocalDateTime.now().plusDays(1));
-
-        Campaign updatedCampaign = new Campaign();
-        updatedCampaign.setTitle("New Campaign");
-        updatedCampaign.setStartDate(LocalDateTime.now());
-        updatedCampaign.setEndDate(LocalDateTime.now().plusDays(1));
-
-        when(campaigns.findByTitle(any(String.class))).thenReturn(List.of(campaign));
-        when(campaigns.findById(2l)).thenReturn(Optional.of(campaign));
-        when(campaigns.save(any(Campaign.class))).thenReturn(updatedCampaign);
-        when(usersService.getCurrentUser()).thenReturn(null);
-
-        Campaign savedCampaign = campaignService.updateCampaign(updatedCampaign, 2l);
-
-        assertEquals(savedCampaign, updatedCampaign);
-        verify(campaigns).findByTitle(updatedCampaign.getTitle());
-        verify(campaigns).findById(2l);
-        updatedCampaign.setId(2l);
-        verify(campaigns).save(updatedCampaign);
-    }
-
-    @Test
-    void updateCampaign_SameTitle_ReturnNull() {
-        Campaign campaign = new Campaign();
-        campaign.setId(1l);
-        campaign.setTitle("Existing Campaign");
-        campaign.setStartDate(LocalDateTime.now());
-        campaign.setEndDate(LocalDateTime.now().plusDays(1));
-
-        Campaign campaign2 = new Campaign();
-        campaign2.setTitle("Existing Campaign");
-        campaign.setStartDate(LocalDateTime.now());
-        campaign.setEndDate(LocalDateTime.now().plusDays(1));
-
-        when(campaigns.findByTitle(any(String.class))).thenReturn(List.of(campaign));
-
-        Campaign savedCampaign = campaignService.updateCampaign(campaign2, 2l);
-
-        assertNull(savedCampaign);
-        verify(campaigns).findByTitle(campaign.getTitle());
     }
 }

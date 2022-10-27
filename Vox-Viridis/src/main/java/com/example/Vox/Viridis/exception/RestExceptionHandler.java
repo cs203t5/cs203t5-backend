@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+
 @RestControllerAdvice
 @Component
 public class RestExceptionHandler {
@@ -69,4 +70,5 @@ public class RestExceptionHandler {
     public void handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
         
     }
+
 }

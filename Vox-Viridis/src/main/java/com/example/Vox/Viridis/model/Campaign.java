@@ -99,6 +99,11 @@ public class Campaign {
         return getCreatedBy().getUsername();
     }
 
+    @JsonProperty("companyImage")
+    public String companyImage() {
+        return getCreatedBy().getImage();
+    }
+
     @Transient
     private String imageUrl;
     public void constructImageUrl(StorageService storageService) {

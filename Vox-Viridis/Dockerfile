@@ -4,7 +4,7 @@ WORKDIR /usr/src/app
 COPY . /usr/src/app
 
 # Using java 17
-FROM openjdk:17-jdk
+FROM openjdk:17-oracle
 
 ARG JAR_FILE=/usr/src/app/target/*.jar
 

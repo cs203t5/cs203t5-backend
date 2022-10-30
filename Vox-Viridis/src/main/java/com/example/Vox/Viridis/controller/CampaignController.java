@@ -1,13 +1,14 @@
 package com.example.Vox.Viridis.controller;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
-import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
+import javax.validation.Validator;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
@@ -23,13 +24,12 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.Vox.Viridis.exception.CampaignTitleExistsException;
 import com.example.Vox.Viridis.exception.ResourceNotFoundException;
 import com.example.Vox.Viridis.exception.InvalidFileTypeException;
 import com.example.Vox.Viridis.exception.InvalidJsonException;
 import com.example.Vox.Viridis.model.Campaign;
 import com.example.Vox.Viridis.model.Reward;
-import com.example.Vox.Viridis.model.RewardType;
+import com.example.Vox.Viridis.model.RewardInputModel;
 import com.example.Vox.Viridis.service.CampaignService;
 import com.example.Vox.Viridis.service.RewardService;
 import com.example.Vox.Viridis.service.RewardTypeService;
@@ -43,18 +43,24 @@ import lombok.RequiredArgsConstructor;
 public class CampaignController {
     private final CampaignService campaignService;
     private final StorageService storageService;
-    private final EntityManager entityManager;
     private final RewardTypeService rewardTypeService;
     private final RewardService rewardService;
+    private final Validator validator;
 
     @GetMapping("{id}")
     public Campaign getCampaign(@PathVariable Long id){
         Campaign result =  campaignService.getCampaign(id)
             .orElseThrow(() -> new ResourceNotFoundException("Campaign id " + id));
-        entityManager.detach(result);
-        String image = result.getImage();
-        if (image != null)
-            result.setImage(storageService.getUrl(image));
+        result.constructImageUrl(storageService);
+        return result;
+    }
+
+    @GetMapping("myCampaign")
+    public List<Campaign> getMyCampaign(){
+        List<Campaign> result =  campaignService.getCampaignCreatedByCurrentUser();
+        result.forEach(campaign -> {
+            campaign.constructImageUrl(storageService);
+        });
         return result;
     }
 
@@ -70,61 +76,54 @@ public class CampaignController {
         List<Campaign> result = campaignService.getCampaign(pageNum, filterByTitle, category, location, reward, isOrderByNewest);
         
         result.forEach(campaign -> {
-                String image = campaign.getImage();
-                if (image != null) {
-                    entityManager.detach(campaign);
-                    campaign.setImage(storageService.getUrl(image));
-                }
+                campaign.constructImageUrl(storageService);
             });
         return result;
     }
 
-    @Transactional
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping()
     public Campaign addCampaign(@ModelAttribute @Valid Campaign campaign, 
             @RequestParam(value="imageFile", required=false) MultipartFile image, 
-            @RequestParam(value = "rewardsArr", required = false)String rewardsJson) {
+            @RequestParam(value = "reward", required = false) String rewardJson) {
         if (image != null && !image.isEmpty()) {
             if (image.getContentType() == null || !image.getContentType().startsWith("image/"))
                 throw new InvalidFileTypeException("Image file like jpeg");
         }
 
         Campaign result = campaignService.addCampaign(campaign);
-        if (result == null) throw new CampaignTitleExistsException(campaign.getTitle());
 
         // create array of rewards
-        if (rewardsJson != null) {
-            List<Reward> rewardsArr = new ArrayList<>();
+        if (rewardJson != null) {
             try {
-                JSONArray rewardsJsonArr = new JSONArray(rewardsJson);
-                for (int i = 0; i < rewardsJsonArr.length(); i++) {
-                    JSONObject current = rewardsJsonArr.getJSONObject(i);
-                    String rewardName = current.getString("rewardName");
-                    String rewardTypeName = current.getString("rewardType");
-                    RewardType rewardType = rewardTypeService.getRewardTypeByName(rewardTypeName).orElseThrow(() -> new ResourceNotFoundException("Reward type ''" + rewardTypeName + "'"));
-                    
-                    Reward reward = new Reward();
-                    reward.setRewardName(rewardName);
-                    reward.setRewardType(rewardType);
-                    rewardsArr.add(reward);
-                }
+                JSONObject rewardJsonObj = new JSONObject(rewardJson);
+                String rewardName = rewardJsonObj.getString("rewardName");
+                String rewardTypeName = rewardJsonObj.getString("rewardType");
+                Integer goal;
+                if (!rewardJsonObj.has("goal")) goal = null;
+                else goal = rewardJsonObj.getInt("goal");
+                String tnc = rewardJsonObj.getString("tnc");
+                RewardInputModel rewardInput = new RewardInputModel(rewardTypeName, rewardName, goal, tnc);
+                
+                Set<ConstraintViolation<RewardInputModel>> constraintViolation =  validator.validate(rewardInput);
+                if (!constraintViolation.isEmpty()) throw new ConstraintViolationException(constraintViolation);
+
+                Reward reward = rewardInput.convertToReward(rewardTypeService);
+                reward = rewardService.addReward(reward, result);
+                result.setRewards(reward);
             } catch (JSONException e) {
-                throw new InvalidJsonException("rewardsArr", e);
+                throw new InvalidJsonException("reward", e);
             }
-            rewardsArr = rewardService.addReward(rewardsArr, result);
-            result.setRewards(rewardsArr);
         }
         
         if (image != null && !image.isEmpty()) {
             String filename = StorageService.CAMPAIGNS_DIR + result.getId() + image.getOriginalFilename().substring(image.getOriginalFilename().lastIndexOf("."));
             result = campaignService.updateCampaignImage(campaign, filename);
-
+            
             storageService.putObject(filename, image);
         }
 
-        entityManager.detach(result);
-        result.setImage(storageService.getUrl(result.getImage()));
+        result.constructImageUrl(storageService);
 
         return result;
     }
@@ -138,7 +137,6 @@ public class CampaignController {
         }
 
         Campaign result = campaignService.updateCampaign(campaign, id);
-        if (result == null) throw new CampaignTitleExistsException(campaign.getTitle());
         
         if (image != null && !image.isEmpty()) {
             if (result.getImage() != null)
@@ -150,9 +148,7 @@ public class CampaignController {
             storageService.putObject(filename, image);
         }
 
-        entityManager.detach(result);
-        result.setImage(storageService.getUrl(result.getImage()));
-
+        result.constructImageUrl(storageService);
         return result;
     }
 

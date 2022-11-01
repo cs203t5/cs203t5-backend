@@ -3,14 +3,10 @@ package com.example.Vox.Viridis;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.URI;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
-
-import javax.transaction.Transactional;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,14 +17,9 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 import com.example.Vox.Viridis.model.Campaign;
 import com.example.Vox.Viridis.model.Participation;
@@ -43,10 +34,6 @@ import com.example.Vox.Viridis.repository.RewardRepository;
 import com.example.Vox.Viridis.repository.RewardTypeRepository;
 import com.example.Vox.Viridis.repository.RoleRepository;
 import com.example.Vox.Viridis.repository.UsersRepository;
-
-import org.json.JSONObject;
-
-import lombok.Data;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 
@@ -186,7 +173,9 @@ public class ParticipationIntegrationTest {
                 new ParameterizedTypeReference<List<Participation>>() {
                 });
         assertEquals(200, result.getStatusCode().value());
-        assertEquals(participation.getId(), result.getBody().get(0).getId());
+        List<Participation> participationsResult = result.getBody();
+        assertNotNull(participationsResult);
+        assertEquals(participation.getId(), participationsResult.get(0).getId());
     }
     
     @Test

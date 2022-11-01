@@ -1,5 +1,6 @@
 package com.example.Vox.Viridis.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -46,6 +47,7 @@ public class ParticipationService {
         }
 
         Participation participation = new Participation();
+        participation.setParticipatedOn(LocalDateTime.now());
         participation.setUser(currentUser);
         participation.setReward(reward);
 

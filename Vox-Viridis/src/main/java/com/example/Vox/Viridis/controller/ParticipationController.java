@@ -3,7 +3,6 @@ package com.example.Vox.Viridis.controller;
 import java.util.List;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,10 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.Vox.Viridis.exception.ParticipationAlreadyJoinedException;
 import com.example.Vox.Viridis.model.Participation;
+import com.example.Vox.Viridis.model.ParticipationAddPointInputModel;
 import com.example.Vox.Viridis.service.ParticipationService;
 import com.example.Vox.Viridis.service.StorageService;
 
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
 @RestController()
@@ -54,10 +53,4 @@ public class ParticipationController {
         @RequestBody @Valid ParticipationAddPointInputModel input) {
         return participationService.addNoOfStamps(id, input.getNoOfStamp());
     }
-}
-
-@Data
-class ParticipationAddPointInputModel {
-    @Min(value = 1, message = "noOfStamp must be at least 1") 
-    private int noOfStamp;
 }

@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
@@ -176,6 +177,84 @@ public class ParticipationIntegrationTest {
         List<Participation> participationsResult = result.getBody();
         assertNotNull(participationsResult);
         assertEquals(participation.getId(), participationsResult.get(0).getId());
+    }
+
+    @Test
+    public void getMyParticipation_ReturnPage1_Success() throws Exception {
+        URI uri = new URI(baseUrl + port + "/api/participation");
+        final int CREATE_NUM_DATA = 25; // will create 25 sample data
+        final int LIMIT = 20; // the limit that the backend will return
+
+        Users currentUser = getCurrentUser();
+
+        Users admin = createAdminAccount();
+        List<Reward> rewardArr = new ArrayList<>();
+        for (int i = 0; i < CREATE_NUM_DATA; i++) {
+            Campaign campaign = createCampaign(admin);
+            Reward reward = new Reward(null, "reward name", campaign, getRewardType("Points"),
+                    10, "tnc12345", null);
+            rewardArr.add(reward);
+        }
+        rewardArr = rewards.saveAll(rewardArr);
+
+        List<Participation> participationArr = new ArrayList<>();
+        for (Reward reward : rewardArr) {
+            Participation participation = new Participation(null, 0, LocalDateTime.now(), reward, currentUser);
+            participationArr.add(participation);
+        }
+        participationArr = participations.saveAll(participationArr);
+
+        ResponseEntity<List<Participation>> result = authenticatedConsumerRestTemplate().exchange(uri,
+                HttpMethod.GET, null,
+                new ParameterizedTypeReference<List<Participation>>() {
+                });
+        assertEquals(200, result.getStatusCode().value());
+        List<Participation> participationsResult = result.getBody();
+        assertNotNull(participationsResult);
+        assertEquals(LIMIT, participationsResult.size());
+        for (int i = 0; i < LIMIT; i++) {
+            Participation participation = participationArr.get(i);
+            assertEquals(participation.getId(), participationsResult.get(i).getId());
+        }
+    }
+
+    @Test
+    public void getMyParticipation_ReturnPage2_Success() throws Exception {
+        URI uri = new URI(baseUrl + port + "/api/participation?pageNum=1"); // should return page 2
+        final int CREATE_NUM_DATA = 25; // will create 25 sample data
+        final int LIMIT = 20; // the limit that the backend will return
+
+        Users currentUser = getCurrentUser();
+
+        Users admin = createAdminAccount();
+        List<Reward> rewardArr = new ArrayList<>();
+        for (int i = 0; i < CREATE_NUM_DATA; i++) {
+            Campaign campaign = createCampaign(admin);
+            Reward reward = new Reward(null, "reward name", campaign, getRewardType("Points"),
+                    10, "tnc12345", null);
+            rewardArr.add(reward);
+        }
+        rewardArr = rewards.saveAll(rewardArr);
+
+        List<Participation> participationArr = new ArrayList<>();
+        for (Reward reward : rewardArr) {
+            Participation participation = new Participation(null, 0, LocalDateTime.now(), reward, currentUser);
+            participationArr.add(participation);
+        }
+        participationArr = participations.saveAll(participationArr);
+
+        ResponseEntity<List<Participation>> result = authenticatedConsumerRestTemplate().exchange(uri,
+                HttpMethod.GET, null,
+                new ParameterizedTypeReference<List<Participation>>() {
+                });
+        assertEquals(200, result.getStatusCode().value());
+        List<Participation> participationsResult = result.getBody();
+        assertNotNull(participationsResult);
+        assertEquals(participationArr.size() - LIMIT, participationsResult.size());
+        for (int i = LIMIT; i < participationArr.size(); i++) {
+            Participation participation = participationArr.get(i);
+            assertEquals(participation.getId(), participationsResult.get(i - LIMIT).getId());
+        }
     }
     
     @Test

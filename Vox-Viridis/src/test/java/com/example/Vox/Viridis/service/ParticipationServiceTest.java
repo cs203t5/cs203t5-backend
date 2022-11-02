@@ -15,6 +15,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import com.example.Vox.Viridis.model.Campaign;
 import com.example.Vox.Viridis.model.Participation;
@@ -84,15 +86,17 @@ public class ParticipationServiceTest {
         Participation participation = new Participation(1l, 0, LocalDateTime.now(), reward1, currentUser);
         reward1.setParticipations(List.of(participation));
 
-        when(participations.findByUser(currentUser)).thenReturn(List.of(
+        Pageable pageable = PageRequest.of(0, 20);
+
+        when(participations.findByUser(currentUser, pageable)).thenReturn(List.of(
            participation 
         ));
         when(usersService.getCurrentUser()).thenReturn(currentUser);
 
-        List<Participation> result = participationService.getMyParticipation();
+        List<Participation> result = participationService.getMyParticipation(0);
 
         assertNotNull(result);
-        verify(participations).findByUser(currentUser);
+        verify(participations).findByUser(currentUser, pageable);
         verify(usersService).getCurrentUser();
     }
 

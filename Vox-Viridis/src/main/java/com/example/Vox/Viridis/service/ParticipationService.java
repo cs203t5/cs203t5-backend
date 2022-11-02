@@ -3,6 +3,8 @@ package com.example.Vox.Viridis.service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.Vox.Viridis.exception.MaxStampException;
@@ -23,8 +25,9 @@ public class ParticipationService {
     private final UsersService usersService;
     private final RewardService rewardService;
 
-    public List<Participation> getMyParticipation() {
-        return participations.findByUser(usersService.getCurrentUser());
+    public List<Participation> getMyParticipation(int pageNum) {
+        Pageable pageable = PageRequest.of(pageNum, 20);
+        return participations.findByUser(usersService.getCurrentUser(), pageable);
     }
 
     public int getMyPoints() {

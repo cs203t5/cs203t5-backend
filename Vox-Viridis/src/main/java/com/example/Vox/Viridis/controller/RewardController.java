@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,13 +33,17 @@ public class RewardController {
     private final RewardTypeService rewardTypeService;
 
     @GetMapping("myReward")
-    public List<Reward> getRewardsByUserId() {
-        return rewardService.getRewardsByCurrentUser();
+    public List<Reward> getRewardsByUserId(@RequestParam(value = "pageNum", required = false) Integer pageNum) {
+        if (pageNum == null)
+            pageNum = 0;
+        return rewardService.getRewardsByCurrentUser(pageNum);
     }
 
     @GetMapping()
-    public List<Reward> getRewards() {
-        return rewardService.getRewards();
+    public List<Reward> getRewards(@RequestParam(value = "pageNum", required = false) Integer pageNum) {
+        if (pageNum == null)
+            pageNum = 0;
+        return rewardService.getRewards(pageNum);
     }
 
     @GetMapping("byCampaign/{campaignId}")

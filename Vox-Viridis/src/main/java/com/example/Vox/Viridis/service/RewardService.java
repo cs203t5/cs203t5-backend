@@ -3,6 +3,8 @@ package com.example.Vox.Viridis.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.Vox.Viridis.exception.CampaignAlreadyHasReward;
@@ -29,8 +31,10 @@ public class RewardService {
      * Will get rewards that are not expired (or hasn't ended)
      * @return List of rewards that hasn't ended
      */
-    public List<Reward> getRewards() {
-        List<Reward> result = rewards.findAllNotEnded();
+    public List<Reward> getRewards(int pageNum) {
+        Pageable pageable = PageRequest.of(pageNum, 20);
+        
+        List<Reward> result = rewards.findAllNotEnded(pageable);
         result.forEach(reward -> reward.constructCampaignImage(storageService));
         return result;
     }
@@ -46,8 +50,10 @@ public class RewardService {
         return result;
     }
 
-    public List<Reward> getRewardsByCurrentUser() {
-        List<Reward> result = rewards.findByUsers_accountId(usersService.getCurrentUser().getAccountId());
+    public List<Reward> getRewardsByCurrentUser(int pageNum) {
+        Pageable pageable = PageRequest.of(pageNum, 20);
+
+        List<Reward> result = rewards.findByUsers_accountId(usersService.getCurrentUser().getAccountId(), pageable);
         result.forEach(reward -> reward.constructCampaignImage(storageService));
         return result;
     }

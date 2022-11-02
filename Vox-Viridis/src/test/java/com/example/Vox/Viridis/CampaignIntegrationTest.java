@@ -840,7 +840,7 @@ public class CampaignIntegrationTest {
         }
 
         @Test
-        public void addCampaign_DuplicateTitle_Success() throws Exception {
+        public void addCampaign_DuplicateTitle_Fail() throws Exception {
                 URI uri = new URI(baseUrl + port + "/api/campaign");
 
                 Campaign campaign = new Campaign();
@@ -868,11 +868,7 @@ public class CampaignIntegrationTest {
 
                 ResponseEntity<Campaign> result = authenticatedRestTemplate().postForEntity(uri,
                                 request, Campaign.class);
-                assertEquals(201, result.getStatusCode().value());
-                Campaign campaignResult = result.getBody();
-                assertNotNull(campaignResult);
-                assertEquals("South", campaignResult.getLocation());
-                assertEquals(campaign.getTitle(), campaignResult.getTitle());
+                assertEquals(409, result.getStatusCode().value());
         }
 
         @Test
@@ -951,11 +947,7 @@ public class CampaignIntegrationTest {
                 ResponseEntity<Campaign> result =
                                 authenticatedRestTemplate().exchange(uri + "/" + campaign2.getId(),
                                                 HttpMethod.PUT, request, Campaign.class);
-                assertEquals(200, result.getStatusCode().value());
-                Campaign campaignResult = result.getBody();
-                assertNotNull(campaignResult);
-                assertEquals("South", campaignResult.getLocation());
-                assertEquals(campaign.getTitle(), campaignResult.getTitle());
+                assertEquals(409, result.getStatusCode().value());
         }
 
         @Test

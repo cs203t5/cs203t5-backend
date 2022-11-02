@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.Vox.Viridis.exception.ResourceNotFoundException;
+import com.example.Vox.Viridis.exception.CampaignTitleExistsException;
 import com.example.Vox.Viridis.exception.InvalidFileTypeException;
 import com.example.Vox.Viridis.exception.InvalidJsonException;
 import com.example.Vox.Viridis.model.Campaign;
@@ -96,6 +97,7 @@ public class CampaignController {
         }
 
         Campaign result = campaignService.addCampaign(campaign);
+        if (result == null) throw new CampaignTitleExistsException(campaign.getTitle());
 
         // create array of rewards
         if (rewardJson != null) {
@@ -146,6 +148,7 @@ public class CampaignController {
         }
 
         Campaign result = campaignService.updateCampaign(campaign, id);
+        if (result == null) throw new CampaignTitleExistsException(campaign.getTitle());
 
         if (image != null && !image.isEmpty()) {
             if (result.getImage() != null)

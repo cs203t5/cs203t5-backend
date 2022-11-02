@@ -34,7 +34,13 @@ public class CampaignServiceImpl implements CampaignService {
     }
 
     public Campaign addCampaign(Campaign campaign) {
-        log.info("Campaign created: " + campaign.getTitle());
+        String title = campaign.getTitle();
+        if (!campaignRepository.findByTitle(title).isEmpty()) {
+            log.error("Error creating Campaign: duplicate title: " + title);
+            return null;
+        }
+
+        log.info("Campaign created: " + title);
         campaign.setCreatedOn(LocalDateTime.now());
         campaign.setCreatedBy(usersService.getCurrentUser());
         return campaignRepository.save(campaign);
@@ -84,6 +90,14 @@ public class CampaignServiceImpl implements CampaignService {
     public Campaign updateCampaign(Campaign updatedCampaign, Long id) {
         Campaign existingCampaign = getCampaign(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Campaign id " + id));
+        
+        // Check if there's duplicate title
+        List<Campaign> tmp = campaignRepository.findByTitle(updatedCampaign.getTitle());
+        if (!((tmp.size() == 1 && tmp.get(0).getId() == id) || tmp.size() == 0)) {
+            log.error("Error creating Campaign: duplicate title: " + updatedCampaign.getTitle());
+            return null;
+        }
+        
         Users username = usersService.getCurrentUser();
         if (username != null && !existingCampaign.getCreatedBy().equals(username))
             throw new NotOwnerException();

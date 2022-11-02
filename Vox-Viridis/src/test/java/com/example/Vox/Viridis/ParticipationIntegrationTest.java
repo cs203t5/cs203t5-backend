@@ -123,12 +123,15 @@ public class ParticipationIntegrationTest {
         return user;
     }
 
-    private Campaign createCampaign(Users createdBy) {
+    private Campaign createCampaign(String campaignTitle, Users createdBy) {
         return campaigns.save(
                 new Campaign(null,
-                        "Campaign title", "campaign description",
+                        campaignTitle, "campaign description",
                         LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2),
                         "North", "SMU address", null, "Plastic", null, createdBy, LocalDateTime.now(), null));
+    }
+    private Campaign createCampaign(Users createdBy) {
+        return createCampaign("Campaign title", createdBy);
     }
 
     private RewardType getRewardType(String rewardType) {
@@ -190,7 +193,7 @@ public class ParticipationIntegrationTest {
         Users admin = createAdminAccount();
         List<Reward> rewardArr = new ArrayList<>();
         for (int i = 0; i < CREATE_NUM_DATA; i++) {
-            Campaign campaign = createCampaign(admin);
+            Campaign campaign = createCampaign("Campaign title " + i, admin);
             Reward reward = new Reward(null, "reward name", campaign, getRewardType("Points"),
                     10, "tnc12345", null);
             rewardArr.add(reward);
@@ -229,7 +232,7 @@ public class ParticipationIntegrationTest {
         Users admin = createAdminAccount();
         List<Reward> rewardArr = new ArrayList<>();
         for (int i = 0; i < CREATE_NUM_DATA; i++) {
-            Campaign campaign = createCampaign(admin);
+            Campaign campaign = createCampaign("Campaign title " + i, admin);
             Reward reward = new Reward(null, "reward name", campaign, getRewardType("Points"),
                     10, "tnc12345", null);
             rewardArr.add(reward);

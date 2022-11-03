@@ -1,8 +1,8 @@
 package com.example.Vox.Viridis.service;
 
-import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -13,6 +13,7 @@ import com.example.Vox.Viridis.exception.ResourceNotFoundException;
 import com.example.Vox.Viridis.model.Campaign;
 import com.example.Vox.Viridis.model.Reward;
 import com.example.Vox.Viridis.model.Users;
+import com.example.Vox.Viridis.model.dto.PaginationDTO;
 import com.example.Vox.Viridis.repository.RewardRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -31,12 +32,12 @@ public class RewardService {
      * Will get rewards that are not expired (or hasn't ended)
      * @return List of rewards that hasn't ended
      */
-    public List<Reward> getRewards(int pageNum) {
+    public PaginationDTO<Reward> getRewards(int pageNum) {
         Pageable pageable = PageRequest.of(pageNum, 20);
         
-        List<Reward> result = rewards.findAllNotEnded(pageable);
-        result.forEach(reward -> reward.constructCampaignImage(storageService));
-        return result;
+        Page<Reward> result = rewards.findAllNotEnded(pageable);
+        result.getContent().forEach(reward -> reward.constructCampaignImage(storageService));
+        return new PaginationDTO<>(result);
     }
 
     /**
@@ -50,12 +51,12 @@ public class RewardService {
         return result;
     }
 
-    public List<Reward> getRewardsByCurrentUser(int pageNum) {
+    public PaginationDTO<Reward> getRewardsByCurrentUser(int pageNum) {
         Pageable pageable = PageRequest.of(pageNum, 20);
 
-        List<Reward> result = rewards.findByUsers_accountId(usersService.getCurrentUser().getAccountId(), pageable);
+        Page<Reward> result = rewards.findByUsers_accountId(usersService.getCurrentUser().getAccountId(), pageable);
         result.forEach(reward -> reward.constructCampaignImage(storageService));
-        return result;
+        return new PaginationDTO<>(result);
     }
 
     /**

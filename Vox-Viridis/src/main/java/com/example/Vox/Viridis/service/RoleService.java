@@ -36,19 +36,20 @@ public class RoleService {
         return roleRepository.save(role).convertToDTO();
     }
 
-    public RoleDTO updateRole(Role role) {
-        Role currentRole = roleRepository.findById(role.getRoleId()).get();
+    public RoleDTO updateRole(String name, Role role) {
+        Role currentRole = roleRepository.findByName(name);
         currentRole.setName(role.getName());
         return roleRepository.save(currentRole).convertToDTO();
     }
 
-    public boolean deleteRole(long id) {
+    public boolean deleteRole(String name) {
         try {
-            roleRepository.deleteById(id);
-            log.info("Role with id " + id + " was deleted");
+            Role role = roleRepository.findByName(name);
+            roleRepository.deleteById(role.getRoleId());
+            log.info("Role with name " + name + " was deleted");
             return true;
         } catch (Exception e) {
-            log.info("Role with id " + id + " was not deleted");
+            log.info("Role with name " + name + " was not deleted");
             return false;
         }
     }

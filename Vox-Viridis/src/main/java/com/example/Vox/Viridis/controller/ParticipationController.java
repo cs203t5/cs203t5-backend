@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.Vox.Viridis.exception.ParticipationAlreadyJoinedException;
 import com.example.Vox.Viridis.model.Participation;
 import com.example.Vox.Viridis.model.ParticipationAddPointInputModel;
+import com.example.Vox.Viridis.model.dto.PaginationDTO;
 import com.example.Vox.Viridis.service.ParticipationService;
 import com.example.Vox.Viridis.service.StorageService;
 
@@ -30,7 +31,7 @@ public class ParticipationController {
     private final StorageService storageService;
 
     @GetMapping
-    public List<Participation> getMyParticipation(@RequestParam(value = "pageNum", required = false) Integer pageNum) {
+    public PaginationDTO<Participation> getMyParticipation(@RequestParam(value = "pageNum", required = false) Integer pageNum) {
         if (pageNum == null)
             pageNum = 0;
         return participationService.getMyParticipation(pageNum);

@@ -29,6 +29,7 @@ import com.example.Vox.Viridis.model.Reward;
 import com.example.Vox.Viridis.model.RewardType;
 import com.example.Vox.Viridis.model.Role;
 import com.example.Vox.Viridis.model.Users;
+import com.example.Vox.Viridis.model.dto.PaginationDTO;
 import com.example.Vox.Viridis.repository.CampaignRepository;
 import com.example.Vox.Viridis.repository.ParticipationRepository;
 import com.example.Vox.Viridis.repository.RewardRepository;
@@ -172,14 +173,16 @@ public class ParticipationIntegrationTest {
         Participation participation = new Participation(null, 0, LocalDateTime.now(), reward, currentUser);
         participation = participations.save(participation);
 
-        ResponseEntity<List<Participation>> result = authenticatedConsumerRestTemplate().exchange(uri,
+        ResponseEntity<PaginationDTO<Participation>> result = authenticatedConsumerRestTemplate().exchange(uri,
                 HttpMethod.GET, null,
-                new ParameterizedTypeReference<List<Participation>>() {
+                new ParameterizedTypeReference<PaginationDTO<Participation>>() {
                 });
         assertEquals(200, result.getStatusCode().value());
-        List<Participation> participationsResult = result.getBody();
+        PaginationDTO<Participation> participationsResult = result.getBody();
         assertNotNull(participationsResult);
-        assertEquals(participation.getId(), participationsResult.get(0).getId());
+        assertEquals(1, participationsResult.getTotalElements());
+        assertEquals(1, participationsResult.getTotalNumPage());
+        assertEquals(participation.getId(), participationsResult.getElements().get(0).getId());
     }
 
     @Test
@@ -207,17 +210,20 @@ public class ParticipationIntegrationTest {
         }
         participationArr = participations.saveAll(participationArr);
 
-        ResponseEntity<List<Participation>> result = authenticatedConsumerRestTemplate().exchange(uri,
+        ResponseEntity<PaginationDTO<Participation>> result = authenticatedConsumerRestTemplate().exchange(uri,
                 HttpMethod.GET, null,
-                new ParameterizedTypeReference<List<Participation>>() {
+                new ParameterizedTypeReference<PaginationDTO<Participation>>() {
                 });
         assertEquals(200, result.getStatusCode().value());
-        List<Participation> participationsResult = result.getBody();
+        PaginationDTO<Participation> participationsResult = result.getBody();
         assertNotNull(participationsResult);
-        assertEquals(LIMIT, participationsResult.size());
+        assertEquals(LIMIT, participationsResult.getElements().size());
+        assertEquals(CREATE_NUM_DATA, participationsResult.getTotalElements());
+        assertEquals(Math.ceil((double)CREATE_NUM_DATA / LIMIT), participationsResult.getTotalNumPage());
         for (int i = 0; i < LIMIT; i++) {
             Participation participation = participationArr.get(i);
-            assertEquals(participation.getId(), participationsResult.get(i).getId());
+            Participation actual = participationsResult.getElements().get(i);
+            assertEquals(participation.getId(), actual.getId());
         }
     }
 
@@ -246,17 +252,20 @@ public class ParticipationIntegrationTest {
         }
         participationArr = participations.saveAll(participationArr);
 
-        ResponseEntity<List<Participation>> result = authenticatedConsumerRestTemplate().exchange(uri,
+        ResponseEntity<PaginationDTO<Participation>> result = authenticatedConsumerRestTemplate().exchange(uri,
                 HttpMethod.GET, null,
-                new ParameterizedTypeReference<List<Participation>>() {
+                new ParameterizedTypeReference<PaginationDTO<Participation>>() {
                 });
         assertEquals(200, result.getStatusCode().value());
-        List<Participation> participationsResult = result.getBody();
+        PaginationDTO<Participation> participationsResult = result.getBody();
         assertNotNull(participationsResult);
-        assertEquals(participationArr.size() - LIMIT, participationsResult.size());
+        assertEquals(participationsResult.getTotalElements(), participationArr.size());
+        assertEquals(Math.ceil((double)participationArr.size() / LIMIT), participationsResult.getTotalNumPage());
+        assertEquals(participationArr.size() - LIMIT, participationsResult.getElements().size());
         for (int i = LIMIT; i < participationArr.size(); i++) {
             Participation participation = participationArr.get(i);
-            assertEquals(participation.getId(), participationsResult.get(i - LIMIT).getId());
+            Participation actual = participationsResult.getElements().get(i - LIMIT);
+            assertEquals(participation.getId(), actual.getId());
         }
     }
     

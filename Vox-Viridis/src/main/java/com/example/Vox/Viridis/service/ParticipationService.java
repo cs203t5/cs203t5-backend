@@ -3,6 +3,7 @@ package com.example.Vox.Viridis.service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import com.example.Vox.Viridis.exception.ResourceNotFoundException;
 import com.example.Vox.Viridis.model.Participation;
 import com.example.Vox.Viridis.model.Reward;
 import com.example.Vox.Viridis.model.Users;
+import com.example.Vox.Viridis.model.dto.PaginationDTO;
 import com.example.Vox.Viridis.repository.ParticipationRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -25,9 +27,10 @@ public class ParticipationService {
     private final UsersService usersService;
     private final RewardService rewardService;
 
-    public List<Participation> getMyParticipation(int pageNum) {
+    public PaginationDTO<Participation> getMyParticipation(int pageNum) {
         Pageable pageable = PageRequest.of(pageNum, 20);
-        return participations.findByUser(usersService.getCurrentUser(), pageable);
+        Page<Participation> result = participations.findByUser(usersService.getCurrentUser(), pageable);
+        return new PaginationDTO<>(result);
     }
 
     public int getMyPoints() {

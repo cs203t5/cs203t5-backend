@@ -101,7 +101,7 @@ public class CampaignServiceImpl implements CampaignService {
         }
         
         Users username = usersService.getCurrentUser();
-        if (username != null && !existingCampaign.getCreatedBy().equals(username))
+        if (!existingCampaign.getCreatedBy().equals(username))
             throw new NotOwnerException();
 
         updatedCampaign.setId(id);
@@ -118,8 +118,7 @@ public class CampaignServiceImpl implements CampaignService {
     @Override
     public void deleteCampaign(Long id) {
         Users username = usersService.getCurrentUser();
-        if (username != null
-                && !campaignRepository.getCreatedBy(id).equals(username.getAccountId()))
+        if (!campaignRepository.getCreatedBy(id).equals(username.getAccountId()))
             throw new NotOwnerException();
         log.info("Delete campaign id: " + id);
         campaignRepository.deleteById(id);

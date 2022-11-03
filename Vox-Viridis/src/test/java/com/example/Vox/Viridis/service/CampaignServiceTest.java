@@ -166,11 +166,19 @@ public class CampaignServiceTest {
 
     @Test
     void updateCampaign_NewTitle_ReturnSavedCampaign() {
+        Users admin = new Users();
+        admin.setAccountId(1l);
+        admin.setEmail("campaign@test.com");
+        admin.setFirstName("Admin");
+        admin.setLastName("name");
+        admin.setUsername("admin123");
+
         Campaign campaign = new Campaign();
         campaign.setId(2l);
         campaign.setTitle("New Campaign");
         campaign.setStartDate(LocalDateTime.now());
         campaign.setEndDate(LocalDateTime.now().plusDays(1));
+        campaign.setCreatedBy(admin);
 
         Campaign updatedCampaign = new Campaign();
         updatedCampaign.setTitle("New New Campaign");
@@ -180,7 +188,7 @@ public class CampaignServiceTest {
         when(campaigns.findByTitle(any(String.class))).thenReturn(new ArrayList<Campaign>());
         when(campaigns.findById(2l)).thenReturn(Optional.of(campaign));
         when(campaigns.save(any(Campaign.class))).thenReturn(updatedCampaign);
-        when(usersService.getCurrentUser()).thenReturn(null);
+        when(usersService.getCurrentUser()).thenReturn(admin);
 
         Campaign savedCampaign = campaignService.updateCampaign(updatedCampaign, 2l);
 
@@ -193,11 +201,19 @@ public class CampaignServiceTest {
 
     @Test
     void updateCampaign_TitleUnchanged_ReturnSavedCampaign() {
+        Users admin = new Users();
+        admin.setAccountId(1l);
+        admin.setEmail("campaign@test.com");
+        admin.setFirstName("Admin");
+        admin.setLastName("name");
+        admin.setUsername("admin123");
+
         Campaign campaign = new Campaign();
         campaign.setId(2l);
         campaign.setTitle("New Campaign");
         campaign.setStartDate(LocalDateTime.now());
         campaign.setEndDate(LocalDateTime.now().plusDays(1));
+        campaign.setCreatedBy(admin);
 
         Campaign updatedCampaign = new Campaign();
         updatedCampaign.setTitle("New Campaign");
@@ -207,7 +223,7 @@ public class CampaignServiceTest {
         when(campaigns.findByTitle(any(String.class))).thenReturn(new ArrayList<Campaign>());
         when(campaigns.findById(2l)).thenReturn(Optional.of(campaign));
         when(campaigns.save(any(Campaign.class))).thenReturn(updatedCampaign);
-        when(usersService.getCurrentUser()).thenReturn(null);
+        when(usersService.getCurrentUser()).thenReturn(admin);
 
         Campaign savedCampaign = campaignService.updateCampaign(updatedCampaign, 2l);
 

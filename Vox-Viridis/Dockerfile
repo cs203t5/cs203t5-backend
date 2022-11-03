@@ -8,7 +8,7 @@ RUN mvn clean package -DskipTests
 # Using java 17
 FROM openjdk:17-oracle
 
-ARG JAR_FILE=/usr/src/app/target/*.jar
+ARG JAR_FILE=/usr/src/app/target/Vox-Viridis-0.0.1-SNAPSHOT.jar
 
 # Copying JAR file
 COPY --from=maven ${JAR_FILE} app.jar

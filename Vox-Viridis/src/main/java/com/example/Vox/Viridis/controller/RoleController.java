@@ -2,11 +2,13 @@ package com.example.Vox.Viridis.controller;
 
 import java.util.List;
 import javax.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.Vox.Viridis.model.Role;
@@ -33,12 +35,12 @@ public class RoleController {
     }
 
     @PostMapping
-    public RoleDTO createRole(@Valid Role role) {
-        return roleService.createRole(role);
+    public ResponseEntity<RoleDTO> createRole(@Valid @RequestBody Role role) {
+        return ResponseEntity.status(201).body(roleService.createRole(role));
     }
 
     @PutMapping("{id}")
-    public RoleDTO updateRole(@PathVariable long id, @Valid Role role) {
+    public RoleDTO updateRole(@PathVariable long id, @Valid @RequestBody Role role) {
         return roleService.updateRole(role);
     }
 

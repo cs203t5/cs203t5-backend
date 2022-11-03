@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import javax.transaction.Transactional;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -15,6 +16,7 @@ import com.example.Vox.Viridis.exception.ResourceNotFoundException;
 import com.example.Vox.Viridis.exception.NotOwnerException;
 import com.example.Vox.Viridis.model.Campaign;
 import com.example.Vox.Viridis.model.Users;
+import com.example.Vox.Viridis.model.dto.PaginationDTO;
 import com.example.Vox.Viridis.repository.CampaignRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -47,7 +49,7 @@ public class CampaignServiceImpl implements CampaignService {
     }
 
     @Override
-    public List<Campaign> getCampaign(int page, String filterByTitle, List<String> category,
+    public PaginationDTO<Campaign> getCampaign(int page, String filterByTitle, List<String> category,
             List<String> location, List<String> reward, boolean isOrderByNewest) {
         Sort sort = Sort.by("createdOn");
         if (isOrderByNewest)
@@ -59,10 +61,10 @@ public class CampaignServiceImpl implements CampaignService {
         Pageable pageable = PageRequest.of(page, 20, sort);
         if (filterByTitle == null)
             filterByTitle = "";
-        List<Campaign> campaigns =
+        Page<Campaign> campaigns =
                 campaignRepository.findByTitleAndCategoryAndLocationAndReward(filterByTitle,
-                        category, location, reward, pageable).getContent();
-        return campaigns;
+                        category, location, reward, pageable);
+        return new PaginationDTO<Campaign>(campaigns);
     }
 
     /**

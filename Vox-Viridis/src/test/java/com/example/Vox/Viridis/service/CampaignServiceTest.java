@@ -24,6 +24,7 @@ import org.springframework.data.domain.Sort;
 
 import com.example.Vox.Viridis.model.Campaign;
 import com.example.Vox.Viridis.model.Users;
+import com.example.Vox.Viridis.model.dto.PaginationDTO;
 import com.example.Vox.Viridis.repository.CampaignRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -97,11 +98,13 @@ public class CampaignServiceTest {
         when(campaigns.findByTitleAndCategoryAndLocationAndReward("", null, null, null, pageable))
                 .thenReturn(page);
 
-        List<Campaign> result = campaignService.getCampaign(0, null, null, null, null, true);
+        PaginationDTO<Campaign> result = campaignService.getCampaign(0, null, null, null, null, true);
 
         assertNotNull(result);
-        assertEquals(result.size(), 1);
-        assertEquals(result.get(0), campaign);
+        assertEquals(result.getTotalElements(), 1);
+        assertEquals(result.getElements().size(), 1);
+        assertEquals(result.getTotalNumPage(), 1);
+        assertEquals(result.getElements().get(0), campaign);
         verify(campaigns).findByTitleAndCategoryAndLocationAndReward("", null, null, null,
                 pageable);
     }
@@ -117,11 +120,13 @@ public class CampaignServiceTest {
         when(campaigns.findByTitleAndCategoryAndLocationAndReward("New", null, null, null,
                 pageable)).thenReturn(new PageImpl<>(List.of(campaign)));
 
-        List<Campaign> result = campaignService.getCampaign(0, "New", null, null, null, true);
+        PaginationDTO<Campaign> result = campaignService.getCampaign(0, "New", null, null, null, true);
 
         assertNotNull(result);
-        assertEquals(result.size(), 1);
-        assertEquals(result.get(0), campaign);
+        assertEquals(result.getTotalElements(), 1);
+        assertEquals(result.getElements().size(), 1);
+        assertEquals(result.getTotalNumPage(), 1);
+        assertEquals(result.getElements().get(0), campaign);
         verify(campaigns).findByTitleAndCategoryAndLocationAndReward("New", null, null, null,
                 pageable);
     }

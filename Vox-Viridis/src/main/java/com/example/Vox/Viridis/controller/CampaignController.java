@@ -31,6 +31,7 @@ import com.example.Vox.Viridis.exception.InvalidJsonException;
 import com.example.Vox.Viridis.model.Campaign;
 import com.example.Vox.Viridis.model.Reward;
 import com.example.Vox.Viridis.model.RewardInputModel;
+import com.example.Vox.Viridis.model.dto.PaginationDTO;
 import com.example.Vox.Viridis.service.CampaignService;
 import com.example.Vox.Viridis.service.RewardService;
 import com.example.Vox.Viridis.service.RewardTypeService;
@@ -66,7 +67,7 @@ public class CampaignController {
     }
 
     @GetMapping()
-    public List<Campaign> getCampaign(@RequestParam(value = "filterByTitle", required = false) String filterByTitle,
+    public PaginationDTO<Campaign> getCampaign(@RequestParam(value = "filterByTitle", required = false) String filterByTitle,
             @RequestParam(value = "category", required = false) List<String> category,
             @RequestParam(value = "location", required = false) List<String> location,
             @RequestParam(value = "reward", required = false) List<String> reward,
@@ -76,10 +77,10 @@ public class CampaignController {
             isOrderByNewest = true;
         if (pageNum == null)
             pageNum = 0;
-        List<Campaign> result = campaignService.getCampaign(pageNum, filterByTitle, category, location, reward,
+        PaginationDTO<Campaign> result = campaignService.getCampaign(pageNum, filterByTitle, category, location, reward,
                 isOrderByNewest);
 
-        result.forEach(campaign -> {
+        result.getElements().forEach(campaign -> {
             campaign.constructImageUrl(storageService);
         });
         return result;

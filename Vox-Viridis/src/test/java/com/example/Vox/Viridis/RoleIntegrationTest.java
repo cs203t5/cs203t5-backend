@@ -15,11 +15,14 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import com.example.Vox.Viridis.model.Role;
 import com.example.Vox.Viridis.model.Users;
 import com.example.Vox.Viridis.model.dto.RoleDTO;
@@ -147,4 +150,5 @@ public class RoleIntegrationTest {
 
         assertEquals(400, result.getStatusCode().value());
     }
+
 }

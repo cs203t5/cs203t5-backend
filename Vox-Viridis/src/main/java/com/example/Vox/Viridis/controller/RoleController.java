@@ -39,18 +39,18 @@ public class RoleController {
         return ResponseEntity.status(201).body(roleService.createRole(role));
     }
 
-    @PutMapping("{id}")
-    public RoleDTO updateRole(@PathVariable long id, @Valid @RequestBody Role role) {
-        return roleService.updateRole(role);
+    @PutMapping("{name}")
+    public RoleDTO updateRole(@PathVariable String name, @Valid @RequestBody Role role) {
+        return roleService.updateRole(name, role);
     }
 
-    @DeleteMapping("{id}")
-    public void deleteRole(@PathVariable long id) {
-        boolean isDeleted = roleService.deleteRole(id);
+    @DeleteMapping("{name}")
+    public void deleteRole(@PathVariable String name) {
+        boolean isDeleted = roleService.deleteRole(name);
         if (isDeleted) {
-            log.info("Role with id " + id + " was deleted");
+            log.info("Role with name " + name + " was deleted");
         } else {
-            log.info("Role with id " + id + " was not deleted");
+            log.info("Role with name " + name + " was not deleted");
         }
     }
 }

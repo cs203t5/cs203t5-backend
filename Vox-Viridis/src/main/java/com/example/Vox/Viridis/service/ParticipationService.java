@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.example.Vox.Viridis.exception.MaxStampException;
 import com.example.Vox.Viridis.exception.ResourceNotFoundException;
 import com.example.Vox.Viridis.model.Participation;
 import com.example.Vox.Viridis.model.Reward;
@@ -53,7 +54,8 @@ public class ParticipationService {
     }
 
     /**
-     * Add stamp to the Participation object
+     * If RewardType = stamp, Add stamp to the Participation object
+     * If RewardType = point, add {reward.goal} number of points to the Users object
      * @param noOfStamp noOfStamp to add to current Participation
      * @param id Participation id
      * @throws ResourceNotFoundException if participation id doesn't exist in Database
@@ -65,13 +67,22 @@ public class ParticipationService {
         
         if (!participation.getReward().getRewardType().getRewardType().equals("Cards")) {
             // If RewardType = Points, should update users.points instead
+            // Will add {reward.goal} number of points
             Users customer = participation.getUser();
-            customer.setPoints(customer.getPoints() + noOfStamp);
+            customer.setPoints(customer.getPoints() + participation.getReward().getGoal());
             usersService.updateUser(customer);
             return participation;
         }
         
-        participation.setNoOfStamp(participation.getNoOfStamp() + noOfStamp);
+        final int maxStamp = participation.getReward().getGoal();
+        if (participation.getNoOfStamp() >= maxStamp)
+            throw new MaxStampException(participation.getReward().getId(), maxStamp);
+        
+        if (participation.getNoOfStamp() + noOfStamp >= maxStamp)
+            participation.setNoOfStamp(maxStamp); // Can only get up to maxStamp
+        else
+            participation.setNoOfStamp(participation.getNoOfStamp() + noOfStamp);
+        
         return participations.save(participation);
     }
 }

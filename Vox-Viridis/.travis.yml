@@ -3,3 +3,4 @@ jdk: oraclejdk17
 
 script:
   - ./mvn clean install -B
+

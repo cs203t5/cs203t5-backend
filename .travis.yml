@@ -2,4 +2,5 @@ language: java
 jdk: oraclejdk17
 
 script:
-  - ./mvn clean install -B
+  - cd Vox-Viridis
+  - ./mvnw clean install -B

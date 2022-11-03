@@ -2,4 +2,5 @@ language: java
 jdk: oraclejdk17
 
 script:
-  - ./mvnw clean install -B
+  - ./mvn clean install -B
+

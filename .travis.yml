@@ -1,0 +1,5 @@
+language: java
+jdk: oraclejdk17
+
+script:
+  - ./mvnw clean install -B

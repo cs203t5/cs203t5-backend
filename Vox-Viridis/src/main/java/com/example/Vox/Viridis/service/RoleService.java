@@ -15,15 +15,21 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public class RoleService {
-    private RoleRepository roleRepository;
+    private final RoleRepository roleRepository;
 
     public List<RoleDTO> getRoles() {
         List<Role> roles = roleRepository.findAll();
         return roles.stream().map(role -> role.convertToDTO()).collect(Collectors.toList());
     }
 
-    public RoleDTO getRoleById(long id) {
-        return roleRepository.findById(id).get().convertToDTO();
+    public RoleDTO getRoleByName(String name) {
+        try {
+            Role role = roleRepository.findByName(name);
+            return role.convertToDTO();
+        } catch (Exception e) {
+            log.info("Role with name " + name + " was not found");
+            return null;
+        }
     }
 
     public RoleDTO createRole(Role role) {
@@ -39,8 +45,10 @@ public class RoleService {
     public boolean deleteRole(long id) {
         try {
             roleRepository.deleteById(id);
+            log.info("Role with id " + id + " was deleted");
             return true;
         } catch (Exception e) {
+            log.info("Role with id " + id + " was not deleted");
             return false;
         }
     }

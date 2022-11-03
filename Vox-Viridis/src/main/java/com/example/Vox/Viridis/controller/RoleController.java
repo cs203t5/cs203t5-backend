@@ -42,7 +42,7 @@ public class RoleController {
         return roleService.updateRole(role);
     }
 
-    @DeleteMapping
+    @DeleteMapping("{id}")
     public void deleteRole(@PathVariable long id) {
         boolean isDeleted = roleService.deleteRole(id);
         if (isDeleted) {

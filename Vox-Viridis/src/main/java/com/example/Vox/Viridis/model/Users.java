@@ -61,6 +61,9 @@ public class Users {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<Participation> userParticipation; // for customer
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "createdBy")
+    private List<Products> userProducts;
+
     public UsersDTO convertToDTO() {
         return new UsersDTO(accountId, username, firstName, lastName, email, points, image);
     }

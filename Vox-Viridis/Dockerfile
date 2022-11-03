@@ -3,6 +3,8 @@ FROM maven:3.8.3-openjdk-17 AS maven
 WORKDIR /usr/src/app
 COPY . /usr/src/app
 
+RUN mvn clean package -DskipTests
+
 # Using java 17
 FROM openjdk:17-oracle
 

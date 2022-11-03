@@ -2,11 +2,13 @@ package com.example.Vox.Viridis.controller;
 
 import java.util.List;
 import javax.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.Vox.Viridis.model.Role;
@@ -20,29 +22,29 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class RoleController {
-    private RoleService roleService;
+    private final RoleService roleService;
 
     @GetMapping
     public List<RoleDTO> getRoles() {
         return roleService.getRoles();
     }
 
-    @GetMapping("{id}")
-    public RoleDTO getRoleById(@PathVariable long id) {
-        return roleService.getRoleById(id);
+    @GetMapping("{name}")
+    public RoleDTO getRoleByName(@PathVariable String name) {
+        return roleService.getRoleByName(name);
     }
 
     @PostMapping
-    public RoleDTO createRole(@Valid Role role) {
-        return roleService.createRole(role);
+    public ResponseEntity<RoleDTO> createRole(@Valid @RequestBody Role role) {
+        return ResponseEntity.status(201).body(roleService.createRole(role));
     }
 
     @PutMapping("{id}")
-    public RoleDTO updateRole(@PathVariable long id, @Valid Role role) {
+    public RoleDTO updateRole(@PathVariable long id, @Valid @RequestBody Role role) {
         return roleService.updateRole(role);
     }
 
-    @DeleteMapping
+    @DeleteMapping("{id}")
     public void deleteRole(@PathVariable long id) {
         boolean isDeleted = roleService.deleteRole(id);
         if (isDeleted) {

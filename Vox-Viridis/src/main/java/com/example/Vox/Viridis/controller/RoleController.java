@@ -20,16 +20,16 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class RoleController {
-    private RoleService roleService;
+    private final RoleService roleService;
 
     @GetMapping
     public List<RoleDTO> getRoles() {
         return roleService.getRoles();
     }
 
-    @GetMapping("{id}")
-    public RoleDTO getRoleById(@PathVariable long id) {
-        return roleService.getRoleById(id);
+    @GetMapping("{name}")
+    public RoleDTO getRoleByName(@PathVariable String name) {
+        return roleService.getRoleByName(name);
     }
 
     @PostMapping

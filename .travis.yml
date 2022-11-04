@@ -1,0 +1,6 @@
+language: java
+jdk: oraclejdk17
+
+script:
+  - cd Vox-Viridis
+  - ./mvnw clean install -B

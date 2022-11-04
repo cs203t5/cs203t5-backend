@@ -48,16 +48,16 @@ public class CampaignController {
     private final Validator validator;
 
     @GetMapping("{id}")
-    public Campaign getCampaign(@PathVariable Long id){
-        Campaign result =  campaignService.getCampaign(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Campaign id " + id));
+    public Campaign getCampaign(@PathVariable Long id) {
+        Campaign result = campaignService.getCampaign(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Campaign id " + id));
         result.constructImageUrl(storageService);
         return result;
     }
 
     @GetMapping("myCampaign")
-    public List<Campaign> getMyCampaign(){
-        List<Campaign> result =  campaignService.getCampaignCreatedByCurrentUser();
+    public List<Campaign> getMyCampaign() {
+        List<Campaign> result = campaignService.getCampaignCreatedByCurrentUser();
         result.forEach(campaign -> {
             campaign.constructImageUrl(storageService);
         });
@@ -65,26 +65,30 @@ public class CampaignController {
     }
 
     @GetMapping()
-    public List<Campaign> getCampaign(@RequestParam(value="filterByTitle", required=false) String filterByTitle,
-            @RequestParam(value="category", required=false) List<String> category,
-            @RequestParam(value="location", required=false) List<String> location,
-            @RequestParam(value="reward", required=false) List<String> reward,
-            @RequestParam(value="isOrderByNewest", required=false) Boolean isOrderByNewest,
-            @RequestParam(value="pageNum", required=false) Integer pageNum){
-        if (isOrderByNewest == null) isOrderByNewest = true;
-        if (pageNum == null) pageNum = 0;
-        List<Campaign> result = campaignService.getCampaign(pageNum, filterByTitle, category, location, reward, isOrderByNewest);
-        
+    public List<Campaign> getCampaign(@RequestParam(value = "filterByTitle", required = false) String filterByTitle,
+            @RequestParam(value = "category", required = false) List<String> category,
+            @RequestParam(value = "location", required = false) List<String> location,
+            @RequestParam(value = "reward", required = false) List<String> reward,
+            @RequestParam(value = "isOrderByNewest", required = false) Boolean isOrderByNewest,
+            @RequestParam(value = "pageNum", required = false) Integer pageNum) {
+        if (isOrderByNewest == null)
+            isOrderByNewest = true;
+        if (pageNum == null)
+            pageNum = 0;
+        List<Campaign> result = campaignService.getCampaign(pageNum, filterByTitle, category, location, reward,
+                isOrderByNewest);
+
         result.forEach(campaign -> {
-                campaign.constructImageUrl(storageService);
-            });
+            campaign.constructImageUrl(storageService);
+        });
         return result;
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping()
-    public Campaign addCampaign(@ModelAttribute @Valid Campaign campaign, 
-            @RequestParam(value="imageFile", required=false) MultipartFile image, 
+    @Transactional
+    public Campaign addCampaign(@ModelAttribute @Valid Campaign campaign,
+            @RequestParam(value = "imageFile", required = false) MultipartFile image,
             @RequestParam(value = "reward", required = false) String rewardJson) {
         if (image != null && !image.isEmpty()) {
             if (image.getContentType() == null || !image.getContentType().startsWith("image/"))
@@ -100,13 +104,16 @@ public class CampaignController {
                 String rewardName = rewardJsonObj.getString("rewardName");
                 String rewardTypeName = rewardJsonObj.getString("rewardType");
                 Integer goal;
-                if (!rewardJsonObj.has("goal")) goal = null;
-                else goal = rewardJsonObj.getInt("goal");
+                if (!rewardJsonObj.has("goal"))
+                    goal = null;
+                else
+                    goal = rewardJsonObj.getInt("goal");
                 String tnc = rewardJsonObj.getString("tnc");
                 RewardInputModel rewardInput = new RewardInputModel(rewardTypeName, rewardName, goal, tnc);
-                
-                Set<ConstraintViolation<RewardInputModel>> constraintViolation =  validator.validate(rewardInput);
-                if (!constraintViolation.isEmpty()) throw new ConstraintViolationException(constraintViolation);
+
+                Set<ConstraintViolation<RewardInputModel>> constraintViolation = validator.validate(rewardInput);
+                if (!constraintViolation.isEmpty())
+                    throw new ConstraintViolationException(constraintViolation);
 
                 Reward reward = rewardInput.convertToReward(rewardTypeService);
                 reward = rewardService.addReward(reward, result);
@@ -115,11 +122,12 @@ public class CampaignController {
                 throw new InvalidJsonException("reward", e);
             }
         }
-        
+
         if (image != null && !image.isEmpty()) {
-            String filename = StorageService.CAMPAIGNS_DIR + result.getId() + image.getOriginalFilename().substring(image.getOriginalFilename().lastIndexOf("."));
+            String filename = StorageService.CAMPAIGNS_DIR + result.getId()
+                    + image.getOriginalFilename().substring(image.getOriginalFilename().lastIndexOf("."));
             result = campaignService.updateCampaignImage(campaign, filename);
-            
+
             storageService.putObject(filename, image);
         }
 
@@ -130,19 +138,21 @@ public class CampaignController {
 
     @Transactional
     @PutMapping("{id}")
-    public Campaign updateCampaign(@PathVariable Long id, @ModelAttribute @Valid Campaign campaign, @RequestParam(value="imageFile", required=false) MultipartFile image) {
+    public Campaign updateCampaign(@PathVariable Long id, @ModelAttribute @Valid Campaign campaign,
+            @RequestParam(value = "imageFile", required = false) MultipartFile image) {
         if (image != null && !image.isEmpty()) {
             if (image.getContentType() == null || !image.getContentType().startsWith("image/"))
                 throw new InvalidFileTypeException("Image file like jpeg");
         }
 
         Campaign result = campaignService.updateCampaign(campaign, id);
-        
+
         if (image != null && !image.isEmpty()) {
             if (result.getImage() != null)
                 storageService.deleteObject(result.getImage());
 
-            String filename = StorageService.CAMPAIGNS_DIR + result.getId() + image.getOriginalFilename().substring(image.getOriginalFilename().lastIndexOf("."));
+            String filename = StorageService.CAMPAIGNS_DIR + result.getId()
+                    + image.getOriginalFilename().substring(image.getOriginalFilename().lastIndexOf("."));
             result = campaignService.updateCampaignImage(campaign, filename);
 
             storageService.putObject(filename, image);
@@ -153,8 +163,9 @@ public class CampaignController {
     }
 
     @DeleteMapping("{id}")
-    public void deleteCampaign(@PathVariable Long id){
-        Campaign campaign = campaignService.getCampaign(id).orElseThrow(() -> new ResourceNotFoundException("Campaign id " + id));
+    public void deleteCampaign(@PathVariable Long id) {
+        Campaign campaign = campaignService.getCampaign(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Campaign id " + id));
         if (campaign.getImage() != null && !campaign.getImage().isBlank())
             storageService.deleteObject(campaign.getImage());
         campaignService.deleteCampaign(id);

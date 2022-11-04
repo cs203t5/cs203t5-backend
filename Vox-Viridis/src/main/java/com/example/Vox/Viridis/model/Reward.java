@@ -77,6 +77,11 @@ public class Reward {
     public String campaignImage() {
         return getOfferedBy().getImageUrl();
     }
+
+    @JsonProperty("companyImage")
+    public String companyImage() {
+        return getOfferedBy().companyImage();
+    }
     
     public void constructCampaignImage(StorageService storageService) {
         this.getOfferedBy().constructImageUrl(storageService);

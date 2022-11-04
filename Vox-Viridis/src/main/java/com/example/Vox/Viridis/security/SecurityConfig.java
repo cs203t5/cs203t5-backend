@@ -59,15 +59,17 @@ public class SecurityConfig {
                                 .hasAnyAuthority("BUSINESS", "ROLE_BUSINESS")
                                 .antMatchers(HttpMethod.GET, "/campaign/*").permitAll()
                                 .antMatchers(HttpMethod.GET, "/campaign").permitAll()
-                                .antMatchers(HttpMethod.GET, "/campaign/myCampaign").hasAnyAuthority("SCOPE_BUSINESS")
+                                .antMatchers(HttpMethod.GET, "/campaign/myCampaign")
+                                .hasAnyAuthority("SCOPE_BUSINESS")
 
                                 // users API
                                 .antMatchers(HttpMethod.PUT, "/users/role/**")
                                 .hasAnyAuthority("ADMIN", "ROLE_ADMIN")
-                                
+
                                 // reward API
-                                .antMatchers(HttpMethod.GET, "/reward", "/reward/*", "/reward/byCampaign/*").permitAll()
-                                .antMatchers(HttpMethod.POST, "/reward/*")
+                                .antMatchers(HttpMethod.GET, "/reward", "/reward/*",
+                                                "/reward/byCampaign/*")
+                                .permitAll().antMatchers(HttpMethod.POST, "/reward/*")
                                 .hasAnyAuthority("BUSINESS", "ROLE_BUSINESS")
                                 .antMatchers(HttpMethod.PUT, "/reward/*")
                                 .hasAnyAuthority("BUSINESS", "ROLE_BUSINESS")
@@ -80,9 +82,13 @@ public class SecurityConfig {
                                 .antMatchers(HttpMethod.GET, "/rewardType").permitAll()
 
                                 // Participation API
-                                .antMatchers(HttpMethod.GET, "/participation", "/participation/myPoints").hasAnyAuthority("CONSUMER", "ROLE_CONSUMER")
-                                .antMatchers(HttpMethod.POST, "/participation/*").hasAnyAuthority("CONSUMER", "ROLE_CONSUMER")
-                                .antMatchers(HttpMethod.POST, "/participation/addPoints/*").hasAnyAuthority("BUSINESS", "ROLE_BUSINESS")
+                                .antMatchers(HttpMethod.GET, "/participation",
+                                                "/participation/myPoints")
+                                .hasAnyAuthority("CONSUMER", "ROLE_CONSUMER")
+                                .antMatchers(HttpMethod.POST, "/participation/*")
+                                .hasAnyAuthority("CONSUMER", "ROLE_CONSUMER")
+                                .antMatchers(HttpMethod.POST, "/participation/addPoints/*")
+                                .hasAnyAuthority("BUSINESS", "ROLE_BUSINESS")
 
                                 // product API
                                 .antMatchers(HttpMethod.GET, "/products").permitAll()
@@ -95,6 +101,17 @@ public class SecurityConfig {
                                 .hasAnyAuthority("ADMIN","ROLE_ADMIN")
                                 .antMatchers(HttpMethod.POST, "/products/buy/*").hasAnyAuthority("CONSUMER","ROLE_CONSUMER")
 
+                                // Role API
+                                .antMatchers(HttpMethod.GET, "/role")
+                                .hasAnyAuthority("ADMIN", "ROLE_ADMIN")
+                                .antMatchers(HttpMethod.GET, "/role/*")
+                                .hasAnyAuthority("ADMIN", "ROLE_ADMIN")
+                                .antMatchers(HttpMethod.POST, "/role")
+                                .hasAnyAuthority("ADMIN", "ROLE_ADMIN")
+                                .antMatchers(HttpMethod.PUT, "/role/*")
+                                .hasAnyAuthority("ADMIN", "ROLE_ADMIN")
+                                .antMatchers(HttpMethod.DELETE, "/role/*")
+                                .hasAnyAuthority("ADMIN", "ROLE_ADMIN")
 
                                 .anyRequest().authenticated()).csrf(csrf -> csrf.disable())
                                 .httpBasic(Customizer.withDefaults())

@@ -30,9 +30,13 @@ public class UsersService {
         if (auth.getPrincipal() instanceof Jwt) {
             Jwt jwt = (Jwt) auth.getPrincipal();
             user1 = usersRepository.findByUsername(jwt.getSubject()).orElse(null);
-        } else {
+        } else if (auth.getPrincipal() instanceof SecurityUser) {
             SecurityUser user = (SecurityUser) auth.getPrincipal();
             user1 = usersRepository.findByUsername(user.getUsername()).orElse(null);
+        } else {
+            String user = (String) auth.getPrincipal();
+            log.info("user is" + user);
+            user1 = usersRepository.findByUsername(user).orElse(null);
         }
 
         return user1;

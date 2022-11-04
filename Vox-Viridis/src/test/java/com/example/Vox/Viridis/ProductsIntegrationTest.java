@@ -289,17 +289,19 @@ public class ProductsIntegrationTest {
 
                 HttpEntity<MultiValueMap<String, Integer>> request = new HttpEntity<MultiValueMap<String, Integer>>(map,headers);
                 ResponseEntity<Users> result = authenticatedRestTemplateConsumer().exchange(uri + "/"+  product.getId(),
-                                 HttpMethod.PUT, null, Users.class);
+                                 HttpMethod.PUT, request, Users.class);
                 assertEquals(200, result.getStatusCode().value());
                 assertEquals(70, getConsumer().getPoints());
         }
 
         @Test
         public void buyProducts_InvalidId_Fail() throws Exception{
-                URI uri = new URI(baseUrl + port + "/api/products/12");
-
-                ResponseEntity<Products> result = authenticatedRestTemplate().exchange(uri,
-                                HttpMethod.GET, null, Products.class);
+                URI uri = new URI(baseUrl + port + "/api/products/buy/12");
+                Users consumer = getConsumer();
+                consumer.setPoints(80);
+                users.save(consumer);
+                ResponseEntity<Users> result = authenticatedRestTemplate().exchange(uri,
+                                HttpMethod.PUT, null, Users.class);
                 assertEquals(404, result.getStatusCode().value());
         }
 
@@ -321,6 +323,7 @@ public class ProductsIntegrationTest {
                 ResponseEntity<Users> result = authenticatedRestTemplateConsumer().exchange(uri + "/"+  product.getId(),
                                  HttpMethod.PUT, null, Users.class);
                 assertEquals(400, result.getStatusCode().value());
+                assertEquals(5, consumer.getPoints());
         }
 
         }

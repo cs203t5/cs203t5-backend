@@ -24,7 +24,8 @@ PORT=8080
 checkHealth() {
     PORT=$1
     url="http://$HOSTNAME:$PORT/actuator/health"
-
+    echo $url
+    
     pingCount=0
     stopIterate=0
     loopStartTime=`date +%s`

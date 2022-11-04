@@ -7,16 +7,20 @@ sudo cp nginx.conf /etc/nginx/conf.d/default.conf
 
 sudo systemctl restart nginx
 
-sudo docker rm $(sudo docker stop $(sudo docker ps -a -q --filter ancestor='vox-viridis'))
+sudo docker rm $(sudo docker stop $(sudo docker ps -a -q --filter ancestor='demo'))
 
 # remove all stopped docker containers
 yes | sudo docker system prune -a 
 
+# # remove all docker images 
+sudo docker rmi -f $(sudo docker images -aq)
+
 # build dockerfile
-sudo ./mvnw spring-boot:build-image -DskipTests  
+sudo docker build -f Dockerfile -t demo:latest .
 
 # run in detached mode
-sudo docker run --env-file ./dev.env -p 8080:8080 -d 'vox-viridis:0.0.1-SNAPSHOT'
+sudo docker run --env-file "../../dev.env" -p 8080:8080 -d demo:latest
+
 # sudo docker compose -d up
 sleep 15
 

@@ -10,7 +10,6 @@ import static org.mockito.Mockito.when;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,7 +20,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.example.Vox.Viridis.exception.NotEnoughPointException;
 import com.example.Vox.Viridis.model.Products;
 import com.example.Vox.Viridis.model.Users;
-import com.example.Vox.Viridis.model.dto.UsersDTO;
 import com.example.Vox.Viridis.repository.*;
 
 @ExtendWith(MockitoExtension.class)

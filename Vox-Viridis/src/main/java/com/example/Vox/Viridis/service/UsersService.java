@@ -4,6 +4,7 @@ import javax.transaction.Transactional;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import com.example.Vox.Viridis.model.Role;
 import com.example.Vox.Viridis.model.SecurityUser;

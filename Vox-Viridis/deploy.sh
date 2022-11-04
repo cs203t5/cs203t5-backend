@@ -13,7 +13,8 @@ sudo docker rm $(sudo docker stop $(sudo docker ps -a -q --filter ancestor="vox-
 yes | sudo docker system prune -a 
 
 # build dockerfile
-mvn spring-boot:build-image
+./mvnw spring-boot:build-image
+
 # run in detached mode
 sudo docker run —env-file=“../../dev.env” -p 8080:8080 vox-viridis:0.0.1-SNAPSHOT
 

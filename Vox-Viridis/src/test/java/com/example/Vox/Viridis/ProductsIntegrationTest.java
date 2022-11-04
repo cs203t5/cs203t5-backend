@@ -327,23 +327,3 @@ public class ProductsIntegrationTest {
         }
 
         }
-
-/*
- * public void addProducts_Success() throws Exception {
-                HttpHeaders headers = new HttpHeaders();
-                headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-                URI uri = new URI(baseUrl + port + "/api/products");
-                MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
-                map.add("name", "This is a new Product");
-                map.add("description", "This is a new Product");
-
-                HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map,headers);
-                ResponseEntity<Products> result = authenticatedRestTemplate().postForEntity(uri,
-                request, Products.class);
-                assertEquals(201, result.getStatusCode().value());
-                Products product = result.getBody();
-                assertNotNull(product);
-                assertEquals("This is a new Product", product.getName());
-                assertEquals("This is a new Product",product.getDescription());
-        }       
- */

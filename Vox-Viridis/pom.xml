@@ -9,9 +9,9 @@
 		<relativePath/> 
 	</parent>
 	<groupId>com.example</groupId>
-	<artifactId>Vox-Viridis</artifactId>
+	<artifactId>vox-viridis</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>Vox-Viridis</name>
+	<name>vox-viridis</name>
 	<description>Vocx Viridis Backend Application</description>
 	<properties>
 		<java.version>17</java.version>
@@ -131,20 +131,13 @@
 	</dependencies>
 	<build>
 		<plugins>
-			<plugin>
+			<!-- <plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
 					<classifier>exec</classifier>
 				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>repackage</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+			</plugin> -->
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
@@ -195,10 +188,10 @@
 						</goals>
 						<configuration>
 							<rules>
-							<rule Implementation="Org.Jacoco.Maven.RuleConfiguration">
+							<rule Implementation="org.jacoco.maven.RuleConfiguration">
 									<element>BUNDLE</element>
 									<limits>
-										<limit Implementation="Org.Jacoco.Report.Check.Limit">
+										<limit Implementation="org.jacoco.report.check.limit">
 											<counter>COMPLEXITY</counter>
 											<value>COVEREDRATIO</value>
 											<minimum>0.60</minimum>

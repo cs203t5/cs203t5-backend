@@ -144,6 +144,13 @@
 					</excludes>
 				</configuration>
 				<executions>
+
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+					</execution>
+
 					<execution>
 						<id>default-prepare-agent</id>
 						<goals>

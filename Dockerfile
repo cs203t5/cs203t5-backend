@@ -6,7 +6,7 @@ ARG public
 RUN echo "$private" > ./src/resources/certs/private.pem && \
     echo "$pubic" > ./src/resources/certs/public.pem && \
     chmod 600 ./src/resources/certs/public.pem && \
-    chmod 600 ./src/resources/certs/private.pem && \ 
+    chmod 600 ./src/resources/certs/private.pem
 CMD cat ./src/resources/certs/private.pem
 
     

@@ -19,7 +19,7 @@ sudo docker rmi -f $(sudo docker images -aq)
 sudo docker pull zdwong9/voxviridis:latest
 
 # run in detached mode
-sudo docker run --env-file "dev.env" -e PUBLIC_KEY="$PUBLIC_KEY" -e PRIVATE_KEY="$PRIVATE_KEY" -p 8080:8080 -it zdwong9/voxviridis:latest
+sudo docker run --env-file "../../dev.env" -e PUBLIC_KEY="$PUBLIC_KEY" -e PRIVATE_KEY="$PRIVATE_KEY" -p 8080:8080 -it zdwong9/voxviridis:latest
 
 sleep 15
 

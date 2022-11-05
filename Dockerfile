@@ -6,10 +6,10 @@ ARG public
 ENV private=$private
 ENV public=$public
 
-RUN echo "$private" > private.pem && \
-    echo "$public" > public.pem && \
-    chmod 600 public.pem && \
-    chmod 600 private.pem
+RUN echo "$private" > private.pem 
+RUN echo "$public" > public.pem 
+RUN chmod 600 public.pem 
+RUN chmod 600 private.pem
 
 COPY private.pem VoxViridis/src/resources/certs
 COPY public.pem VoxViridis/src/resources/certs

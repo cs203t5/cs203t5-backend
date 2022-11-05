@@ -5,20 +5,8 @@ on:
     branches: [ "staging" ]
   pull_request:
     branches: [ "staging" ]
-
+          
 jobs:
-
-  build:
-
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v3
-    - name: Build the Docker image
-      run: |
-           docker build . --file "./Vox-Viridis/Dockerfile" --tag voxViridis:latest
-           
- jobs:
  
   docker:
     runs-on: ubuntu-latest

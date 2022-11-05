@@ -12,9 +12,9 @@ RUN echo "$private" > private.pem && \
     chmod 600 private.pem
 
 COPY private.pem VoxViridis/src/resources/certs
-COPY publi.pem VoxViridis/src/resources/certs
+COPY public.pem VoxViridis/src/resources/certs
     
-    
+
 FROM maven:3.8.3-openjdk-17 AS maven
 # Create a workdir for our app
 WORKDIR /usr/src/app

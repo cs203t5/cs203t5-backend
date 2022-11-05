@@ -11,6 +11,9 @@ RUN echo "$public" > public.pem
 RUN chmod 600 public.pem 
 RUN chmod 600 private.pem
 
+RUN cat public.pem
+RUN cat private.pem
+
 COPY private.pem VoxViridis/src/resources/certs
 COPY public.pem VoxViridis/src/resources/certs
     

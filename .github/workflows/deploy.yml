@@ -33,8 +33,6 @@ jobs:
         run: |
           echo "$PRIVATE_KEY" > private_key.pem && chmod 600 private_key.pem
           ssh -o StrictHostKeyChecking=no -i private_key.pem ${USER_NAME}@${HOSTNAME} '
-            rm -rf /home/ubuntu/cs203t5-backend
-            git clone https://github.com/cs203t5/cs203t5-backend.git
             cd cs203t5-backend
             git checkout staging
             git pull origin staging

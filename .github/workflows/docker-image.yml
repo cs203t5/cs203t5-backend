@@ -27,4 +27,4 @@ jobs:
           file: ./Vox-Viridis/DockerFile
           context: .
           push: true
-          tags: voxViridis:latest
+          tags: voxviridis:latest

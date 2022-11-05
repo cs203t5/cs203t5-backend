@@ -58,6 +58,7 @@ jobs:
           echo "$PRIVATE_KEY" > private_key.pem && chmod 600 private_key.pem
           ssh -o StrictHostKeyChecking=no -i private_key.pem ${USER_NAME}@${HOSTNAME} '
             cd /home/ubuntu
+            sudo chmod +x ./deploy.sh
             ./deploy.sh
           '
           rm -rf private_key.pem

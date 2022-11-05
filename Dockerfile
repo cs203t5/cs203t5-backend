@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM alpine
 
 ENV private=$private
 ENV public=$public

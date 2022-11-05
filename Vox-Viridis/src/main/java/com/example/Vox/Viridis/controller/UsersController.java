@@ -2,6 +2,7 @@ package com.example.Vox.Viridis.controller;
 
 import java.net.URI;
 import java.security.Principal;
+import java.util.List;
 import javax.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -28,6 +29,11 @@ import lombok.extern.slf4j.Slf4j;
 public class UsersController {
     private final UsersService usersService;
     private final TokenService tokenService;
+
+    @GetMapping()
+    public List<UsersDTO> getUsers() {
+        return usersService.getUsers();
+    }
 
     @GetMapping("/name")
     public ResponseEntity<String> getName(Principal principal) {

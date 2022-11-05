@@ -65,6 +65,8 @@ public class SecurityConfig {
                                 // users API
                                 .antMatchers(HttpMethod.PUT, "/users/role/**")
                                 .hasAnyAuthority("ADMIN", "ROLE_ADMIN")
+                                .antMatchers(HttpMethod.GET, "/users")
+                                .hasAnyAuthority("ADMIN", "ROLE_ADMIN")
 
                                 // reward API
                                 .antMatchers(HttpMethod.GET, "/reward", "/reward/*",

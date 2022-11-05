@@ -19,7 +19,7 @@ sudo docker rmi -f $(sudo docker images -aq)
 sudo docker build -f Dockerfile -t demo:latest .
 
 # run in detached mode
-sudo docker run --env-file "../../dev.env" -p 8080:8080 -d demo:latest
+sudo docker run --env-file "dev.env" -p 8080:8080 -d demo:latest
 
 # sudo docker compose -d up
 sleep 15

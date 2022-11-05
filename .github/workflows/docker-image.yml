@@ -27,4 +27,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: voxviridis:latest
+          tags: zdwong9/voxviridis:latest

@@ -1,7 +1,5 @@
 package com.example.Vox.Viridis.controller;
 
-import java.util.List;
-
 import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;

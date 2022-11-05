@@ -6,7 +6,9 @@ ARG public
 RUN echo "$private" > ./src/resources/certs/private.pem && \
     echo "$pubic" > ./src/resources/certs/public.pem && \
     chmod 600 ./src/resources/certs/public.pem && \
-    chmod 600 ./src/resources/certs/private.pem
+    chmod 600 ./src/resources/certs/private.pem && \ 
+    echo "$private" && \
+    echo "${public}"
     
 FROM maven:3.8.3-openjdk-17 AS maven
 # Create a workdir for our app

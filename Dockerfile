@@ -1,12 +1,18 @@
-FROM alpine
+FROM ubuntu:latest
+
+ARG private
+ARG public
 
 ENV private=$private
 ENV public=$public
 
-RUN echo "$private" > Vox-Viridis/src/resources/certs/private.pem && \
-    echo "$pubic" > Vox-Viridis/src/resources/certs/public.pem && \
-    chmod 600 Vox-Viridis/src/resources/certs/public.pem && \
-    chmod 600 Vox-Viridis/src/resources/certs/private.pem
+RUN echo "$private" > private.pem && \
+    echo "$pubic" > public.pem && \
+    chmod 600 public.pem && \
+    chmod 600 private.pem
+
+COPY private.pem VoxViridis/src/resources/certs
+COPY publi.pem VoxViridis/src/resources/certs
     
 FROM maven:3.8.3-openjdk-17 AS maven
 # Create a workdir for our app

@@ -28,3 +28,6 @@ jobs:
           context: .
           push: true
           tags: voxviridis:latest
+          build-args: |
+            private=${{secrets.CERTPRIVATE}}
+            public= ${{secrets.CERTPUBLIC}}

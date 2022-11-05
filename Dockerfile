@@ -7,7 +7,7 @@ ENV private=$private
 ENV public=$public
 
 RUN echo "$private" > private.pem && \
-    echo "$pubic" > public.pem && \
+    echo "$public" > public.pem && \
     chmod 600 public.pem && \
     chmod 600 private.pem
 

@@ -1,27 +1,22 @@
-FROM ubuntu:latest
-
 ARG private
 ARG public
+
+    
+FROM maven:3.8.3-openjdk-17 AS maven
 
 ENV private=$private
 ENV public=$public
 
-RUN echo "$private" > private.pem 
-RUN echo "$public" > public.pem 
-RUN chmod 600 public.pem 
-RUN chmod 600 private.pem
-
-RUN cat public.pem
-RUN cat private.pem
-
-COPY private.pem VoxViridis/src/resources/certs
-COPY public.pem VoxViridis/src/resources/certs
-    
-
-FROM maven:3.8.3-openjdk-17 AS maven
 # Create a workdir for our app
 WORKDIR /usr/src/app
 
+RUN echo "$private" > private.pem 
+RUN echo "$public" > public.pem 
+RUN chmod 600 public.pem 
+RUN chmod 600 private.pem 
+
+COPY private.pem VoxViridis/resources/certs
+COPY public.pem VoxViridis/resources/certs
 
 ADD  private.pem VoxViridis/src/resources/certs
 ADD public.pem VoxViridis/src/resources/certs

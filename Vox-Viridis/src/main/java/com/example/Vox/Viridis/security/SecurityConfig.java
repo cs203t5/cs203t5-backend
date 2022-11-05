@@ -60,7 +60,7 @@ public class SecurityConfig {
                                 .antMatchers(HttpMethod.GET, "/campaign/*").permitAll()
                                 .antMatchers(HttpMethod.GET, "/campaign").permitAll()
                                 .antMatchers(HttpMethod.GET, "/campaign/myCampaign")
-                                .hasAnyAuthority("SCOPE_BUSINESS")
+                                .hasAnyAuthority("BUSINESS", "ROLE_BUSINESS")
 
                                 // users API
                                 .antMatchers(HttpMethod.PUT, "/users/role/**")

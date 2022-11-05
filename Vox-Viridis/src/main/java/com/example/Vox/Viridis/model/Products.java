@@ -34,7 +34,7 @@ public class Products {
     private String name;
 
     @NotNull(message = "Products's description should not be null")
-    @Size(min = 10, max = 255, message = "Product's description should be at least 10 characters long")
+    @Size(min = 5, max = 255, message = "Product's description should be at least 5 characters long")
     private String description;
 
     private String image;

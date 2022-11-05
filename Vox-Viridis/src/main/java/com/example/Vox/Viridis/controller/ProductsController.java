@@ -49,7 +49,7 @@ public class ProductsController {
     }
 
     @GetMapping()
-    public @NotNull List<ProductsDTO> getAllProducts() {
+    public List<ProductsDTO> getAllProducts() {
         List<ProductsDTO> result = new ArrayList<ProductsDTO>();
         for (Products product : productsService.getAllProducts()) {
         ProductsDTO temp = product.convertToDTO();
@@ -80,7 +80,7 @@ public class ProductsController {
 
     @Transactional
     @PutMapping("{id}")
-    public ProductsDTO updateProducts(@RequestBody Products products,@PathVariable Long id, @RequestParam(value="imageFile", required=false) MultipartFile image) {
+    public ProductsDTO updateProducts(@ModelAttribute @Valid Products products,@PathVariable Long id, @RequestParam(value="imageFile", required=false) MultipartFile image) {
         if (image != null && !image.isEmpty()) {
             if (image.getContentType() == null || !image.getContentType().startsWith("image/"))
                 throw new InvalidFileTypeException("Image file like jpeg");
@@ -109,7 +109,7 @@ public class ProductsController {
         productsService.deleteProducts(id);
     }
 
-    @PostMapping("buy/{id}")
+    @PutMapping("buy/{id}")
     public UsersDTO buyProducts(@PathVariable Long id) {
         return productsService.buyProducts(id).convertToDTO();
     }

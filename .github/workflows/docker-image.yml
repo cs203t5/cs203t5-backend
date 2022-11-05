@@ -28,6 +28,4 @@ jobs:
           context: .
           push: true
           build-args: |
-            PRIVATE=${{secrets.CERTPRIVATE}}
-            PUBLIC= ${{secrets.CERTPUBLIC}}
           tags: zdwong9/voxviridis:latest

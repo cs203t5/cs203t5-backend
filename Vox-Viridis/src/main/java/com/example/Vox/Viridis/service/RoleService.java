@@ -15,32 +15,41 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public class RoleService {
-    private RoleRepository roleRepository;
+    private final RoleRepository roleRepository;
 
     public List<RoleDTO> getRoles() {
         List<Role> roles = roleRepository.findAll();
         return roles.stream().map(role -> role.convertToDTO()).collect(Collectors.toList());
     }
 
-    public RoleDTO getRoleById(long id) {
-        return roleRepository.findById(id).get().convertToDTO();
+    public RoleDTO getRoleByName(String name) {
+        try {
+            Role role = roleRepository.findByName(name);
+            return role.convertToDTO();
+        } catch (Exception e) {
+            log.info("Role with name " + name + " was not found");
+            return null;
+        }
     }
 
     public RoleDTO createRole(Role role) {
         return roleRepository.save(role).convertToDTO();
     }
 
-    public RoleDTO updateRole(Role role) {
-        Role currentRole = roleRepository.findById(role.getRoleId()).get();
+    public RoleDTO updateRole(String name, Role role) {
+        Role currentRole = roleRepository.findByName(name);
         currentRole.setName(role.getName());
         return roleRepository.save(currentRole).convertToDTO();
     }
 
-    public boolean deleteRole(long id) {
+    public boolean deleteRole(String name) {
         try {
-            roleRepository.deleteById(id);
+            Role role = roleRepository.findByName(name);
+            roleRepository.deleteById(role.getRoleId());
+            log.info("Role with name " + name + " was deleted");
             return true;
         } catch (Exception e) {
+            log.info("Role with name " + name + " was not deleted");
             return false;
         }
     }

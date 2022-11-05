@@ -9,6 +9,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 
 import com.example.Vox.Viridis.exception.NotEnoughPointException;
+import com.example.Vox.Viridis.exception.NotOwnerException;
 import com.example.Vox.Viridis.exception.ResourceNotFoundException;
 import com.example.Vox.Viridis.model.Products;
 import com.example.Vox.Viridis.model.Users;
@@ -52,8 +53,15 @@ public class ProductsServiceImpl implements ProductsService{
         return productsRepository.save(updatedProducts);
     }
 
+    /**
+     * @throws NotOwnerException if current user isn't the owner of this campaign
+     */
     @Override
     public void deleteProducts(Long id) {
+        Users username = usersService.getCurrentUser();
+        if (username != null
+                && !productsRepository.getCreatedBy(id).equals(username.getAccountId()))
+            throw new NotOwnerException();
         log.info("Delete Product with id: " + id);
         productsRepository.deleteById(id);
     }
@@ -65,6 +73,10 @@ public class ProductsServiceImpl implements ProductsService{
         return productsRepository.save(product);
     }
 
+    
+    /**
+     * @throws NotEnoughPointException if current user doesnt have enough point
+     */
     @Override
     public Users buyProducts(Long id){
         Products products = getProducts(id).orElseThrow(() -> new ResourceNotFoundException("Products not found"));

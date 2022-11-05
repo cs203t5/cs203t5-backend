@@ -1,5 +1,7 @@
 package com.example.Vox.Viridis.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -75,5 +77,10 @@ public class UsersService {
         user.setRoles(role);
         usersRepository.save(user);
         return user.convertToDTO();
+    }
+
+    public List<UsersDTO> getUsers() {
+        return usersRepository.findAll().stream().map(Users::convertToDTO)
+                .collect(Collectors.toList());
     }
 }

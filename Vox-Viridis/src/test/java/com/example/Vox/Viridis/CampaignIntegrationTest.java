@@ -109,6 +109,7 @@ public class CampaignIntegrationTest {
                 ResponseEntity<String> tokenResponse = restTemplate.withBasicAuth("admin", "goodpassword").postForEntity(baseUrl + port + "/api/users/token", null, String.class);
                 return tokenResponse.getBody();
         }
+
         private TestRestTemplate authenticatedRestTemplate() {
                 String jwtToken = getJwtToken();
 
@@ -1031,7 +1032,6 @@ public class CampaignIntegrationTest {
                 assertEquals(403, result.getStatusCode().value());
         }
 }
-
 
 // For getCampaigns_MustContainStatusField_Sucess() test
 // To check it returns 'status' field

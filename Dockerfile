@@ -2,7 +2,7 @@ FROM maven:3.8.3-openjdk-17 AS maven
 
 # Create a workdir for our app
 WORKDIR /usr/src/app
-COPY . /usr/src/app
+COPY Vox-Viridis /usr/src/app
 
 RUN mvn clean package -DskipTests
 

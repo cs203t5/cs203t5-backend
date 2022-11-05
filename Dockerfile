@@ -1,10 +1,10 @@
-ARG private
-ARG public
+ARG PRIVATE
+ARG PUBLIC
 
 FROM maven:3.8.3-openjdk-17 AS maven
 
-ENV private=$private
-ENV public=$public
+ENV private=$PRIVATE
+ENV public=$PUBLIC
 
 # Create a workdir for our app
 WORKDIR /usr/src/app

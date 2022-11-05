@@ -7,7 +7,7 @@ sudo cp nginx.conf /etc/nginx/conf.d/default.conf
 
 sudo systemctl restart nginx
 
-sudo docker rm $(sudo docker stop $(sudo docker ps -a -q --filter ancestor='demo'))
+sudo docker rm $(sudo docker stop $(sudo docker ps -a -q --filter ancestor='zdwong9/voxviridis'))
 
 # remove all stopped docker containers
 yes | sudo docker system prune -a 
@@ -19,9 +19,8 @@ sudo docker rmi -f $(sudo docker images -aq)
 sudo docker pull zdwong9/voxviridis:latest
 
 # run in detached mode
-sudo docker run --env-file "dev.env" -p 8080:8080 -it zdwong9/voxviridis:latest
+sudo docker run --env-file "dev.env" -e PUBLIC_KEY="$PUBLIC_KEY" -e PRIVATE_KEY="$PRIVATE_KEY" -p 8080:8080 -it zdwong9/voxviridis:latest
 
-# sudo docker compose -d up
 sleep 15
 
 PORT=8080

@@ -1,10 +1,8 @@
 FROM maven:3.8.3-openjdk-17 AS maven
 
-ENV private=$PRIVATE
-ENV public=$PUBLIC
-
 # Create a workdir for our app
 WORKDIR /usr/src/app
+COPY . /usr/src/app
 
 RUN mvn clean package -DskipTests
 

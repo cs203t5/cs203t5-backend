@@ -3,8 +3,8 @@ FROM ubuntu:latest
 ARG private
 ARG public
 
-RUN echo $private > ./Vox-Viridis/src/resources/certs/private.pem && \
-    echo $pubic > ./Vox-Viridis/src/resources/certs/public.pem && \
+RUN echo "$private" > ./Vox-Viridis/src/resources/certs/private.pem && \
+    echo "$pubic" > ./Vox-Viridis/src/resources/certs/public.pem && \
     chmod 600 ./Vox-Viridis/src/resources/certs/public.pem && \
     chmod 600 ./Vox-Viridis/src/resources/certs/private.pem
 CMD cat ./src/resources/certs/private.pem

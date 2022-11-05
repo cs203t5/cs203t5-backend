@@ -1,7 +1,6 @@
 ARG private
 ARG public
 
-    
 FROM maven:3.8.3-openjdk-17 AS maven
 
 ENV private=$private
@@ -10,8 +9,8 @@ ENV public=$public
 # Create a workdir for our app
 WORKDIR /usr/src/app
 
-RUN echo "$private" > private.pem 
-RUN echo "$public" > public.pem 
+RUN echo $private > private.pem 
+RUN echo $public > public.pem 
 RUN chmod 600 public.pem 
 RUN chmod 600 private.pem 
 

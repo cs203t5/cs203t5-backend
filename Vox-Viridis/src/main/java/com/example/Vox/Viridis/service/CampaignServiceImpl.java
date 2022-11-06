@@ -108,6 +108,7 @@ public class CampaignServiceImpl implements CampaignService {
         updatedCampaign.setImage(existingCampaign.getImage());
         updatedCampaign.setCreatedBy(existingCampaign.getCreatedBy());
         updatedCampaign.setCreatedOn(existingCampaign.getCreatedOn());
+        updatedCampaign.setRewards(existingCampaign.getRewards());
         log.info("updated campaign id: " + id);
         return campaignRepository.save(updatedCampaign);
     }
@@ -118,7 +119,8 @@ public class CampaignServiceImpl implements CampaignService {
     @Override
     public void deleteCampaign(Long id) {
         Users username = usersService.getCurrentUser();
-        if (!campaignRepository.getCreatedBy(id).equals(username.getAccountId()))
+        Campaign campaign = campaignRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Campaign id " + id));
+        if (!campaign.getCreatedBy().getAccountId().equals(username.getAccountId()))
             throw new NotOwnerException();
         log.info("Delete campaign id: " + id);
         campaignRepository.deleteById(id);

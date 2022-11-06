@@ -65,6 +65,7 @@ public class Users {
     private List<Products> userProducts;
 
     public UsersDTO convertToDTO() {
-        return new UsersDTO(accountId, username, firstName, lastName, email, points, image);
+        return new UsersDTO(accountId, username, firstName, lastName, email, points, image,
+                roles.getName());
     }
 }

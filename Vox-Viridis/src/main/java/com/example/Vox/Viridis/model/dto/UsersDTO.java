@@ -17,4 +17,5 @@ public class UsersDTO {
     private String email;
     private int points;
     private String image;
+    private String role;
 }

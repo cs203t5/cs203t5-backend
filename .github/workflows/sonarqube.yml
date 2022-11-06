@@ -36,7 +36,21 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          
+          AWS_ACCESS_KEY: ${{secrets.MAVEN_AWS_ACCESS_KEY}}
+          AWS_S3_BASE_URL: ${{MAVEN_AWS_S3_BASE_URL}}
+          AWS_SECRET_KEY: ${{MAVEN_AWS_SECRET_KEY}}
+          BUCKET_NAME: ${{MAVEN_BUCKET_NAME}}
+          DB_NAME: ${{MAVEN_DB_NAME}}
+          DB_PASSWORD: ${{MAVEN_DB_PASSWORD}}
+          DB_STRING: ${{MAVEN_DB_STRING}}
+          DB_USER: ${{MAVEN_DB_USER}}
+          GOOGLE_CLIENT_ID: ${{MAVEN_GOOGLE_CLIENT_ID}}
+          PRIVATE_KEY: ${{MAVEN_PRIVATE_KEY}}
+          PUBLIC_KEY: ${{MAVEN_PUBLIC_KEY}}
+          VOX_VIRIDIS_EMAIL: ${{MAVEN_VOX_VIRIDIS_EMAIL}}
+
         
         run: |
           cd Vox-Viridis
-          mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=Vox-Viridis
+          mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=Vox-Viridis -DVOX_VIRIDIS_EMAIL=${{env.VOX_VIRIDIS_EMAIL}} -DPUBLIC_KEY=${{env.PUBLIC_KEY}} -DPRIVATE_KEY=${{env.PRIVATE_KEY}} -DGOOGLE_CLIENT_ID=${{env.GOOGLE_CLIENT_ID}} -DDB_USER=${{env.DB_USER}} -DDB_STRING=${{env.DB_STRING}} -DDB_PASSWORD=${{env.DB_PASSWORD}}  -DDB_NAME=${{env.DB_NAME}} -DAWS_ACCESS_KEY=${{env.AWS_ACCESS_KEY}} -DAWS_S3_BASE_URL=${{env.AWS_S3_BASE_URL}} -DAWS_SECRET_KEY=${{env.AWS_SECRET_KEY}} -DBUCKET_NAME=${{env.BUCKET_NAME}}

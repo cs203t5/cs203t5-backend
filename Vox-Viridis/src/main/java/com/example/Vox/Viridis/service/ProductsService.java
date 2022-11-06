@@ -7,7 +7,7 @@ import com.example.Vox.Viridis.model.Products;
 import com.example.Vox.Viridis.model.Users;
 
 public interface ProductsService {
-    Optional<Products> getProducts(Long id);
+    Products getProducts(Long id);
     List<Products> getAllProducts();
     Products addProducts(Products products);
     Products updateProducts(Products products, Long id);

@@ -1,7 +1,10 @@
 package com.example.Vox.Viridis.service;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.Vox.Viridis.exception.MaxStampException;
@@ -9,6 +12,7 @@ import com.example.Vox.Viridis.exception.ResourceNotFoundException;
 import com.example.Vox.Viridis.model.Participation;
 import com.example.Vox.Viridis.model.Reward;
 import com.example.Vox.Viridis.model.Users;
+import com.example.Vox.Viridis.model.dto.PaginationDTO;
 import com.example.Vox.Viridis.repository.ParticipationRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -22,8 +26,10 @@ public class ParticipationService {
     private final UsersService usersService;
     private final RewardService rewardService;
 
-    public List<Participation> getMyParticipation() {
-        return participations.findByUser(usersService.getCurrentUser());
+    public PaginationDTO<Participation> getMyParticipation(int pageNum) {
+        Pageable pageable = PageRequest.of(pageNum, 20);
+        Page<Participation> result = participations.findByUser(usersService.getCurrentUser(), pageable);
+        return new PaginationDTO<>(result);
     }
 
     public int getMyPoints() {
@@ -46,6 +52,7 @@ public class ParticipationService {
         }
 
         Participation participation = new Participation();
+        participation.setParticipatedOn(LocalDateTime.now());
         participation.setUser(currentUser);
         participation.setReward(reward);
 

@@ -1,5 +1,8 @@
 package com.example.Vox.Viridis.model;
 
+import java.time.LocalDateTime;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -29,12 +32,15 @@ public class Participation {
     @Min(value = 0, message = "noOfStamp must be at least 0")
     private int noOfStamp = 0; // Must be less than or equal to reward.goal (because Reward.goal is the max points that a user can collect)
 
-    @NotNull
+    @Column(nullable = false)
+    private LocalDateTime participatedOn;
+
+    @NotNull(message = "Reward can't be null")
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
     private Reward reward;
 
     @JsonIgnore
-    @NotNull
+    @NotNull(message = "user can't be null")
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Users user;
 }

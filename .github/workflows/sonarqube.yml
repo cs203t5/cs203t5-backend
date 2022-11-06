@@ -53,4 +53,4 @@ jobs:
         
         run: |
           cd Vox-Viridis
-          mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=Vox-Viridis -DVOX_VIRIDIS_EMAIL=${{env.VOX_VIRIDIS_EMAIL}} -DPUBLIC_KEY=${{env.PUBLIC_KEY}} -DPRIVATE_KEY=${{env.PRIVATE_KEY}} -DGOOGLE_CLIENT_ID=${{env.GOOGLE_CLIENT_ID}} -DDB_USER=${{env.DB_USER}} -DDB_STRING=${{env.DB_STRING}} -DDB_PASSWORD=${{env.DB_PASSWORD}}  -DDB_NAME=${{env.DB_NAME}} -DAWS_ACCESS_KEY=${{env.AWS_ACCESS_KEY}} -DAWS_S3_BASE_URL=${{env.AWS_S3_BASE_URL}} -DAWS_SECRET_KEY=${{env.AWS_SECRET_KEY}} -DBUCKET_NAME=${{env.BUCKET_NAME}}
+          mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=Vox-Viridis 

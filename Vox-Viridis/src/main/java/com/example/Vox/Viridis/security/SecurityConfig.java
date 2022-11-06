@@ -115,7 +115,7 @@ public class SecurityConfig {
                                 .antMatchers(HttpMethod.DELETE, "/role/*")
                                 .hasAnyAuthority("ADMIN", "ROLE_ADMIN")
 
-                                .antMatchers(HttpMethod.OPTIONS).permitAll().anyRequest()
+                                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll().anyRequest()
                                 .authenticated()).csrf(csrf -> csrf.disable())
                                 .httpBasic(Customizer.withDefaults())
                                 .userDetailsService(myUserDetailsService)

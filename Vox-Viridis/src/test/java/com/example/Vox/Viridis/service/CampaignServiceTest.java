@@ -24,6 +24,7 @@ import org.springframework.data.domain.Sort;
 
 import com.example.Vox.Viridis.model.Campaign;
 import com.example.Vox.Viridis.model.Users;
+import com.example.Vox.Viridis.model.dto.PaginationDTO;
 import com.example.Vox.Viridis.repository.CampaignRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -97,11 +98,13 @@ public class CampaignServiceTest {
         when(campaigns.findByTitleAndCategoryAndLocationAndReward("", null, null, null, pageable))
                 .thenReturn(page);
 
-        List<Campaign> result = campaignService.getCampaign(0, null, null, null, null, true);
+        PaginationDTO<Campaign> result = campaignService.getCampaign(0, null, null, null, null, true);
 
         assertNotNull(result);
-        assertEquals(result.size(), 1);
-        assertEquals(result.get(0), campaign);
+        assertEquals(result.getTotalElements(), 1);
+        assertEquals(result.getElements().size(), 1);
+        assertEquals(result.getTotalNumPage(), 1);
+        assertEquals(result.getElements().get(0), campaign);
         verify(campaigns).findByTitleAndCategoryAndLocationAndReward("", null, null, null,
                 pageable);
     }
@@ -117,53 +120,140 @@ public class CampaignServiceTest {
         when(campaigns.findByTitleAndCategoryAndLocationAndReward("New", null, null, null,
                 pageable)).thenReturn(new PageImpl<>(List.of(campaign)));
 
-        List<Campaign> result = campaignService.getCampaign(0, "New", null, null, null, true);
+        PaginationDTO<Campaign> result = campaignService.getCampaign(0, "New", null, null, null, true);
 
         assertNotNull(result);
-        assertEquals(result.size(), 1);
-        assertEquals(result.get(0), campaign);
+        assertEquals(result.getTotalElements(), 1);
+        assertEquals(result.getElements().size(), 1);
+        assertEquals(result.getTotalNumPage(), 1);
+        assertEquals(result.getElements().get(0), campaign);
         verify(campaigns).findByTitleAndCategoryAndLocationAndReward("New", null, null, null,
                 pageable);
     }
 
     @Test
-    void addCampaign_ReturnSavedCampaign() {
+    void addCampaign_NewTitle_ReturnSavedCampaign() {
         Campaign campaign = new Campaign();
         campaign.setTitle("New Campaign");
         campaign.setStartDate(LocalDateTime.now());
         campaign.setEndDate(LocalDateTime.now().plusDays(1));
 
+        when(campaigns.findByTitle(any(String.class))).thenReturn(new ArrayList<Campaign>());
         when(campaigns.save(any(Campaign.class))).thenReturn(campaign);
         when(usersService.getCurrentUser()).thenReturn(null);
 
         Campaign savedCampaign = campaignService.addCampaign(campaign);
 
         assertNotNull(savedCampaign);
+        verify(campaigns).findByTitle(campaign.getTitle());
         verify(campaigns).save(campaign);
     }
 
     @Test
-    void updateCampaign_ReturnSavedCampaign() {
+    void addCampaign_SameTitle_Null() {
+        Campaign campaign = new Campaign();
+        campaign.setTitle("Existing Campaign");
+        campaign.setStartDate(LocalDateTime.now());
+        campaign.setEndDate(LocalDateTime.now().plusDays(1));
+
+        when(campaigns.findByTitle(any(String.class))).thenReturn(List.of(campaign));
+
+        Campaign savedCampaign = campaignService.addCampaign(campaign);
+
+        assertNull(savedCampaign);
+        verify(campaigns).findByTitle(campaign.getTitle());
+    }
+
+    @Test
+    void updateCampaign_NewTitle_ReturnSavedCampaign() {
+        Users admin = new Users();
+        admin.setAccountId(1l);
+        admin.setEmail("campaign@test.com");
+        admin.setFirstName("Admin");
+        admin.setLastName("name");
+        admin.setUsername("admin123");
+
         Campaign campaign = new Campaign();
         campaign.setId(2l);
         campaign.setTitle("New Campaign");
         campaign.setStartDate(LocalDateTime.now());
         campaign.setEndDate(LocalDateTime.now().plusDays(1));
+        campaign.setCreatedBy(admin);
 
         Campaign updatedCampaign = new Campaign();
         updatedCampaign.setTitle("New New Campaign");
         updatedCampaign.setStartDate(LocalDateTime.now());
         updatedCampaign.setEndDate(LocalDateTime.now().plusDays(1));
 
+        when(campaigns.findByTitle(any(String.class))).thenReturn(new ArrayList<Campaign>());
         when(campaigns.findById(2l)).thenReturn(Optional.of(campaign));
         when(campaigns.save(any(Campaign.class))).thenReturn(updatedCampaign);
-        when(usersService.getCurrentUser()).thenReturn(null);
+        when(usersService.getCurrentUser()).thenReturn(admin);
 
         Campaign savedCampaign = campaignService.updateCampaign(updatedCampaign, 2l);
 
         assertEquals(savedCampaign, updatedCampaign);
+        verify(campaigns).findByTitle(updatedCampaign.getTitle());
         verify(campaigns).findById(2l);
         updatedCampaign.setId(2l);
         verify(campaigns).save(updatedCampaign);
+    }
+
+    @Test
+    void updateCampaign_TitleUnchanged_ReturnSavedCampaign() {
+        Users admin = new Users();
+        admin.setAccountId(1l);
+        admin.setEmail("campaign@test.com");
+        admin.setFirstName("Admin");
+        admin.setLastName("name");
+        admin.setUsername("admin123");
+
+        Campaign campaign = new Campaign();
+        campaign.setId(2l);
+        campaign.setTitle("New Campaign");
+        campaign.setStartDate(LocalDateTime.now());
+        campaign.setEndDate(LocalDateTime.now().plusDays(1));
+        campaign.setCreatedBy(admin);
+
+        Campaign updatedCampaign = new Campaign();
+        updatedCampaign.setTitle("New Campaign");
+        updatedCampaign.setStartDate(LocalDateTime.now());
+        updatedCampaign.setEndDate(LocalDateTime.now().plusDays(1));
+
+        when(campaigns.findByTitle(any(String.class))).thenReturn(new ArrayList<Campaign>());
+        when(campaigns.findById(2l)).thenReturn(Optional.of(campaign));
+        when(campaigns.save(any(Campaign.class))).thenReturn(updatedCampaign);
+        when(usersService.getCurrentUser()).thenReturn(admin);
+
+        Campaign savedCampaign = campaignService.updateCampaign(updatedCampaign, 2l);
+
+        assertEquals(savedCampaign, updatedCampaign);
+        verify(campaigns).findByTitle(updatedCampaign.getTitle());
+        verify(campaigns).findById(2l);
+        updatedCampaign.setId(2l);
+        verify(campaigns).save(updatedCampaign);
+    }
+
+    @Test
+    void updateCampaign_SameTitle_ReturnNull() {
+        Campaign campaign = new Campaign();
+        campaign.setId(1l);
+        campaign.setTitle("Existing Campaign");
+        campaign.setStartDate(LocalDateTime.now());
+        campaign.setEndDate(LocalDateTime.now().plusDays(1));
+
+        Campaign campaign2 = new Campaign();
+        campaign2.setTitle("Existing Campaign");
+        campaign2.setStartDate(LocalDateTime.now());
+        campaign2.setEndDate(LocalDateTime.now().plusDays(1));
+
+        when(campaigns.findByTitle(any(String.class))).thenReturn(List.of(campaign));
+        when(campaigns.findById(2l)).thenReturn(Optional.of(campaign2));
+
+        Campaign savedCampaign = campaignService.updateCampaign(campaign2, 2l);
+
+        assertNull(savedCampaign);
+        verify(campaigns).findByTitle(campaign2.getTitle());
+        verify(campaigns).findById(2l);
     }
 }

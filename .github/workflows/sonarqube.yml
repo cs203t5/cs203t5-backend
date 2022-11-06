@@ -53,4 +53,4 @@ jobs:
         
         run: |
           cd Vox-Viridis
-          mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=Vox-Viridis 
+          mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=Vox-Viridis -DPUBLIC_KEY=${{secrets.PUBLIC_KEY}} -DPRIVATE_KEY=${{secrets.PRIVATE_KEY}}

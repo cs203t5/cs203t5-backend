@@ -60,7 +60,7 @@ public class SecurityConfig {
                                 .antMatchers(HttpMethod.GET, "/campaign/*").permitAll()
                                 .antMatchers(HttpMethod.GET, "/campaign").permitAll()
                                 .antMatchers(HttpMethod.GET, "/campaign/myCampaign")
-                                .hasAnyAuthority("SCOPE_BUSINESS")
+                                .hasAnyAuthority("BUSINESS", "ROLE_BUSINESS")
 
                                 // users API
                                 .antMatchers(HttpMethod.PUT, "/users/role/**")
@@ -115,7 +115,8 @@ public class SecurityConfig {
                                 .antMatchers(HttpMethod.DELETE, "/role/*")
                                 .hasAnyAuthority("ADMIN", "ROLE_ADMIN")
 
-                                .anyRequest().authenticated()).csrf(csrf -> csrf.disable())
+                                .antMatchers(HttpMethod.OPTIONS).permitAll().anyRequest()
+                                .authenticated()).csrf(csrf -> csrf.disable())
                                 .httpBasic(Customizer.withDefaults())
                                 .userDetailsService(myUserDetailsService)
                                 .oauth2ResourceServer(oauth2 -> oauth2

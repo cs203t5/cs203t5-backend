@@ -42,7 +42,7 @@ public class Campaign {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "title")
+    @Column(name = "title", unique = true)
     @NotNull(message = "Campaign's title should not be null")
     @Size(min = 5, max = 255, message = "Campaign's title should be at least 5 characters long")
     private String title;

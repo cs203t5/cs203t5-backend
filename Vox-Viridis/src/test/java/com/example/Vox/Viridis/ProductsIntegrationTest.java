@@ -51,19 +51,57 @@ public class ProductsIntegrationTest {
         @Autowired
         private UsersRepository users;
 
+        @Autowired
+        private RoleRepository roles;
+
+        @Autowired
+        private PasswordEncoder passwordEncoder;
+
+
         @AfterEach
         void tearDown() {
                 // clear the database after each test
                 products.deleteAll();
         }
 
+        @BeforeEach
+        void createAccount() {
+                users.deleteAll();
+                roles.deleteAll();
+
+                Role role = new Role(1l, "ADMIN", null);
+                role = roles.save(role);
+
+                Role roleConsumer = new Role((long)2l, "CONSUMER", null);
+                roleConsumer = roles.save(roleConsumer);
+
+                Users admin = new Users();
+                admin.setUsername("admin");
+                admin.setEmail("admin12@test.com");
+                admin.setFirstName("Admin");
+                admin.setLastName("admin");
+                admin.setPassword(passwordEncoder.encode("goodpassword"));
+                admin.setRoles(role);
+                admin = users.save(admin);
+
+                Users consumer = new Users();
+                consumer.setUsername("consumer");
+                consumer.setEmail("consumer12@test.com");
+                consumer.setFirstName("Consumer");
+                consumer.setLastName("consumer");
+                consumer.setPassword(passwordEncoder.encode("goodpassword"));
+                consumer.setRoles(roleConsumer);
+                consumer = users.save(consumer);
+        }
+
+
         private String getJwtToken() {
-                ResponseEntity<String> tokenResponse = restTemplate.withBasicAuth("admin", "Hello123456!")
+                ResponseEntity<String> tokenResponse = restTemplate.withBasicAuth("admin", "goodpassword")
                                 .postForEntity(baseUrl + port + "/api/users/token", null, String.class);
                 return tokenResponse.getBody();
         }
         private String getJwtTokenConsumer() {
-                ResponseEntity<String> tokenResponse = restTemplate.withBasicAuth("user1", "Hello1234!")
+                ResponseEntity<String> tokenResponse = restTemplate.withBasicAuth("consumer", "goodpassword")
                                 .postForEntity(baseUrl + port + "/api/users/token", null, String.class);
                 return tokenResponse.getBody();
         }
@@ -99,7 +137,7 @@ public class ProductsIntegrationTest {
         }
 
         private Users getConsumer() {
-                return users.findByUsername("user1").get();
+                return users.findByUsername("Consumer").get();
         }
 
         private void modifyProductList(List<Products> productsList) {

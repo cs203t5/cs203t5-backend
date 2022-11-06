@@ -170,6 +170,7 @@ public class SecurityConfig {
                                 "X-Requested-With", "accept", "Origin",
                                 "Access-Control-Request-Method", "Access-Control-Request-Headers",
                                 "Access-Control-Allow-Origin"));
+                configuration.setAllowCredentials(true);
                 UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
                 source.registerCorsConfiguration("/**", configuration);
                 return source;

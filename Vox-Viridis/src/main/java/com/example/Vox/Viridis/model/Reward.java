@@ -42,6 +42,7 @@ public class Reward {
     @JsonIgnore
     @OneToOne
     @JoinColumn(name = "offered_by")
+    @NotNull
     private Campaign offeredBy;
 
     @JsonIgnore

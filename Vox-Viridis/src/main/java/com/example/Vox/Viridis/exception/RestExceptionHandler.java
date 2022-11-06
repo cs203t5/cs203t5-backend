@@ -1,6 +1,8 @@
 package com.example.Vox.Viridis.exception;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -28,10 +30,9 @@ public class RestExceptionHandler {
     public Map<String, Object> handle(ConstraintViolationException exception) {
 
         Set<ConstraintViolation<?>> violations = exception.getConstraintViolations();
-        StringBuilder error = new StringBuilder();
+        List<String> error = new ArrayList<>();
         for (ConstraintViolation<?> violation : violations) {
-            error.append(violation.getMessage());
-            break;
+            error.add(violation.getMessage());
         }
         
         Map<String, Object> body = new LinkedHashMap<>();
@@ -43,9 +44,9 @@ public class RestExceptionHandler {
     @ResponseBody
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, Object> handle(BindException ex) {
-        StringBuilder error = new StringBuilder();
+        List<String> error = new ArrayList<>();
         for (ObjectError objectError : ex.getBindingResult().getAllErrors()){
-            error.append(objectError.getDefaultMessage());
+            error.add(objectError.getDefaultMessage());
         }
         
         Map<String, Object> body = new LinkedHashMap<>();
@@ -67,8 +68,10 @@ public class RestExceptionHandler {
      */
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public void handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
-        
+    public Map<String,Object> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("message", "Invalid method argument");
+        return body;
     }
 
 }

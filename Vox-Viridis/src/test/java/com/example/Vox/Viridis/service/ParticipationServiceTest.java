@@ -23,6 +23,7 @@ import com.example.Vox.Viridis.model.Campaign;
 import com.example.Vox.Viridis.model.Participation;
 import com.example.Vox.Viridis.model.Reward;
 import com.example.Vox.Viridis.model.RewardType;
+import com.example.Vox.Viridis.model.Role;
 import com.example.Vox.Viridis.model.Users;
 import com.example.Vox.Viridis.model.dto.PaginationDTO;
 import com.example.Vox.Viridis.repository.ParticipationRepository;
@@ -48,6 +49,7 @@ public class ParticipationServiceTest {
         currentUser.setFirstName("user");
         currentUser.setLastName("name");
         currentUser.setUsername("admin123");
+        currentUser.setRoles(new Role(1l, "CONSUMER", null));
         return currentUser;
     }
 
@@ -58,6 +60,7 @@ public class ParticipationServiceTest {
         currentUser.setFirstName("admin");
         currentUser.setLastName("name");
         currentUser.setUsername("admin123");
+        currentUser.setRoles(new Role(1l, "ADMIN", null));
         return currentUser;
     }
 

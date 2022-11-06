@@ -27,4 +27,6 @@ jobs:
           distribution: "temurin"
           cache: maven
       - name: Build with Maven
-        run: mvn --batch-mode --update-snapshots package
+        run: |
+          cd Vox-Viridis
+          mvn --batch-mode --update-snapshots package

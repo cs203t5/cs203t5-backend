@@ -32,8 +32,12 @@ public class ProductsServiceImpl implements ProductsService{
     }
 
     @Override
-    public Optional<Products> getProducts(Long id) {
-        return productsRepository.findById(id);
+    public Products getProducts(Long id) {
+        Optional<Products> result = productsRepository.findById(id);
+        if (result.isEmpty()) {
+           throw new ResourceNotFoundException();
+        }
+        return result.get();
     }
 
     @Override
@@ -45,7 +49,7 @@ public class ProductsServiceImpl implements ProductsService{
 
     @Override
     public Products updateProducts(Products updatedProducts, Long id) {
-        Products existingProducts = getProducts(id).orElseThrow(() -> new ResourceNotFoundException("Products not found"));
+        Products existingProducts = getProducts(id);
         updatedProducts.setId(id);
         updatedProducts.setImage(existingProducts.getImage());
         updatedProducts.setCreatedBy(existingProducts.getCreatedBy());
@@ -60,7 +64,7 @@ public class ProductsServiceImpl implements ProductsService{
     public void deleteProducts(Long id) {
         Users username = usersService.getCurrentUser();
         if (username != null
-                && !productsRepository.getCreatedBy(id).equals(username.getAccountId()))
+                && !getProducts(id).getCreatedBy().getAccountId().equals(username.getAccountId()))
             throw new NotOwnerException();
         log.info("Delete Product with id: " + id);
         productsRepository.deleteById(id);
@@ -73,18 +77,20 @@ public class ProductsServiceImpl implements ProductsService{
         return productsRepository.save(product);
     }
 
+
+    private int getLeftOverPoint(Users buyer,Products product) {
+        return buyer.getPoints() - product.getPoint();
+    }
     
     /**
      * @throws NotEnoughPointException if current user doesnt have enough point
      */
     @Override
     public Users buyProducts(Long id){
-        Products products = getProducts(id).orElseThrow(() -> new ResourceNotFoundException("Products not found"));
-        int cost = products.getPoint();
+        Products products = getProducts(id);
         Users buyer = usersService.getCurrentUser();
-        int buyerPoint = buyer.getPoints();
-        int leftOverPoint = buyerPoint - cost;
-        if (cost > buyerPoint) {
+        int leftOverPoint = getLeftOverPoint(buyer, products);
+        if (leftOverPoint < 0) {
             throw new NotEnoughPointException();
         }
         else {

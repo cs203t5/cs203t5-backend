@@ -93,7 +93,8 @@ public class CampaignController {
             @RequestParam(value = "imageFile", required = false) MultipartFile image,
             @RequestParam(value = "reward", required = false) String rewardJson) {
         if (image != null && !image.isEmpty()) {
-            if (image.getContentType() == null || !image.getContentType().startsWith("image/"))
+            final String imageContentType = image.getContentType();
+            if (imageContentType == null || !imageContentType.startsWith("image/"))
                 throw new InvalidFileTypeException("Image file like jpeg");
         }
 
@@ -127,8 +128,11 @@ public class CampaignController {
         }
 
         if (image != null && !image.isEmpty()) {
+            String imageOriginalFilename = image.getOriginalFilename();
+            if (imageOriginalFilename == null)
+                imageOriginalFilename = "";
             String filename = StorageService.CAMPAIGNS_DIR + result.getId()
-                    + image.getOriginalFilename().substring(image.getOriginalFilename().lastIndexOf("."));
+                    + imageOriginalFilename.substring(imageOriginalFilename.lastIndexOf("."));
             result = campaignService.updateCampaignImage(campaign, filename);
 
             storageService.putObject(filename, image);
@@ -144,7 +148,8 @@ public class CampaignController {
     public Campaign updateCampaign(@PathVariable Long id, @ModelAttribute @Valid Campaign campaign,
             @RequestParam(value = "imageFile", required = false) MultipartFile image) {
         if (image != null && !image.isEmpty()) {
-            if (image.getContentType() == null || !image.getContentType().startsWith("image/"))
+            final String contentType = image.getContentType();
+            if (contentType == null || !contentType.startsWith("image/"))
                 throw new InvalidFileTypeException("Image file like jpeg");
         }
 
@@ -155,8 +160,11 @@ public class CampaignController {
             if (result.getImage() != null)
                 storageService.deleteObject(result.getImage());
 
+            String imageOriginalFilename = image.getOriginalFilename();
+            if (imageOriginalFilename == null)
+                imageOriginalFilename = "";
             String filename = StorageService.CAMPAIGNS_DIR + result.getId()
-                    + image.getOriginalFilename().substring(image.getOriginalFilename().lastIndexOf("."));
+                    + imageOriginalFilename.substring(imageOriginalFilename.lastIndexOf("."));
             result = campaignService.updateCampaignImage(campaign, filename);
 
             storageService.putObject(filename, image);

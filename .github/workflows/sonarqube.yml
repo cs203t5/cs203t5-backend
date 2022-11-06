@@ -1,0 +1,20 @@
+name: sonarqube
+
+on:
+  push:
+    branches:
+      - staging
+
+jobs:
+  sonarQubeTrigger:
+    runs-on: ubuntu-latest    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      
+    - name: SonarQube Scan
+      uses: kitabisa/sonarqube-action@master
+      with:
+        projectBaseDir: Vox-Viridis
+        host: ${{ secrets.SONARQUBE_HOST }}
+        login: ${{ secrets.SONARQUBE_TOKEN }}

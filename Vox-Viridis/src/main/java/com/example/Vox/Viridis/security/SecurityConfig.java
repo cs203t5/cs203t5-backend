@@ -96,12 +96,13 @@ public class SecurityConfig {
                                 .antMatchers(HttpMethod.GET, "/products").permitAll()
                                 .antMatchers(HttpMethod.GET, "/products/*").permitAll()
                                 .antMatchers(HttpMethod.POST, "/products")
-                                .hasAnyAuthority( "ADMIN","ROLE_ADMIN")
+                                .hasAnyAuthority("ADMIN", "ROLE_ADMIN")
                                 .antMatchers(HttpMethod.PUT, "/products/*")
-                                .hasAnyAuthority("ADMIN","ROLE_ADMIN")
+                                .hasAnyAuthority("ADMIN", "ROLE_ADMIN")
                                 .antMatchers(HttpMethod.DELETE, "/products/*")
-                                .hasAnyAuthority("ADMIN","ROLE_ADMIN")
-                                .antMatchers(HttpMethod.POST, "/products/buy/*").hasAnyAuthority("CONSUMER","ROLE_CONSUMER")
+                                .hasAnyAuthority("ADMIN", "ROLE_ADMIN")
+                                .antMatchers(HttpMethod.POST, "/products/buy/*")
+                                .hasAnyAuthority("CONSUMER", "ROLE_CONSUMER")
 
                                 // Role API
                                 .antMatchers(HttpMethod.GET, "/role")
@@ -161,7 +162,8 @@ public class SecurityConfig {
         @Bean
         CorsConfigurationSource corsConfigurationSource() {
                 CorsConfiguration configuration = new CorsConfiguration();
-                configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+                configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000",
+                                "https://cs203t5-frontend-fi6k.vercel.app/"));
                 configuration.setAllowedMethods(
                                 Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                 configuration.setAllowedHeaders(List.of("Authorization", "Content-Type",

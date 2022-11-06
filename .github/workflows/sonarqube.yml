@@ -2,7 +2,6 @@ name: Testing with SonarQube
 on:
   push:
     branches:
-      - staging # or the name of your main branch
       - main
 
 jobs:

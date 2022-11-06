@@ -40,8 +40,7 @@ public class ProductsController {
 
     @GetMapping("{id}")
     public ProductsDTO getProducts(@PathVariable Long id) {
-        Products product = productsService.getProducts(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Products id " + id));
+        Products product = productsService.getProducts(id);
         String image = product.getImage();
         if (image != null)
             product.setImage(storageService.getUrl(image));
@@ -82,8 +81,8 @@ public class ProductsController {
     @PutMapping("{id}")
     public ProductsDTO updateProducts(@ModelAttribute @Valid Products products,@PathVariable Long id, @RequestParam(value="imageFile", required=false) MultipartFile image) {
         if (image != null && !image.isEmpty()) {
-            if (image.getContentType() == null || !image.getContentType().startsWith("image/"))
-                throw new InvalidFileTypeException("Image file like jpeg");
+            if (image.getContentType() == null || !image.getContentType().startsWith("image/")) {
+                throw new InvalidFileTypeException("Image file like jpeg");}
         }
         Products result = productsService.updateProducts(products, id);
         if (image != null && !image.isEmpty()) {
@@ -102,8 +101,7 @@ public class ProductsController {
 
     @DeleteMapping("{id}")
     public void deleteProducts(@PathVariable Long id) {
-        Products product = productsService.getProducts(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Product id: " + id));
+        Products product = productsService.getProducts(id);
         if (product.getImage() != null && !product.getImage().isBlank())
             storageService.deleteObject(product.getImage());
         productsService.deleteProducts(id);

@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -24,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.Vox.Viridis.exception.InvalidFileTypeException;
-import com.example.Vox.Viridis.exception.ResourceNotFoundException;
 import com.example.Vox.Viridis.model.Products;
 import com.example.Vox.Viridis.model.dto.ProductsDTO;
 import com.example.Vox.Viridis.model.dto.UsersDTO;
@@ -49,7 +46,7 @@ public class ProductsController {
 
     @GetMapping()
     public List<ProductsDTO> getAllProducts() {
-        List<ProductsDTO> result = new ArrayList<ProductsDTO>();
+        List<ProductsDTO> result = new ArrayList<>();
         for (Products product : productsService.getAllProducts()) {
         ProductsDTO temp = product.convertToDTO();
         result.add(temp);
@@ -64,11 +61,15 @@ public class ProductsController {
             @RequestParam(value = "imageFile", required = false) MultipartFile image) {
             Products result = productsService.addProducts(products);
         if (image != null && !image.isEmpty()) {
-            if (image.getContentType() == null || !image.getContentType().startsWith("image/"))
+            final String contentType = image.getContentType();
+            if (contentType == null || !contentType.startsWith("image/"))
                 throw new InvalidFileTypeException("Image file like jpeg");
         }
         if (image != null && !image.isEmpty()) {
-            String filename = StorageService.PRODUCTS_DIR + result.getId() + image.getOriginalFilename().substring(image.getOriginalFilename().lastIndexOf("."));
+            String originalFilename = image.getOriginalFilename();
+            if (originalFilename == null)
+                originalFilename = "";
+            String filename = StorageService.PRODUCTS_DIR + result.getId() + originalFilename.substring(originalFilename.lastIndexOf("."));
             result = productsService.updateProductsImage(products, filename);
 
             storageService.putObject(filename, image);
@@ -81,7 +82,8 @@ public class ProductsController {
     @PutMapping("{id}")
     public ProductsDTO updateProducts(@ModelAttribute @Valid Products products,@PathVariable Long id, @RequestParam(value="imageFile", required=false) MultipartFile image) {
         if (image != null && !image.isEmpty()) {
-            if (image.getContentType() == null || !image.getContentType().startsWith("image/")) {
+            final String contentType = image.getContentType();
+            if (contentType == null || !contentType.startsWith("image/")) {
                 throw new InvalidFileTypeException("Image file like jpeg");}
         }
         Products result = productsService.updateProducts(products, id);
@@ -89,12 +91,14 @@ public class ProductsController {
             if (result.getImage() != null)
                 storageService.deleteObject(result.getImage());
 
-            String filename = StorageService.PRODUCTS_DIR + result.getId() + image.getOriginalFilename().substring(image.getOriginalFilename().lastIndexOf("."));
+            String originalFilename = image.getOriginalFilename();
+            if (originalFilename == null)
+                originalFilename = "";
+            String filename = StorageService.PRODUCTS_DIR + result.getId() + originalFilename.substring(originalFilename.lastIndexOf("."));
             result = productsService.updateProductsImage(products, filename);
 
             storageService.putObject(filename, image);
         }
-        //entityManager.detach(result);
         result.setImage(storageService.getUrl(result.getImage()));
         return result.convertToDTO();
     }

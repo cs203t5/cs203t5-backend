@@ -1,6 +1,7 @@
 package com.example.Vox.Viridis.controller;
 
 import javax.validation.Valid;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,12 +17,14 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class EmailController {
     private final MailService mailService;
+    @Value("${VOX_VIRIDIS_EMAIL}")
+    private String EMAIL;
 
     @PostMapping
     public ResponseEntity<Object> sendEmail(@Valid @RequestBody Contact email) {
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
-        simpleMailMessage.setFrom("${VOX_VIRIDIS_EMAIL}");
-        simpleMailMessage.setTo("${VOX_VIRIDIS_EMAIL}");
+        simpleMailMessage.setFrom(EMAIL);
+        simpleMailMessage.setTo(EMAIL);
         simpleMailMessage
                 .setSubject("Question from " + email.getFirstName() + " " + email.getLastName());
         simpleMailMessage.setText("Email: " + email.getEmail() + "\n" + "First Name: "

@@ -17,6 +17,20 @@ jobs:
         with:
           java-version: 17
           
+      - name: Shutdown Ubuntu MySQL (SUDO)
+        run: sudo service mysql stop # Shutdown the Default MySQL, "sudo" is necessary, please not remove it
+
+      - name: Set up mysql
+        uses: mirromutth/mysql-action@v1.1
+        env:
+          DB_NAME: ${{secrets.MAVEN_DB_NAME}}
+          DB_PASSWORD: ${{secrets.MAVEN_DB_PASSWORD}}
+          DB_USER: ${{secrets.MAVEN_DB_USER}}
+        with:
+          mysql database: ${{env.DB_NAME}}
+          mysql user: ${{env.DB_USER}}
+          mysql password: ${{env.DB_PASSWORD}}
+          
       - name: Cache SonarQube packages
         uses: actions/cache@v1
         with:
@@ -36,7 +50,21 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          
+          AWS_ACCESS_KEY: ${{secrets.MAVEN_AWS_ACCESS_KEY}}
+          AWS_S3_BASE_URL: ${{secrets.MAVEN_AWS_S3_BASE_URL}}
+          AWS_SECRET_KEY: ${{secrets.MAVEN_AWS_SECRET_KEY}}
+          BUCKET_NAME: ${{secrets.MAVEN_BUCKET_NAME}}
+          DB_NAME: ${{secrets.MAVEN_DB_NAME}}
+          DB_PASSWORD: ${{secrets.MAVEN_DB_PASSWORD}}
+          DB_STRING: ${{secrets.MAVEN_DB_STRING}}
+          DB_USER: ${{secrets.MAVEN_DB_USER}}
+          GOOGLE_CLIENT_ID: ${{secrets.MAVEN_GOOGLE_CLIENT_ID}}
+          PRIVATE_KEY: ${{secrets.MAVEN_PRIVATE_KEY}}
+          PUBLIC_KEY: ${{secrets.MAVEN_PUBLIC_KEY}}
+          VOX_VIRIDIS_EMAIL: ${{secrets.MAVEN_VOX_VIRIDIS_EMAIL}}
+
         
         run: |
           cd Vox-Viridis
-          mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=Vox-Viridis
+          mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=Vox-Viridis 

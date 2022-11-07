@@ -82,6 +82,9 @@ public class RewardIntegrationTest {
 
     @BeforeEach
     void createAdminAccount() {
+        users.deleteAll();
+        roles.deleteAll();
+
         Role businessRole = new Role(1l, "BUSINESS", null);
         Role consumerRole = new Role(2l, "CONSUMER", null);
         businessRole = roles.save(businessRole);
@@ -140,20 +143,21 @@ public class RewardIntegrationTest {
         return user;
     }
 
-    private String getJwtToken(String username) {
+    /*private String getJwtToken(String username) {
         ResponseEntity<String> tokenResponse = restTemplate.withBasicAuth(username, "goodpassword")
                 .postForEntity(baseUrl + port + "/api/users/token", null, String.class);
         return tokenResponse.getBody();
-    }
+    }*/
 
     private TestRestTemplate authenticatedRestTemplate(String username) {
-        String jwtToken = getJwtToken(username);
+        /*String jwtToken = getJwtToken(username);
 
         restTemplate.getRestTemplate().getInterceptors().add((request, body, execution) -> {
             request.getHeaders().add("Authorization", "Bearer " + jwtToken);
             return execution.execute(request, body);
         });
-        return restTemplate;
+        return restTemplate;*/
+        return restTemplate.withBasicAuth(username, "goodpassword");
     }
 
     private TestRestTemplate authenticatedConsumerRestTemplate() {

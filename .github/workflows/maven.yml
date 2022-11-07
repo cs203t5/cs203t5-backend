@@ -42,22 +42,6 @@ jobs:
           mysql user: ${{env.DB_USER}}
           mysql password: ${{env.DB_PASSWORD}}
       
-      - name: Create Schema
-        env:
-            DB_NAME: ${{secrets.MAVEN_DB_NAME}}
-            DB_PASSWORD: ${{secrets.MAVEN_DB_PASSWORD}}
-            DB_USER: ${{secrets.MAVEN_DB_USER}}
-
-        run: |
-          sudo /etc/init.d/mysql start
-          mysql -u ${{env.DB_USER}} -p${{env.DB_PASSWORD}} 
-          drop database voxViridis
-          create database voxViridis
-          use voxViridis
-          create schema ${{env.DB_NAME}}          
-          use schema ${{env.DB_NAME}}
-
-      
       - name: Build with Maven
         env:
 

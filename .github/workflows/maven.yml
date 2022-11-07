@@ -28,6 +28,19 @@ jobs:
           java-version: "17"
           distribution: "temurin"
           cache: maven
+      - name: Shutdown Ubuntu MySQL (SUDO)
+        run: sudo service mysql stop # Shutdown the Default MySQL, "sudo" is necessary, please not remove it
+
+      - name: Set up mysql
+        uses: mirromutth/mysql-action@v1.1
+        env:
+          DB_NAME: ${{secrets.MAVEN_DB_NAME}}
+          DB_PASSWORD: ${{secrets.MAVEN_DB_PASSWORD}}
+          DB_USER: ${{secrets.MAVEN_DB_USER}}
+        with:
+          mysql database: ${{env.DB_NAME}}
+          mysql user: ${{env.DB_USER}}
+          mysql password: ${{env.DB_PASSWORD}}
       
       - name: Build with Maven
         env:

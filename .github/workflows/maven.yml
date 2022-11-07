@@ -46,7 +46,7 @@ jobs:
             DB_USER: ${{secrets.MAVEN_DB_USER}}
 
         run: |
-          ${{env.DB_PASSWORD}} | mysql -u ${{env.DB_USER}} -p 
+          mysql -u ${{env.DB_USER}} -p${{env.DB_PASSWORD}} 
           drop database voxViridis
           create database voxViridis
           use voxViridis

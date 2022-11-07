@@ -119,8 +119,7 @@ public class CampaignServiceImpl implements CampaignService {
     @Override
     public void deleteCampaign(Long id) {
         Users username = usersService.getCurrentUser();
-        Campaign campaign = campaignRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Campaign id " + id));
-        if (!campaign.getCreatedBy().getAccountId().equals(username.getAccountId()))
+        if (!campaignRepository.getCreatedBy(id).equals(username.getAccountId()))
             throw new NotOwnerException();
         log.info("Delete campaign id: " + id);
         campaignRepository.deleteById(id);

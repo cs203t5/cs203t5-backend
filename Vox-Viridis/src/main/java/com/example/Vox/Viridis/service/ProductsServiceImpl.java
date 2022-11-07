@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import javax.transaction.Transactional;
 
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 
 import com.example.Vox.Viridis.exception.NotEnoughPointException;
@@ -64,7 +63,7 @@ public class ProductsServiceImpl implements ProductsService{
     public void deleteProducts(Long id) {
         Users username = usersService.getCurrentUser();
         if (username != null
-                && !getProducts(id).getCreatedBy().getAccountId().equals(username.getAccountId()))
+                && !productsRepository.getCreatedBy(id).equals(username.getAccountId()))
             throw new NotOwnerException();
         log.info("Delete Product with id: " + id);
         productsRepository.deleteById(id);

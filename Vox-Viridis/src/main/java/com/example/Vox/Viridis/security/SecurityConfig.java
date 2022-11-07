@@ -121,7 +121,7 @@ public class SecurityConfig {
                                 .antMatchers(HttpMethod.POST, "/email").permitAll()
 
                                 // Chat API
-                                .antMatchers("/ws/*").permitAll()
+                                .antMatchers("/ws/**").permitAll()
 
                                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll().anyRequest()
 

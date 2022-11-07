@@ -28,6 +28,27 @@ jobs:
           java-version: "17"
           distribution: "temurin"
           cache: maven
+      - name: Set up mysql
+        uses: mirromutth/mysql-action@v1.1
+        env:
+          DB_NAME: ${{secrets.MAVEN_DB_NAME}}
+          DB_PASSWORD: ${{secrets.MAVEN_DB_PASSWORD}}
+          DB_USER: ${{secrets.MAVEN_DB_USER}}
+        with:
+          mysql database: ${{DB_NAME}}
+          mysql user: ${{DB_USER}}
+          mysql password: ${{DB_PASSWORD}}
+      
+      - name: Create Schema
+        env:
+            DB_NAME: ${{secrets.MAVEN_DB_NAME}}
+        run: |
+          drop database voxViridis
+          create database voxViridis
+          use voxViridis
+          create schema ${{DB_NAME}}          
+          use schema ${{DB_NAME}}
+
       
       - name: Build with Maven
         env:

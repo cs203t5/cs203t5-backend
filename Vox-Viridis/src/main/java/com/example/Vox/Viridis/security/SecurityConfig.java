@@ -92,6 +92,18 @@ public class SecurityConfig {
                                 .antMatchers(HttpMethod.POST, "/participation/addPoints/*")
                                 .hasAnyAuthority("BUSINESS", "ROLE_BUSINESS")
 
+                                // product API
+                                .antMatchers(HttpMethod.GET, "/products").permitAll()
+                                .antMatchers(HttpMethod.GET, "/products/*").permitAll()
+                                .antMatchers(HttpMethod.POST, "/products")
+                                .hasAnyAuthority("ADMIN", "ROLE_ADMIN")
+                                .antMatchers(HttpMethod.PUT, "/products/*")
+                                .hasAnyAuthority("ADMIN", "ROLE_ADMIN")
+                                .antMatchers(HttpMethod.DELETE, "/products/*")
+                                .hasAnyAuthority("ADMIN", "ROLE_ADMIN")
+                                .antMatchers(HttpMethod.POST, "/products/buy/*")
+                                .hasAnyAuthority("CONSUMER", "ROLE_CONSUMER")
+
                                 // Role API
                                 .antMatchers(HttpMethod.GET, "/role")
                                 .hasAnyAuthority("ADMIN", "ROLE_ADMIN")
@@ -104,10 +116,13 @@ public class SecurityConfig {
                                 .antMatchers(HttpMethod.DELETE, "/role/*")
                                 .hasAnyAuthority("ADMIN", "ROLE_ADMIN")
 
+
                                 // Email API
                                 .antMatchers(HttpMethod.POST, "/email").permitAll()
 
                                 .antMatchers(HttpMethod.OPTIONS).permitAll().anyRequest()
+                                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll().anyRequest()
+                                
                                 .authenticated()).csrf(csrf -> csrf.disable())
                                 .httpBasic(Customizer.withDefaults())
                                 .userDetailsService(myUserDetailsService)

@@ -32,6 +32,7 @@ import com.example.Vox.Viridis.model.Campaign;
 import com.example.Vox.Viridis.model.RewardType;
 import com.example.Vox.Viridis.model.Role;
 import com.example.Vox.Viridis.model.Users;
+import com.example.Vox.Viridis.model.dto.PaginationDTO;
 import com.example.Vox.Viridis.repository.CampaignRepository;
 import com.example.Vox.Viridis.repository.RewardTypeRepository;
 import com.example.Vox.Viridis.repository.RoleRepository;
@@ -71,6 +72,9 @@ public class CampaignIntegrationTest {
                 // clear the database after each test
                 campaigns.deleteAll();
                 rewardTypes.deleteAll();
+
+                users.deleteAll();
+                roles.deleteAll();
         }
 
         @BeforeEach
@@ -104,22 +108,22 @@ public class CampaignIntegrationTest {
                 return user;
         }
 
-        private String getJwtToken() {
+        /*private String getJwtToken() {
                 ResponseEntity<String> tokenResponse = restTemplate.withBasicAuth("admin", "goodpassword").postForEntity(baseUrl + port + "/api/users/token", null, String.class);
                 return tokenResponse.getBody();
-        }
+        }*/
 
         private TestRestTemplate authenticatedRestTemplate() {
-                String jwtToken = getJwtToken();
+                /*String jwtToken = getJwtToken();
 
                 restTemplate.getRestTemplate().getInterceptors().add((request, body, execution) -> {
                         request.getHeaders().add("Authorization", "Bearer " + jwtToken);
                         return execution.execute(request, body);
                 });
-                return restTemplate;
+                return restTemplate;*/
 
                 // Using Basic Authentiaction
-                // return restTemplate.withBasicAuth("admin", "goodpassword");
+                return restTemplate.withBasicAuth("admin", "goodpassword");
         }
 
         private Users getUser() {
@@ -172,12 +176,14 @@ public class CampaignIntegrationTest {
                 List<Campaign> campaignArr = List.of(campaign, campaign2);
                 campaignArr = campaigns.saveAll(campaignArr);
 
-                ResponseEntity<List<Campaign>> result = restTemplate.exchange(uri,
+                ResponseEntity<PaginationDTO<Campaign>> result = restTemplate.exchange(uri,
                                 HttpMethod.GET, null,
-                                new ParameterizedTypeReference<List<Campaign>>() {});
+                                new ParameterizedTypeReference<PaginationDTO<Campaign>>() {});
                 assertEquals(200, result.getStatusCode().value());
+                PaginationDTO<Campaign> campaignResult = result.getBody();
+                assertNotNull(campaignResult);
                 modifyCampaignArr(campaignArr);
-                assertEquals(campaignArr, result.getBody());
+                assertEquals(campaignArr, campaignResult.getElements());
         }
 
         @Test
@@ -214,13 +220,13 @@ public class CampaignIntegrationTest {
                 List<Campaign> campaignArr = List.of(campaign, campaign2);
                 campaignArr = campaigns.saveAll(campaignArr);
 
-                ResponseEntity<List<CampaignCompanyName>> result =
+                ResponseEntity<PaginationDTO<CampaignCompanyName>> result =
                                 restTemplate.exchange(uri, HttpMethod.GET, null,
-                                                new ParameterizedTypeReference<List<CampaignCompanyName>>() {});
+                                                new ParameterizedTypeReference<PaginationDTO<CampaignCompanyName>>() {});
                 assertEquals(200, result.getStatusCode().value());
-                List<CampaignCompanyName> resultArr = result.getBody();
+                PaginationDTO<CampaignCompanyName> resultArr = result.getBody();
                 assertNotNull(resultArr);
-                resultArr.forEach(c -> {
+                resultArr.getElements().forEach(c -> {
                         if (c.getTitle().equals("user1"))
                                 assertEquals(c.getCompanyName(), campaign2.companyName());
                         else
@@ -261,13 +267,13 @@ public class CampaignIntegrationTest {
                 List<Campaign> campaignArr = List.of(campaign, campaign2);
                 campaignArr = campaigns.saveAll(campaignArr);
 
-                ResponseEntity<List<CampaignStatus>> result = restTemplate.exchange(
+                ResponseEntity<PaginationDTO<CampaignStatus>> result = restTemplate.exchange(
                                 uri, HttpMethod.GET, null,
-                                new ParameterizedTypeReference<List<CampaignStatus>>() {});
+                                new ParameterizedTypeReference<PaginationDTO<CampaignStatus>>() {});
                 assertEquals(200, result.getStatusCode().value());
-                List<CampaignStatus> resultArr = result.getBody();
+                PaginationDTO<CampaignStatus> resultArr = result.getBody();
                 assertNotNull(resultArr);
-                resultArr.forEach(c -> {
+                resultArr.getElements().forEach(c -> {
                         if (c.getTitle().equals("Ongoing campaign"))
                                 assertEquals(c.getStatus(), 'O');
                         else
@@ -308,12 +314,14 @@ public class CampaignIntegrationTest {
                 List<Campaign> campaignArr = List.of(campaign, campaign2);
                 campaignArr = campaigns.saveAll(campaignArr);
 
-                ResponseEntity<List<Campaign>> result = restTemplate.exchange(uri,
+                ResponseEntity<PaginationDTO<Campaign>> result = restTemplate.exchange(uri,
                                 HttpMethod.GET, null,
-                                new ParameterizedTypeReference<List<Campaign>>() {});
+                                new ParameterizedTypeReference<PaginationDTO<Campaign>>() {});
                 assertEquals(200, result.getStatusCode().value());
+                PaginationDTO<Campaign> campaignResult = result.getBody();
+                assertNotNull(campaignResult);
                 modifyCampaignArr(campaignArr);
-                assertEquals(List.of(campaign2), result.getBody());
+                assertEquals(List.of(campaign2), campaignResult.getElements());
         }
 
         @Test
@@ -351,12 +359,14 @@ public class CampaignIntegrationTest {
                 List<Campaign> campaignArr = List.of(campaign, campaign2);
                 campaignArr = campaigns.saveAll(campaignArr);
 
-                ResponseEntity<List<Campaign>> result = restTemplate.exchange(uri,
+                ResponseEntity<PaginationDTO<Campaign>> result = restTemplate.exchange(uri,
                                 HttpMethod.GET, null,
-                                new ParameterizedTypeReference<List<Campaign>>() {});
+                                new ParameterizedTypeReference<PaginationDTO<Campaign>>() {});
                 assertEquals(200, result.getStatusCode().value());
+                PaginationDTO<Campaign> campaignResult = result.getBody();
+                assertNotNull(campaignResult);
                 modifyCampaignArr(campaignArr);
-                assertEquals(List.of(campaign), result.getBody());
+                assertEquals(List.of(campaign), campaignResult.getElements());
         }
 
         @Test
@@ -393,12 +403,14 @@ public class CampaignIntegrationTest {
                 List<Campaign> campaignArr = List.of(campaign, campaign2);
                 campaignArr = campaigns.saveAll(campaignArr);
 
-                ResponseEntity<List<Campaign>> result = restTemplate.exchange(uri,
+                ResponseEntity<PaginationDTO<Campaign>> result = restTemplate.exchange(uri,
                                 HttpMethod.GET, null,
-                                new ParameterizedTypeReference<List<Campaign>>() {});
+                                new ParameterizedTypeReference<PaginationDTO<Campaign>>() {});
                 assertEquals(200, result.getStatusCode().value());
+                PaginationDTO<Campaign> campaignResult = result.getBody();
+                assertNotNull(campaignResult);
                 modifyCampaignArr(campaignArr);
-                assertEquals(List.of(campaign), result.getBody());
+                assertEquals(List.of(campaign), campaignResult.getElements());
         }
 
         @Test
@@ -437,12 +449,14 @@ public class CampaignIntegrationTest {
                 List<Campaign> campaignArr = List.of(campaign, campaign2);
                 campaignArr = campaigns.saveAll(campaignArr);
 
-                ResponseEntity<List<Campaign>> result = restTemplate.exchange(uri,
+                ResponseEntity<PaginationDTO<Campaign>> result = restTemplate.exchange(uri,
                                 HttpMethod.GET, null,
-                                new ParameterizedTypeReference<List<Campaign>>() {});
+                                new ParameterizedTypeReference<PaginationDTO<Campaign>>() {});
                 assertEquals(200, result.getStatusCode().value());
+                PaginationDTO<Campaign> campaignResult = result.getBody();
+                assertNotNull(campaignResult);
                 modifyCampaignArr(campaignArr);
-                assertEquals(List.of(campaign2, campaign), result.getBody());
+                assertEquals(List.of(campaign2, campaign), campaignResult.getElements());
         }
 
         @Test
@@ -481,12 +495,14 @@ public class CampaignIntegrationTest {
                 List<Campaign> campaignArr = List.of(campaign, campaign2);
                 campaignArr = campaigns.saveAll(campaignArr);
 
-                ResponseEntity<List<Campaign>> result = restTemplate.exchange(uri,
+                ResponseEntity<PaginationDTO<Campaign>> result = restTemplate.exchange(uri,
                                 HttpMethod.GET, null,
-                                new ParameterizedTypeReference<List<Campaign>>() {});
+                                new ParameterizedTypeReference<PaginationDTO<Campaign>>() {});
                 assertEquals(200, result.getStatusCode().value());
+                PaginationDTO<Campaign> campaignResult = result.getBody();
+                assertNotNull(campaignResult);
                 modifyCampaignArr(campaignArr);
-                assertEquals(List.of(campaign, campaign2), result.getBody());
+                assertEquals(List.of(campaign, campaign2), campaignResult.getElements());
         }
         
         @Test
@@ -841,7 +857,7 @@ public class CampaignIntegrationTest {
         }
 
         @Test
-        public void addCampaign_DuplicateTitle_Success() throws Exception {
+        public void addCampaign_DuplicateTitle_Fail() throws Exception {
                 URI uri = new URI(baseUrl + port + "/api/campaign");
 
                 Campaign campaign = new Campaign();
@@ -869,11 +885,7 @@ public class CampaignIntegrationTest {
 
                 ResponseEntity<Campaign> result = authenticatedRestTemplate().postForEntity(uri,
                                 request, Campaign.class);
-                assertEquals(201, result.getStatusCode().value());
-                Campaign campaignResult = result.getBody();
-                assertNotNull(campaignResult);
-                assertEquals("South", campaignResult.getLocation());
-                assertEquals(campaign.getTitle(), campaignResult.getTitle());
+                assertEquals(409, result.getStatusCode().value());
         }
 
         @Test
@@ -952,11 +964,7 @@ public class CampaignIntegrationTest {
                 ResponseEntity<Campaign> result =
                                 authenticatedRestTemplate().exchange(uri + "/" + campaign2.getId(),
                                                 HttpMethod.PUT, request, Campaign.class);
-                assertEquals(200, result.getStatusCode().value());
-                Campaign campaignResult = result.getBody();
-                assertNotNull(campaignResult);
-                assertEquals("South", campaignResult.getLocation());
-                assertEquals(campaign.getTitle(), campaignResult.getTitle());
+                assertEquals(409, result.getStatusCode().value());
         }
 
         @Test

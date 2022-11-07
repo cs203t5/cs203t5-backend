@@ -1,8 +1,10 @@
 package com.example.Vox.Viridis.service;
 
-import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.Vox.Viridis.exception.CampaignAlreadyHasReward;
@@ -11,6 +13,7 @@ import com.example.Vox.Viridis.exception.ResourceNotFoundException;
 import com.example.Vox.Viridis.model.Campaign;
 import com.example.Vox.Viridis.model.Reward;
 import com.example.Vox.Viridis.model.Users;
+import com.example.Vox.Viridis.model.dto.PaginationDTO;
 import com.example.Vox.Viridis.repository.RewardRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -29,10 +32,12 @@ public class RewardService {
      * Will get rewards that are not expired (or hasn't ended)
      * @return List of rewards that hasn't ended
      */
-    public List<Reward> getRewards() {
-        List<Reward> result = rewards.findAllNotEnded();
-        result.forEach(reward -> reward.constructCampaignImage(storageService));
-        return result;
+    public PaginationDTO<Reward> getRewards(int pageNum) {
+        Pageable pageable = PageRequest.of(pageNum, 20);
+        
+        Page<Reward> result = rewards.findAllNotEnded(pageable);
+        result.getContent().forEach(reward -> reward.constructCampaignImage(storageService));
+        return new PaginationDTO<>(result);
     }
 
     /**
@@ -46,10 +51,12 @@ public class RewardService {
         return result;
     }
 
-    public List<Reward> getRewardsByCurrentUser() {
-        List<Reward> result = rewards.findByUsers_accountId(usersService.getCurrentUser().getAccountId());
+    public PaginationDTO<Reward> getRewardsByCurrentUser(int pageNum) {
+        Pageable pageable = PageRequest.of(pageNum, 20);
+
+        Page<Reward> result = rewards.findByUsers_accountId(usersService.getCurrentUser().getAccountId(), pageable);
         result.forEach(reward -> reward.constructCampaignImage(storageService));
-        return result;
+        return new PaginationDTO<>(result);
     }
 
     /**
@@ -82,12 +89,12 @@ public class RewardService {
     public Reward addReward(Reward reward, Campaign offeredBy) {
         // validate that the campaign object belongs to the current logged in user
         Users user = usersService.getCurrentUser();
-        if (user != null && !offeredBy.getCreatedBy().equals(user))
+        if (!offeredBy.getCreatedBy().equals(user))
             throw new NotOwnerException();
 
-            // check if campaign alr has reward
-            if (offeredBy.getRewards() != null) 
-                throw new CampaignAlreadyHasReward(offeredBy.getId(), offeredBy.getRewards().getId());
+        // check if campaign alr has reward
+        if (offeredBy.getRewards() != null) 
+            throw new CampaignAlreadyHasReward(offeredBy.getId(), offeredBy.getRewards().getId());
 
         reward.setOfferedBy(offeredBy);
 
@@ -96,30 +103,6 @@ public class RewardService {
         log.info("Created reward id " + reward.getId() + " for campaign id " + offeredBy.getId());
         return result;
     }
-
-    /*public Reward addUserToReward(long rewardId) {
-        Reward reward = rewards.findById(rewardId)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Reward id " + rewardId));
-
-        Users user = usersService.getCurrentUser();
-        reward.getUsers().add(user);
-        Reward result = rewards.save(reward);
-        log.info("username '" + user.getUsername() + "' added to reward id " + rewardId);
-        return result;
-    }
-
-    public Reward addUserToRewardByCampaignId(long campaignId) {
-        Reward reward = rewards.findByOfferedBy(campaignId)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Reward with Campaign id " + campaignId));
-
-        Users user = usersService.getCurrentUser();
-        reward.getUsers().add(user);
-        Reward result = rewards.save(reward);
-        log.info("username '" + user.getUsername() + "' added to reward id " + reward.getId() + " (campaign id" + campaignId + ")");
-        return result;
-    }*/
 
     /**
      * Update reward by id
@@ -138,7 +121,7 @@ public class RewardService {
 
         // validate it belongs to current logged in user
         Users user = usersService.getCurrentUser();
-        if (user != null && !updatedReward.getOfferedBy().getCreatedBy().equals(user))
+        if (!updatedReward.getOfferedBy().getCreatedBy().equals(user))
             throw new NotOwnerException();
 
         updatedReward = rewards.save(updatedReward);
@@ -160,11 +143,11 @@ public class RewardService {
 
         // validate it belongs to current logged in user
         Users user = usersService.getCurrentUser();
-        if (user != null && !reward.getOfferedBy().getCreatedBy().equals(user))
+        if (!reward.getOfferedBy().getCreatedBy().equals(user))
             throw new NotOwnerException();
 
         log.info("Deleted record id " + id + " with campaignId " + reward.getOfferedBy().getId() + "by user id "
-                + (user != null ? user.getAccountId() : "null"));
+                + user.getAccountId());
         rewards.delete(reward);
     }
 }

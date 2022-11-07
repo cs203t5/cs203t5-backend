@@ -1,33 +1,22 @@
-
-
-# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-maven
-
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
-name: Java CI with Maven
-
+name: Testing with SonarQube 
 on:
   push:
-    branches: ["staging","main"]
-  pull_request:
-    branches: ["staging","main"]
+    branches:
+      - main
 
 jobs:
   build:
+    name: Build
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v3
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
+      - uses: actions/checkout@v2
         with:
-          java-version: "17"
-          distribution: "temurin"
-          cache: maven
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name: Set up JDK 17
+        uses: actions/setup-java@v1
+        with:
+          java-version: 17
+          
       - name: Shutdown Ubuntu MySQL (SUDO)
         run: sudo service mysql stop # Shutdown the Default MySQL, "sudo" is necessary, please not remove it
 
@@ -41,10 +30,26 @@ jobs:
           mysql database: ${{env.DB_NAME}}
           mysql user: ${{env.DB_USER}}
           mysql password: ${{env.DB_PASSWORD}}
-      
-      - name: Build with Maven
+          
+      - name: Cache SonarQube packages
+        uses: actions/cache@v1
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+          
+      - name: Cache Maven packages
+        uses: actions/cache@v1
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+                
+      - name: Build and analyze
         env:
-
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
           
           AWS_ACCESS_KEY: ${{secrets.MAVEN_AWS_ACCESS_KEY}}
           AWS_S3_BASE_URL: ${{secrets.MAVEN_AWS_S3_BASE_URL}}
@@ -58,6 +63,8 @@ jobs:
           PRIVATE_KEY: ${{secrets.MAVEN_PRIVATE_KEY}}
           PUBLIC_KEY: ${{secrets.MAVEN_PUBLIC_KEY}}
           VOX_VIRIDIS_EMAIL: ${{secrets.MAVEN_VOX_VIRIDIS_EMAIL}}
+
+        
         run: |
           cd Vox-Viridis
-          ./mvnw test 
+          mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=Vox-Viridis 

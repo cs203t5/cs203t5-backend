@@ -1,7 +1,5 @@
 package com.example.Vox.Viridis.controller;
 
-import java.util.List;
-
 import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
@@ -13,12 +11,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.Vox.Viridis.exception.ResourceNotFoundException;
 import com.example.Vox.Viridis.model.Reward;
 import com.example.Vox.Viridis.model.RewardInputModel;
+import com.example.Vox.Viridis.model.dto.PaginationDTO;
 import com.example.Vox.Viridis.service.RewardService;
 import com.example.Vox.Viridis.service.RewardTypeService;
 import lombok.RequiredArgsConstructor;
@@ -32,13 +32,17 @@ public class RewardController {
     private final RewardTypeService rewardTypeService;
 
     @GetMapping("myReward")
-    public List<Reward> getRewardsByUserId() {
-        return rewardService.getRewardsByCurrentUser();
+    public PaginationDTO<Reward> getRewardsByUserId(@RequestParam(value = "pageNum", required = false) Integer pageNum) {
+        if (pageNum == null)
+            pageNum = 0;
+        return rewardService.getRewardsByCurrentUser(pageNum);
     }
 
     @GetMapping()
-    public List<Reward> getRewards() {
-        return rewardService.getRewards();
+    public PaginationDTO<Reward> getRewards(@RequestParam(value = "pageNum", required = false) Integer pageNum) {
+        if (pageNum == null)
+            pageNum = 0;
+        return rewardService.getRewards(pageNum);
     }
 
     @GetMapping("byCampaign/{campaignId}")

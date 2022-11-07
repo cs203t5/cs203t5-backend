@@ -15,13 +15,13 @@
 	<description>Vocx Viridis Backend Application</description>
 	<properties>
 		<java.version>17</java.version>
-		<sonar.exclusions>
-			**/VoxViridisApplication.java
-			**/config/*.java
-			**/exception/*.java
-			**/model/*.java
+		<sonar.coverage.exclusions>
+			**/VoxViridisApplication.java,
+			**/config/*.java,
+			**/exception/*.java,
+			**/model/*.java,
 			**/security/*.java
-  		</sonar.exclusions>
+  		</sonar.coverage.exclusions>
 	</properties>
 	<dependencyManagement>
     <dependencies>

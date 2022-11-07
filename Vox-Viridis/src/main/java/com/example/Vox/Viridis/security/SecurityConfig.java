@@ -104,6 +104,9 @@ public class SecurityConfig {
                                 .antMatchers(HttpMethod.DELETE, "/role/*")
                                 .hasAnyAuthority("ADMIN", "ROLE_ADMIN")
 
+                                // Email API
+                                .antMatchers(HttpMethod.POST, "/email").permitAll()
+
                                 .antMatchers(HttpMethod.OPTIONS).permitAll().anyRequest()
                                 .authenticated()).csrf(csrf -> csrf.disable())
                                 .httpBasic(Customizer.withDefaults())

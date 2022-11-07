@@ -42,7 +42,11 @@ jobs:
       - name: Create Schema
         env:
             DB_NAME: ${{secrets.MAVEN_DB_NAME}}
+            DB_PASSWORD: ${{secrets.MAVEN_DB_PASSWORD}}
+            DB_USER: ${{secrets.MAVEN_DB_USER}}
+
         run: |
+          ${{env.DB_PASSWORD}} | mysql -u ${{env.DB_USER}} -p 
           drop database voxViridis
           create database voxViridis
           use voxViridis

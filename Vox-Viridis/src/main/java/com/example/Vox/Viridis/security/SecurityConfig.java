@@ -120,6 +120,9 @@ public class SecurityConfig {
                                 // Email API
                                 .antMatchers(HttpMethod.POST, "/email").permitAll()
 
+                                // Chat API
+                                .antMatchers("/ws/*").permitAll()
+
                                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll().anyRequest()
 
                                 .authenticated()).csrf(csrf -> csrf.disable())

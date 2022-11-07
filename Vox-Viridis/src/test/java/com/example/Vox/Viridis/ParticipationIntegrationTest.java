@@ -21,6 +21,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.annotation.DirtiesContext;
 
 import com.example.Vox.Viridis.model.Campaign;
 import com.example.Vox.Viridis.model.Participation;
@@ -38,7 +39,7 @@ import com.example.Vox.Viridis.repository.RoleRepository;
 import com.example.Vox.Viridis.repository.UsersRepository;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-
+// @DirtiesContext
 public class ParticipationIntegrationTest {
     @LocalServerPort
     private int port;
@@ -77,49 +78,55 @@ public class ParticipationIntegrationTest {
         rewards.deleteAll();
         campaigns.deleteAll();
         rewardTypes.deleteAll();
+
+        users.deleteAll();
+        roles.deleteAll();
     }
 
     @BeforeEach
     void createConsumerAccount() {
         users.deleteAll();
         roles.deleteAll();
-
+        
         Role role = new Role(1l, "CONSUMER", null);
-        role = roles.save(role);
+        role = roles.saveAndFlush(role);
 
         Users user = new Users();
-        user.setUsername("customer");
-        user.setEmail("customer@test.com");
+        user.setUsername("customerParticipation");
+        user.setEmail("customerParticipation@test.com");
         user.setFirstName("customer");
-        user.setLastName("customer");
+        user.setLastName("participation");
         user.setPassword(passwordEncoder.encode("goodpassword"));
         user.setRoles(role);
-        user = users.save(user);
+        user = users.saveAndFlush(user);
     }
 
     @BeforeEach
     void createRewardTypes() {
-        rewardTypes.saveAll(List.of(
+        rewardTypes.saveAllAndFlush(List.of(
                 new RewardType(null, "Points", null),
                 new RewardType(null, "Cards", null)));
     }
 
     private Users getCurrentUser() {
-        return users.findByUsername("customer").get();
+        return users.findByUsername("customerParticipation").get();
     }
 
     private Users createAdminAccount() {
         Role role = new Role(2l, "BUSINESS", null);
-        role = roles.save(role);
+        role = roles.saveAndFlush(role);
 
         Users user = new Users();
-        user.setUsername("admin2");
-        user.setEmail("admin2@test.com");
+        user.setUsername("adminParticipation");
+        user.setEmail("adminParticipation@test.com");
         user.setFirstName("Admin2");
-        user.setLastName("admin2");
+        user.setLastName("Participation");
         user.setPassword(passwordEncoder.encode("goodpassword"));
         user.setRoles(role);
-        user = users.save(user);
+        user = users.saveAndFlush(user);
+
+        role.setUser(List.of(user));
+        roles.saveAndFlush(role);
 
         return user;
     }
@@ -146,19 +153,20 @@ public class ParticipationIntegrationTest {
     }
 
     private TestRestTemplate authenticatedRestTemplate(String username) {
-        String jwtToken = getJwtToken(username);
+        /*String jwtToken = getJwtToken(username);
 
         restTemplate.getRestTemplate().getInterceptors().add((request, body, execution) -> {
             request.getHeaders().add("Authorization", "Bearer " + jwtToken);
             return execution.execute(request, body);
         });
-        return restTemplate;
+        return restTemplate;*/
+        return restTemplate.withBasicAuth(username, "goodpassword");
     }
     private TestRestTemplate authenticatedConsumerRestTemplate() {
-        return authenticatedRestTemplate("customer");
+        return authenticatedRestTemplate("customerParticipation");
     }
     private TestRestTemplate authenticatedAdminRestTemplate() {
-        return authenticatedRestTemplate("admin2");
+        return authenticatedRestTemplate("adminParticipation");
     }
 
     @Test

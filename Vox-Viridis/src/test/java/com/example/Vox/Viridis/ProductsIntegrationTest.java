@@ -107,29 +107,29 @@ public class ProductsIntegrationTest {
         }
 
         private TestRestTemplate authenticatedRestTemplate() {
-                String jwtToken = getJwtToken();
+                /*String jwtToken = getJwtToken();
 
                 restTemplate.getRestTemplate().getInterceptors().add((request, body, execution) -> {
                         request.getHeaders().add("Authorization", "Bearer " + jwtToken);
                         return execution.execute(request, body);
                 });
-                return restTemplate;
+                return restTemplate;*/
 
                 // Using Basic Authentiaction
-                // return restTemplate.withBasicAuth("admin", "goodpassword");
+                return restTemplate.withBasicAuth("admin", "goodpassword");
         }
 
         private TestRestTemplate authenticatedRestTemplateConsumer() {
-                String jwtToken = getJwtTokenConsumer();
+                /*String jwtToken = getJwtTokenConsumer();
 
                 restTemplate.getRestTemplate().getInterceptors().add((request, body, execution) -> {
                         request.getHeaders().add("Authorization", "Bearer " + jwtToken);
                         return execution.execute(request, body);
                 });
-                return restTemplate;
+                return restTemplate;*/
 
                 // Using Basic Authentiaction
-                // return restTemplate.withBasicAuth("admin", "goodpassword");
+                return restTemplate.withBasicAuth("consumer", "goodpassword");
         }
 
         private Users getUser() {

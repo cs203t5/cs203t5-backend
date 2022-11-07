@@ -30,7 +30,6 @@ import org.springframework.util.MultiValueMap;
 import com.example.Vox.Viridis.model.Products;
 import com.example.Vox.Viridis.model.Role;
 import com.example.Vox.Viridis.model.Users;
-import com.example.Vox.Viridis.model.dto.ProductsDTO;
 import com.example.Vox.Viridis.repository.ProductsRepository;
 import com.example.Vox.Viridis.repository.RoleRepository;
 import com.example.Vox.Viridis.repository.UsersRepository;
@@ -95,7 +94,7 @@ public class ProductsIntegrationTest {
         }
 
 
-        private String getJwtToken() {
+        /*private String getJwtToken() {
                 ResponseEntity<String> tokenResponse = restTemplate.withBasicAuth("admin", "goodpassword")
                                 .postForEntity(baseUrl + port + "/api/users/token", null, String.class);
                 return tokenResponse.getBody();
@@ -104,7 +103,7 @@ public class ProductsIntegrationTest {
                 ResponseEntity<String> tokenResponse = restTemplate.withBasicAuth("consumer", "goodpassword")
                                 .postForEntity(baseUrl + port + "/api/users/token", null, String.class);
                 return tokenResponse.getBody();
-        }
+        }*/
 
         private TestRestTemplate authenticatedRestTemplate() {
                 /*String jwtToken = getJwtToken();

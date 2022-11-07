@@ -143,11 +143,11 @@ public class RewardIntegrationTest {
         return user;
     }
 
-    private String getJwtToken(String username) {
+    /*private String getJwtToken(String username) {
         ResponseEntity<String> tokenResponse = restTemplate.withBasicAuth(username, "goodpassword")
                 .postForEntity(baseUrl + port + "/api/users/token", null, String.class);
         return tokenResponse.getBody();
-    }
+    }*/
 
     private TestRestTemplate authenticatedRestTemplate(String username) {
         /*String jwtToken = getJwtToken(username);

@@ -21,7 +21,6 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.annotation.DirtiesContext;
 
 import com.example.Vox.Viridis.model.Campaign;
 import com.example.Vox.Viridis.model.Participation;
@@ -39,7 +38,6 @@ import com.example.Vox.Viridis.repository.RoleRepository;
 import com.example.Vox.Viridis.repository.UsersRepository;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-// @DirtiesContext
 public class ParticipationIntegrationTest {
     @LocalServerPort
     private int port;
@@ -146,11 +144,11 @@ public class ParticipationIntegrationTest {
         return rewardTypes.findByRewardType(rewardType).get();
     }
 
-    private String getJwtToken(String username) {
+    /*private String getJwtToken(String username) {
         ResponseEntity<String> tokenResponse = restTemplate.withBasicAuth(username, "goodpassword")
                 .postForEntity(baseUrl + port + "/api/users/token", null, String.class);
         return tokenResponse.getBody();
-    }
+    }*/
 
     private TestRestTemplate authenticatedRestTemplate(String username) {
         /*String jwtToken = getJwtToken(username);

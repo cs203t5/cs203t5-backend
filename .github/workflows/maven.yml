@@ -46,7 +46,7 @@ jobs:
             DB_USER: ${{secrets.MAVEN_DB_USER}}
 
         run: |
-          sudo service mysql start
+          sudo /etc/init.d/mysql start
           mysql -u ${{env.DB_USER}} -p${{env.DB_PASSWORD}} 
           drop database voxViridis
           create database voxViridis

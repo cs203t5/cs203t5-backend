@@ -21,6 +21,7 @@
 			**/exception/*.java,
 			**/model/*.java,
 			**/security/*.java
+			**/repository/*.java
   		</sonar.coverage.exclusions>
 	</properties>
 	<dependencyManagement>

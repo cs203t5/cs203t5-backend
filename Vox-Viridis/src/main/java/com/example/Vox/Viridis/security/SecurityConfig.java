@@ -123,9 +123,13 @@ public class SecurityConfig {
                                 // Chat API
                                 .antMatchers("/ws/**").permitAll()
 
-                                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll().anyRequest()
+                                // Analysis API
+                                .antMatchers(HttpMethod.GET, "/analysis/*")
+                                .hasAnyAuthority("ADMIN", "ROLE_ADMIN")
 
-                                .authenticated()).csrf(csrf -> csrf.disable())
+                                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                                .anyRequest().authenticated()).csrf(csrf -> csrf.disable())
                                 .httpBasic(Customizer.withDefaults())
                                 .userDetailsService(myUserDetailsService)
                                 .oauth2ResourceServer(oauth2 -> oauth2

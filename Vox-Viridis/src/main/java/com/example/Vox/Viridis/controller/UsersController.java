@@ -76,4 +76,9 @@ public class UsersController {
     public ResponseEntity<UsersDTO> downgradeRole(@PathVariable String username) {
         return ResponseEntity.ok(usersService.downgradeRole(username));
     }
+
+    @GetMapping("/{username}")
+    public ResponseEntity<UsersDTO> getUserById(@PathVariable String username) {
+        return ResponseEntity.ok(usersService.getUser(username));
+    }
 }

@@ -83,4 +83,8 @@ public class UsersService {
         return usersRepository.findAll().stream().map(Users::convertToDTO)
                 .collect(Collectors.toList());
     }
+
+    public UsersDTO getUser(String username) {
+        return usersRepository.findByUsername(username).orElseThrow().convertToDTO();
+    }
 }

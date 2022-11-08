@@ -122,6 +122,7 @@ public class SecurityConfig {
 
                                 // Chat API
                                 .antMatchers("/ws/**").permitAll()
+                                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
                                 // Analysis API
                                 .antMatchers(HttpMethod.GET, "/analysis/*")

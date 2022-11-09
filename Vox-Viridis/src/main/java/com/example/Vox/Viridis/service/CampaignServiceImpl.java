@@ -89,9 +89,11 @@ public class CampaignServiceImpl implements CampaignService {
         Pageable pageable = PageRequest.of(page, 20, sort);
         if (filterByTitle == null)
             filterByTitle = "";
-        Page<Campaign> campaigns = campaignRepository.findByTitleAndCategoryAndLocationAndReward(
-                filterByTitle, category, location, reward, pageable);
-        return new PaginationDTO<Campaign>(campaigns);
+
+        Page<Campaign> campaigns =
+                campaignRepository.findByTitleAndCategoryAndLocationAndReward(filterByTitle,
+                        category, location, reward, pageable);
+        return new PaginationDTO<>(campaigns);
     }
 
     /**
@@ -123,7 +125,7 @@ public class CampaignServiceImpl implements CampaignService {
 
         // Check if there's duplicate title
         List<Campaign> tmp = campaignRepository.findByTitle(updatedCampaign.getTitle());
-        if (!((tmp.size() == 1 && tmp.get(0).getId() == id) || tmp.size() == 0)) {
+        if (!((tmp.size() == 1 && tmp.get(0).getId() == id) || tmp.isEmpty())) {
             log.error("Error creating Campaign: duplicate title: " + updatedCampaign.getTitle());
             return null;
         }

@@ -101,8 +101,6 @@ public class ParticipationService {
 
     public List<Participation> getParticipation() {
 
-        List<Participation> participationsList = participations.findAll();
-
-        return participationsList;
+        return participations.findAll();
     }
 }

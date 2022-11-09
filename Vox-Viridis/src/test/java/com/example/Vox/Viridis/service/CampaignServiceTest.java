@@ -98,7 +98,8 @@ public class CampaignServiceTest {
         when(campaigns.findByTitleAndCategoryAndLocationAndReward("", null, null, null, pageable))
                 .thenReturn(page);
 
-        PaginationDTO<Campaign> result = campaignService.getCampaign(0, null, null, null, null, true);
+        PaginationDTO<Campaign> result =
+                campaignService.getCampaign(0, null, null, null, null, true);
 
         assertNotNull(result);
         assertEquals(result.getTotalElements(), 1);
@@ -120,7 +121,8 @@ public class CampaignServiceTest {
         when(campaigns.findByTitleAndCategoryAndLocationAndReward("New", null, null, null,
                 pageable)).thenReturn(new PageImpl<>(List.of(campaign)));
 
-        PaginationDTO<Campaign> result = campaignService.getCampaign(0, "New", null, null, null, true);
+        PaginationDTO<Campaign> result =
+                campaignService.getCampaign(0, "New", null, null, null, true);
 
         assertNotNull(result);
         assertEquals(result.getTotalElements(), 1);
@@ -134,7 +136,7 @@ public class CampaignServiceTest {
     @Test
     void addCampaign_NewTitle_ReturnSavedCampaign() {
         Campaign campaign = new Campaign();
-        campaign.setTitle("New Campaign");
+        campaign.setTitle("New Campaign economical");
         campaign.setStartDate(LocalDateTime.now());
         campaign.setEndDate(LocalDateTime.now().plusDays(1));
 

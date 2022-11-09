@@ -108,19 +108,20 @@ public class CampaignIntegrationTest {
                 return user;
         }
 
-        /*private String getJwtToken() {
-                ResponseEntity<String> tokenResponse = restTemplate.withBasicAuth("admin", "goodpassword").postForEntity(baseUrl + port + "/api/users/token", null, String.class);
-                return tokenResponse.getBody();
-        }*/
+        /*
+         * private String getJwtToken() { ResponseEntity<String> tokenResponse =
+         * restTemplate.withBasicAuth("admin", "goodpassword").postForEntity(baseUrl + port +
+         * "/api/users/token", null, String.class); return tokenResponse.getBody(); }
+         */
 
         private TestRestTemplate authenticatedRestTemplate() {
-                /*String jwtToken = getJwtToken();
-
-                restTemplate.getRestTemplate().getInterceptors().add((request, body, execution) -> {
-                        request.getHeaders().add("Authorization", "Bearer " + jwtToken);
-                        return execution.execute(request, body);
-                });
-                return restTemplate;*/
+                /*
+                 * String jwtToken = getJwtToken();
+                 * 
+                 * restTemplate.getRestTemplate().getInterceptors().add((request, body, execution)
+                 * -> { request.getHeaders().add("Authorization", "Bearer " + jwtToken); return
+                 * execution.execute(request, body); }); return restTemplate;
+                 */
 
                 // Using Basic Authentiaction
                 return restTemplate.withBasicAuth("admin", "goodpassword");
@@ -137,9 +138,8 @@ public class CampaignIntegrationTest {
         }
 
         private void createRewardType() {
-                rewardTypes.saveAll(List.of(
-                        new RewardType(null, "Points", null), 
-                        new RewardType(null, "Cards", null)));
+                rewardTypes.saveAll(List.of(new RewardType(null, "Points", null),
+                                new RewardType(null, "Cards", null)));
         }
 
         @Test
@@ -220,9 +220,9 @@ public class CampaignIntegrationTest {
                 List<Campaign> campaignArr = List.of(campaign, campaign2);
                 campaignArr = campaigns.saveAll(campaignArr);
 
-                ResponseEntity<PaginationDTO<CampaignCompanyName>> result =
-                                restTemplate.exchange(uri, HttpMethod.GET, null,
-                                                new ParameterizedTypeReference<PaginationDTO<CampaignCompanyName>>() {});
+                ResponseEntity<PaginationDTO<CampaignCompanyName>> result = restTemplate.exchange(
+                                uri, HttpMethod.GET, null,
+                                new ParameterizedTypeReference<PaginationDTO<CampaignCompanyName>>() {});
                 assertEquals(200, result.getStatusCode().value());
                 PaginationDTO<CampaignCompanyName> resultArr = result.getBody();
                 assertNotNull(resultArr);
@@ -267,8 +267,8 @@ public class CampaignIntegrationTest {
                 List<Campaign> campaignArr = List.of(campaign, campaign2);
                 campaignArr = campaigns.saveAll(campaignArr);
 
-                ResponseEntity<PaginationDTO<CampaignStatus>> result = restTemplate.exchange(
-                                uri, HttpMethod.GET, null,
+                ResponseEntity<PaginationDTO<CampaignStatus>> result = restTemplate.exchange(uri,
+                                HttpMethod.GET, null,
                                 new ParameterizedTypeReference<PaginationDTO<CampaignStatus>>() {});
                 assertEquals(200, result.getStatusCode().value());
                 PaginationDTO<CampaignStatus> resultArr = result.getBody();
@@ -504,7 +504,7 @@ public class CampaignIntegrationTest {
                 modifyCampaignArr(campaignArr);
                 assertEquals(List.of(campaign, campaign2), campaignResult.getElements());
         }
-        
+
         @Test
         public void getCampaignById_Success() throws Exception {
                 URI uri = new URI(baseUrl + port + "/api/campaign");
@@ -539,8 +539,8 @@ public class CampaignIntegrationTest {
                 campaignArr = campaigns.saveAll(campaignArr);
 
                 ResponseEntity<Campaign> result =
-                        restTemplate.exchange(uri + "/" + campaign2.getId(),
-                                                HttpMethod.GET, null, Campaign.class);
+                                restTemplate.exchange(uri + "/" + campaign2.getId(), HttpMethod.GET,
+                                                null, Campaign.class);
                 assertEquals(200, result.getStatusCode().value());
                 modifyCampaignArr(campaignArr);
                 assertEquals(campaign2, result.getBody());
@@ -592,9 +592,9 @@ public class CampaignIntegrationTest {
                 List<Campaign> campaignArr = List.of(campaign, campaign2, campaign3);
                 campaignArr = campaigns.saveAll(campaignArr);
 
-                ResponseEntity<List<Campaign>> result = authenticatedRestTemplate().exchange(uri, 
-                        HttpMethod.GET, null, 
-                        new ParameterizedTypeReference<List<Campaign>>() {});
+                ResponseEntity<List<Campaign>> result = authenticatedRestTemplate().exchange(uri,
+                                HttpMethod.GET, null,
+                                new ParameterizedTypeReference<List<Campaign>>() {});
                 assertEquals(200, result.getStatusCode().value());
                 modifyCampaignArr(campaignArr);
                 assertEquals(List.of(campaign, campaign2), result.getBody());
@@ -604,8 +604,8 @@ public class CampaignIntegrationTest {
         public void getCampaignById_NotFound_Fail() throws Exception {
                 URI uri = new URI(baseUrl + port + "/api/campaign/158");
 
-                ResponseEntity<Campaign> result = restTemplate.exchange(uri,
-                                HttpMethod.GET, null, Campaign.class);
+                ResponseEntity<Campaign> result =
+                                restTemplate.exchange(uri, HttpMethod.GET, null, Campaign.class);
                 assertEquals(404, result.getStatusCode().value());
                 Campaign campaignResult = result.getBody();
                 assertNull(campaignResult == null ? campaignResult : campaignResult.getTitle());
@@ -622,7 +622,7 @@ public class CampaignIntegrationTest {
                 String startDate = LocalDateTime.now().plusMinutes(20).format(dateformat);
                 String endDate = LocalDateTime.now().plusMinutes(20).plusDays(1).format(dateformat);
                 MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
-                map.add("title", "New campaign");
+                map.add("title", "New campaign economical");
                 map.add("startDate", startDate);
                 map.add("endDate", endDate);
                 map.add("location", "north");
@@ -635,7 +635,7 @@ public class CampaignIntegrationTest {
                 assertEquals(201, result.getStatusCode().value());
                 Campaign campaign = result.getBody();
                 assertNotNull(campaign);
-                assertEquals("New campaign", campaign.getTitle());
+                assertEquals("New campaign economical", campaign.getTitle());
                 assertEquals(startDate, campaign.getStartDate().format(dateformat));
                 assertEquals(endDate, campaign.getEndDate().format(dateformat));
                 assertEquals("north", campaign.getLocation());
@@ -652,7 +652,7 @@ public class CampaignIntegrationTest {
                 String startDate = LocalDateTime.now().plusMinutes(20).format(dateformat);
                 String endDate = LocalDateTime.now().plusMinutes(20).plusDays(1).format(dateformat);
                 MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
-                map.add("title", "New campaign");
+                map.add("title", "New campaign economical");
                 map.add("startDate", startDate);
                 map.add("endDate", endDate);
                 map.add("location", "north");
@@ -673,7 +673,7 @@ public class CampaignIntegrationTest {
                 assertEquals(201, result.getStatusCode().value());
                 Campaign campaign = result.getBody();
                 assertNotNull(campaign);
-                assertEquals("New campaign", campaign.getTitle());
+                assertEquals("New campaign economical", campaign.getTitle());
                 assertEquals(startDate, campaign.getStartDate().format(dateformat));
                 assertEquals(endDate, campaign.getEndDate().format(dateformat));
                 assertEquals("north", campaign.getLocation());
@@ -694,7 +694,7 @@ public class CampaignIntegrationTest {
                 String startDate = LocalDateTime.now().plusMinutes(20).format(dateformat);
                 String endDate = LocalDateTime.now().plusMinutes(20).plusDays(1).format(dateformat);
                 MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
-                map.add("title", "New campaign");
+                map.add("title", "New campaign economical");
                 map.add("startDate", startDate);
                 map.add("endDate", endDate);
                 map.add("location", "north");
@@ -727,7 +727,7 @@ public class CampaignIntegrationTest {
                 String startDate = LocalDateTime.now().plusMinutes(20).format(dateformat);
                 String endDate = LocalDateTime.now().plusMinutes(20).plusDays(1).format(dateformat);
                 MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
-                map.add("title", "New campaign");
+                map.add("title", "New campaign economical");
                 map.add("startDate", startDate);
                 map.add("endDate", endDate);
                 map.add("location", "north");
@@ -737,7 +737,7 @@ public class CampaignIntegrationTest {
                 rewardJson.put("rewardType", "Points");
                 rewardJson.put("rewardName", "Reward test");
                 rewardJson.put("tnc", "Terms and Conditions testing");
-                //rewardJson.put("goal", 10);
+                // rewardJson.put("goal", 10);
                 map.add("reward", rewardJson.toString());
 
                 HttpEntity<MultiValueMap<String, String>> request =
@@ -785,7 +785,7 @@ public class CampaignIntegrationTest {
                 String endDate = LocalDateTime.now().plusMinutes(20).plusDays(1).format(dateformat)
                                 + " 00:00";
                 MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
-                map.add("title", "New campaign");
+                map.add("title", "New campaign economical");
                 map.add("startDate", startDate);
                 map.add("endDate", endDate);
                 map.add("location", "North");
@@ -800,7 +800,7 @@ public class CampaignIntegrationTest {
                 assertEquals(201, result.getStatusCode().value());
                 Campaign campaign = result.getBody();
                 assertNotNull(campaign);
-                assertEquals("New campaign", campaign.getTitle());
+                assertEquals("New campaign economical", campaign.getTitle());
                 assertEquals(startDate, campaign.getStartDate().format(dateformat));
                 assertEquals(endDate, campaign.getEndDate().format(dateformat));
         }
@@ -1035,6 +1035,7 @@ public class CampaignIntegrationTest {
                 assertEquals(403, result.getStatusCode().value());
         }
 }
+
 
 // For getCampaigns_MustContainStatusField_Sucess() test
 // To check it returns 'status' field

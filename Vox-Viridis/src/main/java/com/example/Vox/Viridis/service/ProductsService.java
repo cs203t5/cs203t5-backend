@@ -1,7 +1,6 @@
 package com.example.Vox.Viridis.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import com.example.Vox.Viridis.model.Products;
 import com.example.Vox.Viridis.model.Users;

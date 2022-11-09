@@ -2,7 +2,6 @@ package com.example.Vox.Viridis.model.validation;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

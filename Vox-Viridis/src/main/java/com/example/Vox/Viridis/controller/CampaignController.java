@@ -60,9 +60,9 @@ public class CampaignController {
     @GetMapping("myCampaign")
     public List<Campaign> getMyCampaign() {
         List<Campaign> result = campaignService.getCampaignCreatedByCurrentUser();
-        result.forEach(campaign -> {
-            campaign.constructImageUrl(storageService);
-        });
+        result.forEach(campaign -> 
+            campaign.constructImageUrl(storageService)
+        );
         return result;
     }
 
@@ -80,9 +80,9 @@ public class CampaignController {
         PaginationDTO<Campaign> result = campaignService.getCampaign(pageNum, filterByTitle, category, location, reward,
                 isOrderByNewest);
 
-        result.getElements().forEach(campaign -> {
-            campaign.constructImageUrl(storageService);
-        });
+        result.getElements().forEach(campaign -> 
+            campaign.constructImageUrl(storageService)
+        );
         return result;
     }
 

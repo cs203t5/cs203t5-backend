@@ -11,23 +11,23 @@ import lombok.Getter;
 public abstract class ValidationException extends RuntimeException {
 
     @Getter
-    private HttpStatus httpStatus;
+    private final HttpStatus httpStatus;
 
-    public ValidationException() {
+    protected ValidationException() {
         httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
     }
 
-    public ValidationException(HttpStatus httpStatus, String message) {
+    protected ValidationException(HttpStatus httpStatus, String message) {
         super(message);
         this.httpStatus = httpStatus;
     }
 
-    public ValidationException(HttpStatus httpStatus, Throwable ex) {
+    protected ValidationException(HttpStatus httpStatus, Throwable ex) {
         super(ex);
         this.httpStatus = httpStatus;
     }
 
-    public ValidationException(HttpStatus httpStatus, String message, Throwable ex) {
+    protected ValidationException(HttpStatus httpStatus, String message, Throwable ex) {
         super(message, ex);
         this.httpStatus = httpStatus;
     }

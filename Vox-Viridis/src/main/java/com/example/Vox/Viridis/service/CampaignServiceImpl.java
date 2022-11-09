@@ -1,11 +1,16 @@
 package com.example.Vox.Viridis.service;
 
+import java.io.File;
+import java.io.FileReader;
+import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-
+import java.util.Scanner;
+import java.util.regex.Pattern;
 import javax.transaction.Transactional;
-
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +32,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public class CampaignServiceImpl implements CampaignService {
+    @Value("classpath:WHITELISTED_WORDS.txt")
+    private Resource resource;
+
     private final CampaignRepository campaignRepository;
     private final UsersService usersService;
 
@@ -41,6 +49,25 @@ public class CampaignServiceImpl implements CampaignService {
             log.error("Error creating Campaign: duplicate title: " + title);
             return null;
         }
+        try {
+            Scanner scanner = new Scanner(resource.getFile());
+            boolean doesContain = false;
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                if (Pattern.compile(Pattern.quote(line), Pattern.CASE_INSENSITIVE).matcher(title)
+                        .find()) {
+                    doesContain = true;
+                    break;
+                }
+            }
+            if (!doesContain) {
+                log.error(
+                        "Error creating Campaign: title does not contain any of the whitelisted words");
+                throw new Exception("Title does not contain any of the whitelisted words");
+            }
+        } catch (Exception e) {
+            return null;
+        }
 
         log.info("Campaign created: " + title);
         campaign.setCreatedOn(LocalDateTime.now());
@@ -49,8 +76,9 @@ public class CampaignServiceImpl implements CampaignService {
     }
 
     @Override
-    public PaginationDTO<Campaign> getCampaign(int page, String filterByTitle, List<String> category,
-            List<String> location, List<String> reward, boolean isOrderByNewest) {
+    public PaginationDTO<Campaign> getCampaign(int page, String filterByTitle,
+            List<String> category, List<String> location, List<String> reward,
+            boolean isOrderByNewest) {
         Sort sort = Sort.by("createdOn");
         if (isOrderByNewest)
             sort = sort.descending();
@@ -61,14 +89,14 @@ public class CampaignServiceImpl implements CampaignService {
         Pageable pageable = PageRequest.of(page, 20, sort);
         if (filterByTitle == null)
             filterByTitle = "";
-        Page<Campaign> campaigns =
-                campaignRepository.findByTitleAndCategoryAndLocationAndReward(filterByTitle,
-                        category, location, reward, pageable);
+        Page<Campaign> campaigns = campaignRepository.findByTitleAndCategoryAndLocationAndReward(
+                filterByTitle, category, location, reward, pageable);
         return new PaginationDTO<Campaign>(campaigns);
     }
 
     /**
      * Will return a list of campaigns created by current user
+     * 
      * @return list of campaign created by current user
      */
     @Override
@@ -92,14 +120,14 @@ public class CampaignServiceImpl implements CampaignService {
     public Campaign updateCampaign(Campaign updatedCampaign, Long id) {
         Campaign existingCampaign = getCampaign(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Campaign id " + id));
-        
+
         // Check if there's duplicate title
         List<Campaign> tmp = campaignRepository.findByTitle(updatedCampaign.getTitle());
         if (!((tmp.size() == 1 && tmp.get(0).getId() == id) || tmp.size() == 0)) {
             log.error("Error creating Campaign: duplicate title: " + updatedCampaign.getTitle());
             return null;
         }
-        
+
         Users username = usersService.getCurrentUser();
         if (!existingCampaign.getCreatedBy().equals(username))
             throw new NotOwnerException();

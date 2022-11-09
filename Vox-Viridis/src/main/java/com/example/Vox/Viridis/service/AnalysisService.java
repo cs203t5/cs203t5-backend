@@ -9,11 +9,9 @@ import org.springframework.stereotype.Service;
 import com.example.Vox.Viridis.model.Analysis;
 import com.example.Vox.Viridis.model.Participation;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Transactional
-@Slf4j
 @RequiredArgsConstructor
 public class AnalysisService {
     private final ParticipationService participationService;

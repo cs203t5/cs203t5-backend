@@ -1,8 +1,5 @@
 package com.example.Vox.Viridis.service;
 
-import java.io.File;
-import java.io.FileReader;
-import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -49,8 +46,7 @@ public class CampaignServiceImpl implements CampaignService {
             log.error("Error creating Campaign: duplicate title: " + title);
             return null;
         }
-        try {
-            Scanner scanner = new Scanner(resource.getFile());
+        try (Scanner scanner = new Scanner(resource.getFile())){
             boolean doesContain = false;
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
@@ -67,7 +63,8 @@ public class CampaignServiceImpl implements CampaignService {
             }
         } catch (Exception e) {
             return null;
-        }
+        } 
+        
 
         log.info("Campaign created: " + title);
         campaign.setCreatedOn(LocalDateTime.now());
@@ -125,7 +122,7 @@ public class CampaignServiceImpl implements CampaignService {
 
         // Check if there's duplicate title
         List<Campaign> tmp = campaignRepository.findByTitle(updatedCampaign.getTitle());
-        if (!((tmp.size() == 1 && tmp.get(0).getId() == id) || tmp.isEmpty())) {
+        if (!((tmp.size() == 1 && tmp.get(0).getId().equals(id)) || tmp.isEmpty())) {
             log.error("Error creating Campaign: duplicate title: " + updatedCampaign.getTitle());
             return null;
         }

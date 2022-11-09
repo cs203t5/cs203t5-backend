@@ -42,6 +42,7 @@ public class CampaignServiceImpl implements CampaignService {
 
     public Campaign addCampaign(Campaign campaign) {
         String title = campaign.getTitle();
+        String description = campaign.getDescription();
         if (!campaignRepository.findByTitle(title).isEmpty()) {
             log.error("Error creating Campaign: duplicate title: " + title);
             return null;
@@ -55,10 +56,15 @@ public class CampaignServiceImpl implements CampaignService {
                     doesContain = true;
                     break;
                 }
+                if (Pattern.compile(Pattern.quote(line), Pattern.CASE_INSENSITIVE)
+                        .matcher(description).find()) {
+                    doesContain = true;
+                    break;
+                }
             }
             if (!doesContain) {
                 log.error(
-                        "Error creating Campaign: title does not contain any of the whitelisted words");
+                        "Error creating Campaign: title and description does not contain any of the whitelisted words");
                 throw new Exception("Title does not contain any of the whitelisted words");
             }
         } catch (Exception e) {
@@ -87,9 +93,8 @@ public class CampaignServiceImpl implements CampaignService {
         if (filterByTitle == null)
             filterByTitle = "";
 
-        Page<Campaign> campaigns =
-                campaignRepository.findByTitleAndCategoryAndLocationAndReward(filterByTitle,
-                        category, location, reward, pageable);
+        Page<Campaign> campaigns = campaignRepository.findByTitleAndCategoryAndLocationAndReward(
+                filterByTitle, category, location, reward, pageable);
         return new PaginationDTO<>(campaigns);
     }
 

@@ -30,13 +30,16 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Transactional
 @Slf4j
-@RequiredArgsConstructor
 public class CampaignServiceImpl implements CampaignService {
-    @Value("classpath:WHITELISTED_WORDS.txt")
-    private Resource resource;
-
+    private final Resource resource;
     private final CampaignRepository campaignRepository;
     private final UsersService usersService;
+
+    public CampaignServiceImpl(CampaignRepository campaignRepository, UsersService usersService, @Value("classpath:WHITELISTED_WORDS.txt") Resource resource) {
+        this.campaignRepository = campaignRepository;
+        this.usersService = usersService;
+        this.resource = resource;
+    }
 
     @Override
     public Optional<Campaign> getCampaign(Long id) {

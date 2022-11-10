@@ -49,15 +49,11 @@ public class CampaignServiceImpl implements CampaignService {
         }
         try (Scanner scanner = new Scanner(resource.getFile())){
             boolean doesContain = false;
+            final String titleLowerCase = title.toLowerCase();
+            final String descLowerCase = description == null ? description : description.toLowerCase();
             while (scanner.hasNextLine()) {
-                String line = scanner.nextLine();
-                if (Pattern.compile(Pattern.quote(line), Pattern.CASE_INSENSITIVE).matcher(title)
-                        .find()) {
-                    doesContain = true;
-                    break;
-                }
-                if (Pattern.compile(Pattern.quote(line), Pattern.CASE_INSENSITIVE)
-                        .matcher(description).find()) {
+                String line = scanner.nextLine().toLowerCase();
+                if (titleLowerCase.contains(line) || (descLowerCase != null && descLowerCase.contains(line))) {
                     doesContain = true;
                     break;
                 }

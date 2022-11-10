@@ -1,4 +1,4 @@
-name: Deploy AWS EC2
+name: AWS Code-Guru
 
 on:
   push:

@@ -2,7 +2,7 @@ name: AWS Code-Guru
 
 on:
   push:
-    branches: ["staging","main"]
+    branches: 
 jobs:
   build:
     runs-on: ubuntu-latest

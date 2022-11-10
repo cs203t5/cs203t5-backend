@@ -1,5 +1,6 @@
 package com.example.Vox.Viridis.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import com.example.Vox.Viridis.model.Campaign;
+import com.example.Vox.Viridis.model.Role;
 import com.example.Vox.Viridis.model.Users;
 import com.example.Vox.Viridis.model.dto.PaginationDTO;
 import com.example.Vox.Viridis.repository.CampaignRepository;
@@ -37,6 +39,17 @@ public class CampaignServiceTest {
 
     @InjectMocks
     private CampaignServiceImpl campaignService;
+
+    private static Users createAdminUser() {
+        Users currentUser = new Users();
+        currentUser.setAccountId(2l);
+        currentUser.setEmail("admin@test.com");
+        currentUser.setFirstName("admin");
+        currentUser.setLastName("name");
+        currentUser.setUsername("admin123");
+        currentUser.setRoles(new Role(1l, "ADMIN", null));
+        return currentUser;
+    }
 
     @Test
     void getCampaignCompanyName() {
@@ -142,7 +155,7 @@ public class CampaignServiceTest {
 
         when(campaigns.findByTitle(any(String.class))).thenReturn(new ArrayList<Campaign>());
         when(campaigns.save(any(Campaign.class))).thenReturn(campaign);
-        when(usersService.getCurrentUser()).thenReturn(null);
+        when(usersService.getCurrentUser()).thenReturn(createAdminUser());
 
         Campaign savedCampaign = campaignService.addCampaign(campaign);
 

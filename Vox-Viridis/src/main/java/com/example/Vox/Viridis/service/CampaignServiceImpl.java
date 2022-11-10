@@ -1,5 +1,7 @@
 package com.example.Vox.Viridis.service;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -15,6 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.example.Vox.Viridis.exception.ResourceNotFoundException;
+import com.example.Vox.Viridis.exception.NoGreenWordException;
 import com.example.Vox.Viridis.exception.NotOwnerException;
 import com.example.Vox.Viridis.model.Campaign;
 import com.example.Vox.Viridis.model.Users;
@@ -47,6 +50,8 @@ public class CampaignServiceImpl implements CampaignService {
             log.error("Error creating Campaign: duplicate title: " + title);
             return null;
         }
+
+        // check if contain green (whitelisted) words
         try (Scanner scanner = new Scanner(resource.getFile())){
             boolean doesContain = false;
             final String titleLowerCase = title.toLowerCase();
@@ -61,11 +66,11 @@ public class CampaignServiceImpl implements CampaignService {
             if (!doesContain) {
                 log.error(
                         "Error creating Campaign: title and description does not contain any of the whitelisted words");
-                throw new Exception("Title does not contain any of the whitelisted words");
+                throw new NoGreenWordException();
             }
-        } catch (Exception e) {
-            return null;
-        } 
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         
 
         log.info("Campaign created: " + title);
@@ -126,6 +131,26 @@ public class CampaignServiceImpl implements CampaignService {
         if (!((tmp.size() == 1 && tmp.get(0).getId().equals(id)) || tmp.isEmpty())) {
             log.error("Error creating Campaign: duplicate title: " + updatedCampaign.getTitle());
             return null;
+        }
+
+        try (Scanner scanner = new Scanner(resource.getFile())){
+            boolean doesContain = false;
+            final String titleLowerCase = updatedCampaign.getTitle().toLowerCase();
+            final String descLowerCase = updatedCampaign.getDescription() == null ? null : updatedCampaign.getDescription().toLowerCase();
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine().toLowerCase();
+                if (titleLowerCase.contains(line) || (descLowerCase != null && descLowerCase.contains(line))) {
+                    doesContain = true;
+                    break;
+                }
+            }
+            if (!doesContain) {
+                log.error(
+                        "Error creating Campaign: title and description does not contain any of the whitelisted words");
+                throw new NoGreenWordException();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
         Users username = usersService.getCurrentUser();

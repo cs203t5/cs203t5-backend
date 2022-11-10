@@ -419,7 +419,7 @@ public class CampaignIntegrationTest {
 
                 DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
                 Campaign campaign = new Campaign();
-                campaign.setTitle("New campaign");
+                campaign.setTitle("New campaign economical");
                 campaign.setCreatedBy(getUser());
                 campaign.setLocation("North");
                 campaign.setStartDate(LocalDateTime.parse(
@@ -893,7 +893,7 @@ public class CampaignIntegrationTest {
                 URI uri = new URI(baseUrl + port + "/api/campaign");
 
                 Campaign campaign = new Campaign();
-                campaign.setTitle("New campaign");
+                campaign.setTitle("New campaign economical");
                 campaign.setStartDate(LocalDateTime.now().plusMinutes(2));
                 campaign.setEndDate(LocalDateTime.now().plusMinutes(2).plusDays(1));
                 campaign.setCreatedBy(getUser());
@@ -907,7 +907,7 @@ public class CampaignIntegrationTest {
                 String startDate = LocalDateTime.now().plusMinutes(20).format(dateformat);
                 String endDate = LocalDateTime.now().plusMinutes(20).plusDays(1).format(dateformat);
                 MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
-                map.add("title", "New campaign 2");
+                map.add("title", "New campaign 2 economical");
                 map.add("startDate", startDate);
                 map.add("endDate", endDate);
                 map.add("location", "North");
@@ -921,7 +921,7 @@ public class CampaignIntegrationTest {
                 assertEquals(200, result.getStatusCode().value());
                 Campaign results = result.getBody();
                 assertNotNull(results);
-                assertEquals("New campaign 2", results.getTitle());
+                assertEquals("New campaign 2 economical", results.getTitle());
                 assertEquals(startDate, results.getStartDate().format(dateformat));
                 assertEquals(endDate, results.getEndDate().format(dateformat));
         }

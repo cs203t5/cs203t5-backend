@@ -1,5 +1,8 @@
 package com.example.Vox.Viridis.service;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -17,6 +20,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -36,6 +40,10 @@ public class CampaignServiceTest {
 
     @Mock
     private UsersService usersService;
+
+    @Mock(name = "resource")
+    private Resource greenWordsResource;
+    private static final File greenWordsResourceFile = Path.of("./src/main/resources/WHITELISTED_WORDS.txt").toFile();
 
     @InjectMocks
     private CampaignServiceImpl campaignService;
@@ -147,7 +155,7 @@ public class CampaignServiceTest {
     }
 
     @Test
-    void addCampaign_NewTitle_ReturnSavedCampaign() {
+    void addCampaign_NewTitle_ReturnSavedCampaign() throws IOException {
         Campaign campaign = new Campaign();
         campaign.setTitle("New Campaign economical");
         campaign.setStartDate(LocalDateTime.now());
@@ -156,11 +164,14 @@ public class CampaignServiceTest {
         when(campaigns.findByTitle(any(String.class))).thenReturn(new ArrayList<Campaign>());
         when(campaigns.save(any(Campaign.class))).thenReturn(campaign);
         when(usersService.getCurrentUser()).thenReturn(createAdminUser());
+        when(greenWordsResource.getFile()).thenReturn(greenWordsResourceFile);
 
         Campaign savedCampaign = campaignService.addCampaign(campaign);
 
         assertNotNull(savedCampaign);
         verify(campaigns).findByTitle(campaign.getTitle());
+        // should check if title contains any of the green words from this file
+        verify(greenWordsResource).getFile(); 
         verify(campaigns).save(campaign);
     }
 
@@ -180,7 +191,7 @@ public class CampaignServiceTest {
     }
 
     @Test
-    void updateCampaign_NewTitle_ReturnSavedCampaign() {
+    void updateCampaign_NewTitle_ReturnSavedCampaign() throws IOException {
         Users admin = new Users();
         admin.setAccountId(1l);
         admin.setEmail("campaign@test.com");
@@ -196,7 +207,7 @@ public class CampaignServiceTest {
         campaign.setCreatedBy(admin);
 
         Campaign updatedCampaign = new Campaign();
-        updatedCampaign.setTitle("New New Campaign");
+        updatedCampaign.setTitle("New New Campaign economical");
         updatedCampaign.setStartDate(LocalDateTime.now());
         updatedCampaign.setEndDate(LocalDateTime.now().plusDays(1));
 
@@ -204,6 +215,7 @@ public class CampaignServiceTest {
         when(campaigns.findById(2l)).thenReturn(Optional.of(campaign));
         when(campaigns.save(any(Campaign.class))).thenReturn(updatedCampaign);
         when(usersService.getCurrentUser()).thenReturn(admin);
+        when(greenWordsResource.getFile()).thenReturn(greenWordsResourceFile);
 
         Campaign savedCampaign = campaignService.updateCampaign(updatedCampaign, 2l);
 
@@ -212,10 +224,12 @@ public class CampaignServiceTest {
         verify(campaigns).findById(2l);
         updatedCampaign.setId(2l);
         verify(campaigns).save(updatedCampaign);
+        // should check if title contains any of the green words from this file
+        verify(greenWordsResource).getFile(); 
     }
 
     @Test
-    void updateCampaign_TitleUnchanged_ReturnSavedCampaign() {
+    void updateCampaign_TitleUnchanged_ReturnSavedCampaign() throws IOException {
         Users admin = new Users();
         admin.setAccountId(1l);
         admin.setEmail("campaign@test.com");
@@ -231,7 +245,7 @@ public class CampaignServiceTest {
         campaign.setCreatedBy(admin);
 
         Campaign updatedCampaign = new Campaign();
-        updatedCampaign.setTitle("New Campaign");
+        updatedCampaign.setTitle("New Campaign economical");
         updatedCampaign.setStartDate(LocalDateTime.now());
         updatedCampaign.setEndDate(LocalDateTime.now().plusDays(1));
 
@@ -239,6 +253,7 @@ public class CampaignServiceTest {
         when(campaigns.findById(2l)).thenReturn(Optional.of(campaign));
         when(campaigns.save(any(Campaign.class))).thenReturn(updatedCampaign);
         when(usersService.getCurrentUser()).thenReturn(admin);
+        when(greenWordsResource.getFile()).thenReturn(greenWordsResourceFile);
 
         Campaign savedCampaign = campaignService.updateCampaign(updatedCampaign, 2l);
 
@@ -247,6 +262,8 @@ public class CampaignServiceTest {
         verify(campaigns).findById(2l);
         updatedCampaign.setId(2l);
         verify(campaigns).save(updatedCampaign);
+        // should check if title contains any of the green words from this file
+        verify(greenWordsResource).getFile(); 
     }
 
     @Test

@@ -141,7 +141,9 @@ public class UsersIntegrationTest {
                 authenticatedRestTemplate().postForEntity(uri, user, UsersDTO.class);
 
         assertEquals(201, result.getStatusCode().value());
-        assertEquals("admin3", result.getBody().getUsername());
+        UsersDTO userResult = result.getBody();
+        assertNotNull(userResult);
+        assertEquals("admin3", userResult.getUsername());
     }
 
     @Test
@@ -225,7 +227,9 @@ public class UsersIntegrationTest {
                 .exchange(uri, HttpMethod.PUT, request, UsersDTO.class);
 
         assertEquals(200, result.getStatusCode().value());
-        assertEquals("consumer1", result.getBody().getUsername());
+        UsersDTO userResult = result.getBody();
+        assertNotNull(userResult);
+        assertEquals("consumer1", userResult.getUsername());
     }
 
     @Test
@@ -270,7 +274,9 @@ public class UsersIntegrationTest {
                 .exchange(uri, HttpMethod.PUT, request, UsersDTO.class);
 
         assertEquals(200, result.getStatusCode().value());
-        assertEquals("consumer1", result.getBody().getUsername());
+        UsersDTO userResult = result.getBody();
+        assertNotNull(userResult);
+        assertEquals("consumer1", userResult.getUsername());
     }
 
     @Test

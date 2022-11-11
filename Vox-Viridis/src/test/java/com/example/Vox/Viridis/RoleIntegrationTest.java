@@ -132,7 +132,9 @@ public class RoleIntegrationTest {
                 authenticatedRestTemplate().postForEntity(uri, role, RoleDTO.class);
 
         assertEquals(201, result.getStatusCode().value());
-        assertEquals("TEST", result.getBody().getName());
+        RoleDTO roleResult = result.getBody();
+        assertNotNull(roleResult);
+        assertEquals("TEST", roleResult.getName());
     }
 
     @Test

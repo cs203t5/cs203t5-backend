@@ -3,7 +3,6 @@ package com.example.Vox.Viridis.service;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +11,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -27,6 +27,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import com.example.Vox.Viridis.exception.NoGreenWordException;
 import com.example.Vox.Viridis.model.Campaign;
 import com.example.Vox.Viridis.model.Role;
 import com.example.Vox.Viridis.model.Users;
@@ -176,6 +177,25 @@ public class CampaignServiceTest {
     }
 
     @Test
+    void addCampaign_WithoutGreenWords_ThrowException() throws IOException {
+        Campaign campaign = new Campaign();
+        campaign.setTitle("New Campaign");
+        campaign.setStartDate(LocalDateTime.now());
+        campaign.setEndDate(LocalDateTime.now().plusDays(1));
+
+        when(campaigns.findByTitle(any(String.class))).thenReturn(new ArrayList<Campaign>());
+        when(greenWordsResource.getFile()).thenReturn(greenWordsResourceFile);
+
+        assertThrows(NoGreenWordException.class, () -> {
+            campaignService.addCampaign(campaign);
+        });
+
+        verify(campaigns).findByTitle(campaign.getTitle());
+        // should check if title contains any of the green words from this file
+        verify(greenWordsResource).getFile();
+    }
+
+    @Test
     void addCampaign_SameTitle_Null() {
         Campaign campaign = new Campaign();
         campaign.setTitle("Existing Campaign");
@@ -224,6 +244,41 @@ public class CampaignServiceTest {
         verify(campaigns).findById(2l);
         updatedCampaign.setId(2l);
         verify(campaigns).save(updatedCampaign);
+        // should check if title contains any of the green words from this file
+        verify(greenWordsResource).getFile(); 
+    }
+
+    @Test
+    void updateCampaign_WithoutGreenWords_ThrowException() throws IOException {
+        Users admin = new Users();
+        admin.setAccountId(1l);
+        admin.setEmail("campaign@test.com");
+        admin.setFirstName("Admin");
+        admin.setLastName("name");
+        admin.setUsername("admin123");
+
+        Campaign campaign = new Campaign();
+        campaign.setId(2l);
+        campaign.setTitle("New Campaign");
+        campaign.setStartDate(LocalDateTime.now());
+        campaign.setEndDate(LocalDateTime.now().plusDays(1));
+        campaign.setCreatedBy(admin);
+
+        Campaign updatedCampaign = new Campaign();
+        updatedCampaign.setTitle("New New Campaign");
+        updatedCampaign.setStartDate(LocalDateTime.now());
+        updatedCampaign.setEndDate(LocalDateTime.now().plusDays(1));
+
+        when(campaigns.findByTitle(any(String.class))).thenReturn(new ArrayList<Campaign>());
+        when(campaigns.findById(2l)).thenReturn(Optional.of(campaign));
+        when(greenWordsResource.getFile()).thenReturn(greenWordsResourceFile);
+
+        assertThrows(NoGreenWordException.class, () -> {
+            campaignService.updateCampaign(updatedCampaign, 2l);
+        });
+
+        verify(campaigns).findByTitle(updatedCampaign.getTitle());
+        verify(campaigns).findById(2l);
         // should check if title contains any of the green words from this file
         verify(greenWordsResource).getFile(); 
     }

@@ -275,9 +275,9 @@ public class CampaignIntegrationTest {
                 assertNotNull(resultArr);
                 resultArr.getElements().forEach(c -> {
                         if (c.getTitle().equals("Ongoing campaign"))
-                                assertEquals(c.getStatus(), 'O');
+                                assertEquals('O', c.getStatus());
                         else
-                                assertEquals(c.getStatus(), 'U');
+                                assertEquals('U', c.getStatus());
                 });
         }
 

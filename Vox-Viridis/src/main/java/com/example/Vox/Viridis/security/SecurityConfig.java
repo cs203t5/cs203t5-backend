@@ -129,7 +129,7 @@ public class SecurityConfig {
                                 .hasAnyAuthority("ADMIN", "ROLE_ADMIN")
 
                                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-
+                                .antMatchers(HttpMethod.GET, "/healthCheck").permitAll()
                                 .anyRequest().authenticated()).csrf(csrf -> csrf.disable())
                                 .httpBasic(Customizer.withDefaults())
                                 .userDetailsService(myUserDetailsService)

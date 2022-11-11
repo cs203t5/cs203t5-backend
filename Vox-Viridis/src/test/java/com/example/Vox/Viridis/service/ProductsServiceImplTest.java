@@ -7,6 +7,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -62,16 +63,14 @@ public class ProductsServiceImplTest {
     @Test
     void getProduct_InvalidId_ReturnNull() {
         Products product = new Products();
-        product.setId((long) 23);
-        Throwable resourceNotFoundException = new ResourceNotFoundException();
-        Throwable exception = null;
+        product.setId(23l);
         when(products.findById(((long) 22))).thenReturn(Optional.ofNullable(null));
-        try {
-        Products returnProduct = productsService.getProducts((long) 22);
-        }catch(ResourceNotFoundException e) {
-            exception = resourceNotFoundException;
-        }
-        assertEquals(resourceNotFoundException,exception);
+        
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            productsService.getProducts(22l);
+        });
+        
+        assertEquals(new ResourceNotFoundException().getMessage(), exception.getMessage());
         verify(products).findById((long) 22);
     }
 
@@ -165,20 +164,16 @@ public class ProductsServiceImplTest {
         product.setId((long) (24));
         product.setPoint(10);
 
-        NotEnoughPointException error = new NotEnoughPointException();
         // mock the "Find" operation
         when(products.findById((long) (24))).thenReturn(Optional.of(product));
         // mock the get current user
         when(usersService.getCurrentUser()).thenReturn(user);
 
-        String errorMsg = "";
-        try{
-        Users savedUser = productsService.buyProducts((long) 24);
-        }catch (NotEnoughPointException e) {
-            errorMsg += "Insufficient point to purchase product.";
-        }
+        NotEnoughPointException exception = assertThrows(NotEnoughPointException.class, () -> {
+            productsService.buyProducts(24l);
+        });
         
-        assertEquals(error.getMessage(),errorMsg);
+        assertEquals(new NotEnoughPointException().getMessage(), exception.getMessage());
         verify(products).findById((long) 24);
         verify(usersService).getCurrentUser();
     }

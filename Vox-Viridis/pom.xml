@@ -155,11 +155,11 @@
 					<excludes>
 						<exclude>in/sivalabs/freelancerkit/entities/*</exclude>
 						<exclude>in/sivalabs/freelancerkit/*Application</exclude>
-						<exclude>**/VoxViridisApplication.java</exclude>   
-						<exclude>**/config/*.java</exclude>
-						<exclude>**/exception/*.java</exclude>
-						<exlude>**/model/*.java</exlude>
-						<exclude>**/security/*.java</exclude>
+						<exclude>**/Vox/Viridis/VoxViridisApplication.class</exclude>   
+						<exclude>**/config/</exclude>
+						<exclude>**/exception/</exclude>
+						<exclude>**/model/</exclude>
+						<exclude>**/security/</exclude>
 					</excludes>
 				</configuration>
 				<executions>
